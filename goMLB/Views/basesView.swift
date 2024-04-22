@@ -22,9 +22,9 @@ struct BasesView: View {
 
 		 HStack(alignment: .center) {
 			GeometryReader { geometry in
-			   let size = min(geometry.size.width, geometry.size.height) / 3
+			   let size = min(geometry.size.width, geometry.size.height) / 2
 			   let strokeWidth: CGFloat = 2
-			   let onBaseColor: Color = .red
+			   let onBaseColor: Color = .green
 
 			   ZStack {
 				  // Top middle (Second base)
@@ -59,7 +59,7 @@ struct BasesView: View {
 			   }
 
 			}
-			.frame(width: 35, height: 30)
+			.frame(width: 45, height: 40)
 		 }
 		 HStack {
 		 Text("\nBalls: \(balls) - Strikes: \(strikes) - Outs: \(outs) ")

@@ -35,6 +35,10 @@ class EventViewModel: ObservableObject {
    /// Loads baseball event data from an API, filters it, and updates the view model.
    func loadData() {
 	  // API URL for MLB scoreboard data.
+
+ // MARK: Team Playing
+	  let teamPlaying = "Detroit"
+
 	  guard let url = URL(string: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard") else { return }
 
 	  URLSession.shared.dataTask(with: url) { data, response, error in
@@ -54,7 +58,7 @@ class EventViewModel: ObservableObject {
 
 			   // teamPlaying holds the value to filter the list of events to include to only those where the name contains the value of teamPlaying.
 			   // Then it maps the results to a new structure.
-			   let teamPlaying = "Reds"
+
 			   self.filteredEvents = decodedResponse.events.filter { $0.name.contains(teamPlaying) }.map { event in
 
 				  // Filtering and Mapping: The filter method screens the events based on the condition that their names contain "Yankees". This
@@ -92,6 +96,9 @@ class EventViewModel: ObservableObject {
 struct ContentView: View {
    @ObservedObject var viewModel = EventViewModel()
    let timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
+   let scoreColor = Color(.blue)
+   let winners = Color(.green)
+   let scoreSize = 50.0
 
    var body: some View {
 	  VStack {
@@ -99,24 +106,28 @@ struct ContentView: View {
 			Spacer()
 			VStack{
 			   HStack(alignment: .center) {
-				  Text(event.title).font(.headline)
+				  Text(event.title)
 			   }
+			   .font(.system(size: 20))
+			   .padding()
+			   .lineLimit(2)
+			   .minimumScaleFactor(0.15)
+			   .scaledToFit()
 			   Spacer()
 
-			   HStack {
-				  Spacer()
+			   HStack(spacing: 2) {
 				  HStack {
 					 // First column for visitor's score
 					 Text("\(viewModel.filteredEvents.first?.visitScore ?? "")")
-						.font(.system(size: 45).weight(.bold))
-						.frame(width: UIScreen.main.bounds.width * 0.1, alignment: .leading)
-						.foregroundColor(.white)
+						.font(.system(size: scoreSize).weight(.bold))
+						.frame(width: UIScreen.main.bounds.width * 0.1, alignment: .trailing)
+						.foregroundColor(.blue)
 						.padding(.leading).padding(.leading)
 
 					 // Second column for visitor's name
 					 Text("\(viewModel.filteredEvents.first?.visitors ?? "")")
 						.font(.title2)
-						.frame(width: UIScreen.main.bounds.width * 0.3, alignment: .leading)
+						.frame(width: UIScreen.main.bounds.width * 0.3)
 						.foregroundColor(.gray)
 
 					 // Fourth column for home's name
@@ -127,15 +138,13 @@ struct ContentView: View {
 
 					 // Third column for home's score
 					 Text("\(viewModel.filteredEvents.first?.homeScore ?? "")")
-						.font(.system(size: 45).weight(.bold))
+						.font(.system(size: scoreSize).weight(.bold))
 						.frame(width: UIScreen.main.bounds.width * 0.1, alignment: .leading)
-						.foregroundColor(.white)
-						.padding(.trailing)
+						.foregroundColor(.blue)
+						.padding(.trailing).padding(.trailing)
 				  }
 			   }
-			   Spacer()
 			   HStack {
-
 				  Text("Inning: \(event.inning)")
 				  if let lastPlay = event.lastPlay {
 					 Text("Last Play: \(lastPlay)")
