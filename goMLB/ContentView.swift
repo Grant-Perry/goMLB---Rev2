@@ -30,9 +30,10 @@ struct ContentView: View {
 			let winColor = Color.green
 
 			VStack(spacing: 0) {
- //	MARK: Title Tile
+			   //	MARK: Title Tile
 			   HStack(alignment: .center) {
 				  VStack(spacing: 0) {  // Remove spacing between VStack elements
+
 					 Text("\(home ?? "")")
 						.font(.system(size: scoreSize))
 						.foregroundColor(Color(hex: homeColor ?? "000000"))
@@ -55,20 +56,20 @@ struct ContentView: View {
 			   }
 			   .font(.system(size: 20))
 			   .padding()
-//			   .lineLimit(2)
+			   //			   .lineLimit(2)
 			   .minimumScaleFactor(0.15)
 			   .scaledToFit()
 
-// MARK: Scores
+			   // MARK: Scores
 			   HStack(spacing: 0) {
-		 // First column for visitor's score (Right justified)
+				  // First column for visitor's score (Right justified)
 				  Text("\(viewModel.filteredEvents.first?.visitScore ?? "0")")
 					 .font(.system(size: scoreSize).weight(.bold))
 					 .frame(width: UIScreen.main.bounds.width * 0.15, alignment: .trailing)
 					 .foregroundColor(homeWin ? winColor : .blue)
-//					 .padding(.leading)
+				  //					 .padding(.leading)
 
-		 // Second column for visitor's name and record
+				  // Second column for visitor's name and record
 				  VStack(alignment: .leading) {
 					 Text("\(viewModel.filteredEvents.first?.visitors ?? "")")
 						.font(.title2)
@@ -76,6 +77,15 @@ struct ContentView: View {
 					 Text("\(viewModel.filteredEvents.first?.visitorRecord ?? "")")
 						.font(.caption)
 						.foregroundColor(.gray)
+					 VStack(alignment: .leading) {
+						AsyncImage(url: URL(string: event.visitorLogo)) { image in
+						   image.resizable().scaledToFit()
+						} placeholder: {
+						   Color.gray
+						}
+						.frame(width: 30)
+						.clipShape(Circle())
+					 }
 				  }
 				  .frame(width: UIScreen.main.bounds.width * 0.35)
 
@@ -88,6 +98,15 @@ struct ContentView: View {
 					 Text("\(viewModel.filteredEvents.first?.homeRecord ?? "")")
 						.font(.caption)
 						.foregroundColor(.gray)
+					 VStack(alignment: .leading) {
+						AsyncImage(url: URL(string: event.homeLogo)) { image in
+						   image.resizable().scaledToFit()
+						} placeholder: {
+						   Color.gray
+						}
+						.frame(width: 30)
+						.clipShape(Circle())
+					 }
 				  }
 				  .frame(width: UIScreen.main.bounds.width * 0.35)
 
@@ -99,9 +118,8 @@ struct ContentView: View {
 			   }
 
 			   HStack {
-				 
 				  if let lastPlay = event.lastPlay {
-					 Text("Last Play: \(lastPlay)")
+					 Text("\nLast Play: \(lastPlay)")
 				  }
 			   }
 			   Spacer()
@@ -118,7 +136,6 @@ struct ContentView: View {
 			   HStack {
 				  Text("Inning: \(event.inning)")
 					 .font(.caption)
-
 			   }
 			}
 		 }
@@ -131,14 +148,14 @@ struct ContentView: View {
 		 .foregroundColor(.white)
 		 .clipShape(Capsule())
 	  }
-	  
+
 
 	  .onAppear(perform: viewModel.loadData)
 	  .onReceive(timer) { _ in
 		 viewModel.loadData()
 	  }
 
-//	  .preferredColorScheme(/*@START_MENU_TOKEN@*/.dark/*@END_MENU_TOKEN@*/)
+	  //	  .preferredColorScheme(/*@START_MENU_TOKEN@*/.dark/*@END_MENU_TOKEN@*/)
    }
 }
 

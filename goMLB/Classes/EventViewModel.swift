@@ -34,6 +34,8 @@ class EventViewModel: ObservableObject {
 	  var balls: Int?          // Current ball count.
 	  var strikes: Int?        // Current strike count.
 	  var outs: Int?           // Current out count.
+	  var homeLogo: String
+	  var visitorLogo: String
    }
 
    /// Loads baseball event data from an API, filters it, and updates the view model.
@@ -92,7 +94,9 @@ class EventViewModel: ObservableObject {
 					 lastPlay: situation?.lastPlay?.text ?? "N/A",  // Sets the text of the last play, defaulting to "N/A" if null.
 					 balls: situation?.balls ?? 0,  // Sets the current number of balls, defaulting to 0 if null.
 					 strikes: situation?.strikes ?? 0,  // Sets the current number of strikes, defaulting to 0 if null.
-					 outs: situation?.outs ?? 0  // Sets the current number of outs, defaulting to 0 if null.
+					 outs: situation?.outs ?? 0,  // Sets the current number of outs, defaulting to 0 if null.
+					 homeLogo: homeCompetitor.team.logo,
+					 visitorLogo: visitorCompetitor.team.logo
 				  )
 			   }
 			}
