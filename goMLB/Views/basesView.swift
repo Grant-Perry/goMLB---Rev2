@@ -68,7 +68,7 @@ struct BasesView: View {
 		 }
 	  }
 
-//	  .preferredColorScheme(/*@START_MENU_TOKEN@*/.dark/*@END_MENU_TOKEN@*/)
+	  .preferredColorScheme(.light)
    }
 }
 

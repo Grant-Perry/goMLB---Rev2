@@ -16,6 +16,15 @@ struct ContentView: View {
    let winners = Color(.green)
    let scoreSize = 50.0
    let titleSize = 25.0
+   let teams = ["Arizona Diamondbacks", "Atlanta Braves", "Baltimore Orioles", "Boston Red Sox",
+				"Chicago Cubs", "Chicago White Sox", "Cincinnati Reds", "Cleveland Guardians",
+				"Colorado Rockies", "Detroit Tigers", "Houston Astros", "Kansas City Royals",
+				"Los Angeles Angels", "Los Angeles Dodgers", "Miami Marlins", "Milwaukee Brewers",
+				"Minnesota Twins", "New York Mets", "New York Yankees", "Oakland Athletics",
+				"Philadelphia Phillies", "Pittsburgh Pirates", "San Diego Padres", "San Francisco Giants",
+				"Seattle Mariners", "St. Louis Cardinals", "Tampa Bay Rays", "Texas Rangers",
+				"Toronto Blue Jays", "Washington Nationals"]
+   @State var selectedTeam = "Dorks"
 
    var body: some View {
 	  VStack {
@@ -137,6 +146,7 @@ struct ContentView: View {
 				  Text("Inning: \(event.inning)")
 					 .font(.caption)
 			   }
+
 			}
 		 }
 
@@ -149,13 +159,30 @@ struct ContentView: View {
 		 .clipShape(Capsule())
 	  }
 
+	  .safeAreaInset(edge: .bottom) {
+		 Picker("Select a team:", selection: $selectedTeam) {
+			ForEach(teams, id: \.self) { team in
+			   Text(team).tag(team)
+			}
+		 }
+		 .pickerStyle(MenuPickerStyle())
+		 .onChange(of: selectedTeam) { newValue in
+			print("newValue: \(newValue)")
+			DispatchQueue.main.async {
+			   viewModel.updateTeamPlaying(with: newValue)
+			   viewModel.teamPlaying = newValue
+			   viewModel.loadData()
+			}
+		 }
+	  }
+
 
 	  .onAppear(perform: viewModel.loadData)
 	  .onReceive(timer) { _ in
 		 viewModel.loadData()
 	  }
 
-	  //	  .preferredColorScheme(/*@START_MENU_TOKEN@*/.dark/*@END_MENU_TOKEN@*/)
+	  	  .preferredColorScheme(.light)
    }
 }
 
