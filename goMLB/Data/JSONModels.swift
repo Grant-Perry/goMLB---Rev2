@@ -39,10 +39,13 @@ struct Competition: Codable {
 
 /// `Competitor` defines a participant in the competition, including the team details and current score.
 struct Competitor: Codable {
-   /// Team details for the competitor.
    var team: Team
-   /// Current score for the competitor; optional because a game might not have started.
-   var score: String?
+   var score: String?  // Current score for the competitor; optional because a game might not have started.
+   var records: [Record]
+}
+
+struct Record: Codable {
+   var summary: String // holds the team's season record prior to current game i.e. 18-6
 }
 
 /// `Team` provides basic information about a team including its name and logo URL.
@@ -51,6 +54,8 @@ struct Team: Codable {
    var name: String
    /// URL string of the team's logo.
    var logo: String
+   var color: String // team's color
+   var alternateColor: String // team's color
 }
 
 /// `Situation` represents the current state of play, providing detailed game conditions.

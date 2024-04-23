@@ -15,6 +15,7 @@
 		9B585FF42BD5C86400BE2E4B /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FF32BD5C86400BE2E4B /* NetworkManager.swift */; };
 		9B585FF72BD6EB4200BE2E4B /* basesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FF62BD6EB4200BE2E4B /* basesView.swift */; };
 		9B585FFB2BD7024600BE2E4B /* scoreBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFA2BD7024600BE2E4B /* scoreBoardView.swift */; };
+		9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFC2BD8439700BE2E4B /* colorMod.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 		9B585FF32BD5C86400BE2E4B /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		9B585FF62BD6EB4200BE2E4B /* basesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = basesView.swift; sourceTree = "<group>"; };
 		9B585FFA2BD7024600BE2E4B /* scoreBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = scoreBoardView.swift; sourceTree = "<group>"; };
+		9B585FFC2BD8439700BE2E4B /* colorMod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = colorMod.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +92,7 @@
 		9B585FF12BD5C81F00BE2E4B /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				9B585FFC2BD8439700BE2E4B /* colorMod.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -185,6 +188,7 @@
 				9B585FF42BD5C86400BE2E4B /* NetworkManager.swift in Sources */,
 				9B1D63532BD5B09B00066D30 /* ContentView.swift in Sources */,
 				9B585FF02BD5C70900BE2E4B /* JSONModels.swift in Sources */,
+				9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */,
 				9B585FFB2BD7024600BE2E4B /* scoreBoardView.swift in Sources */,
 				9B1D63512BD5B09B00066D30 /* goMLBApp.swift in Sources */,
 			);

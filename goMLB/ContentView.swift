@@ -20,9 +20,13 @@ class EventViewModel: ObservableObject {
 	  var shortTitle: String   // Shortened title of the event.
 	  var home: String         // Home team name.
 	  var visitors: String     // Visiting team name.
+	  var homeRecord: String  //  Home team's season record
+	  var visitorRecord: String  // Visitor's season record
 	  var inning: Int          // Current inning number.
 	  var homeScore: String    // Home team's current score.
 	  var visitScore: String   // Visitor team's current score.
+	  var homeColor: String 	// home colors
+	  var visitorColor: String 	// visitors colors
 	  var on1: Bool            // Runner on first base.
 	  var on2: Bool            // Runner on second base.
 	  var on3: Bool            // Runner on third base.
@@ -37,7 +41,7 @@ class EventViewModel: ObservableObject {
 	  // API URL for MLB scoreboard data.
 
  // MARK: Team Playing
-	  let teamPlaying = "Detroit"
+	  let teamPlaying = "Yankees"
 
 	  guard let url = URL(string: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard") else { return }
 
@@ -61,21 +65,27 @@ class EventViewModel: ObservableObject {
 
 			   self.filteredEvents = decodedResponse.events.filter { $0.name.contains(teamPlaying) }.map { event in
 
-				  // Filtering and Mapping: The filter method screens the events based on the condition that their names contain "Yankees". This
-				  // is followed by the map method, which transforms each filtered event into an EventDisplay object structured to fit the UI's needs.
-				  // This includes extracting and simplifying data from nested structures (like competitors and situations).
+				  // Filtering and Mapping: The filter method screens the events based on the condition that their names contain teamPlaying.
+				  // This is followed by the map method, which transforms each filtered event into an EventDisplay object structured to
+				  // fit the UI's needs. This includes extracting and simplifying data from nested structures (like competitors and situations).
 
 				  // Accesses the current situation details of the first competition in each event.
-				  let situation = event.competitions[0].situation
+				  let situation = event.competitions[0].situation  // holds the entire "situation" JSON tree
 				  // Constructs a new EventDisplay object, mapping event data and situation data into a flat, displayable structure.
+				  let homeCompetitor = event.competitions[0].competitors[0] // holds the entire home "competitors" JSON tree
+				  let visitorCompetitor = event.competitions[0].competitors[1] // holds the entire visitor "competitors" JSON tree
 				  return EventDisplay(
 					 title: event.name,  // Sets the full title of the event.
 					 shortTitle: event.shortName,  // Sets a shorter title for the event.
 					 home: event.competitions[0].competitors[0].team.name,  // Sets the home team name using the first competitor's team name.
 					 visitors: event.competitions[0].competitors[1].team.name,  // Sets the visiting team name using the second competitor's team name.
+					 homeRecord: homeCompetitor.records.first?.summary ?? "0-0", // set the home season record
+					 visitorRecord: visitorCompetitor.records.first?.summary ?? "0-0", // set the away season record
 					 inning: event.status.period,  // Sets the current inning number from the event status.
 					 homeScore: event.competitions[0].competitors[0].score ?? "0",  // Sets the home team's score, defaulting to "0" if null.
 					 visitScore: event.competitions[0].competitors[1].score ?? "0",  // Sets the visiting team's score, defaulting to "0" if null.
+					 homeColor: event.competitions[0].competitors[0].team.color,
+					 visitorColor: event.competitions[0].competitors[1].team.color,
 					 on1: situation?.onFirst ?? false,  // Indicates if there is a runner on first base, defaulting to false if null.
 					 on2: situation?.onSecond ?? false,  // Indicates if there is a runner on second base, defaulting to false if null.
 					 on3: situation?.onThird ?? false,  // Indicates if there is a runner on third base, defaulting to false if null.
@@ -99,53 +109,91 @@ struct ContentView: View {
    let scoreColor = Color(.blue)
    let winners = Color(.green)
    let scoreSize = 50.0
+   let titleSize = 25.0
 
    var body: some View {
 	  VStack {
 		 List(viewModel.filteredEvents, id: \.title) { event in
-			Spacer()
-			VStack{
+			let home = viewModel.filteredEvents.first?.home
+			let visitors = viewModel.filteredEvents.first?.visitors
+			let visitScore = viewModel.filteredEvents.first?.visitScore ?? "0"
+			let homeScore = viewModel.filteredEvents.first?.homeScore ?? "0"
+			let homeWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? true : false
+			let homeColor = viewModel.filteredEvents.first?.homeColor
+			let visitColor = viewModel.filteredEvents.first?.visitorColor
+			let winColor = Color.green
+
+			VStack(spacing: 0) {
+ //	MARK: Title Tile
 			   HStack(alignment: .center) {
-				  Text(event.title)
+				  VStack(spacing: 0) {  // Remove spacing between VStack elements
+					 Text("\(home ?? "")")
+						.font(.system(size: scoreSize))
+						.foregroundColor(Color(hex: homeColor ?? "000000"))
+						.multilineTextAlignment(.center)
+
+					 Text("vs.")
+						.font(.footnote)
+						.multilineTextAlignment(.center)
+						.padding(.vertical, 2)  // Minimal padding to reduce space
+
+					 Text("\(visitors ?? "")")
+						.font(.system(size: scoreSize))
+						.foregroundColor(Color(hex: visitColor ?? "000000"))
+						.multilineTextAlignment(.center)
+				  }
+				  .frame(maxWidth: .infinity, maxHeight: 120)
+				  .multilineTextAlignment(.center)
+				  .padding()
+				  .lineSpacing(0)  // Set line spacing to be very tight
 			   }
 			   .font(.system(size: 20))
 			   .padding()
-			   .lineLimit(2)
+//			   .lineLimit(2)
 			   .minimumScaleFactor(0.15)
 			   .scaledToFit()
-			   Spacer()
 
-			   HStack(spacing: 2) {
-				  HStack {
-					 // First column for visitor's score
-					 Text("\(viewModel.filteredEvents.first?.visitScore ?? "")")
-						.font(.system(size: scoreSize).weight(.bold))
-						.frame(width: UIScreen.main.bounds.width * 0.1, alignment: .trailing)
-						.foregroundColor(.blue)
-						.padding(.leading).padding(.leading)
+// MARK: Scores
+			   HStack(spacing: 0) {
+		 // First column for visitor's score (Right justified)
+				  Text("\(viewModel.filteredEvents.first?.visitScore ?? "0")")
+					 .font(.system(size: scoreSize).weight(.bold))
+					 .frame(width: UIScreen.main.bounds.width * 0.15, alignment: .trailing)
+					 .foregroundColor(homeWin ? winColor : .blue)
+//					 .padding(.leading)
 
-					 // Second column for visitor's name
+		 // Second column for visitor's name and record
+				  VStack(alignment: .leading) {
 					 Text("\(viewModel.filteredEvents.first?.visitors ?? "")")
 						.font(.title2)
-						.frame(width: UIScreen.main.bounds.width * 0.3)
+						.foregroundColor(Color(hex: visitColor ?? "000000"))
+					 Text("\(viewModel.filteredEvents.first?.visitorRecord ?? "")")
+						.font(.caption)
 						.foregroundColor(.gray)
+				  }
+				  .frame(width: UIScreen.main.bounds.width * 0.35)
 
-					 // Fourth column for home's name
+				  // Third column for home's name and record
+				  VStack(alignment: .leading) {
 					 Text("\(viewModel.filteredEvents.first?.home ?? "")")
 						.font(.title2)
-						.frame(width: UIScreen.main.bounds.width * 0.3, alignment: .leading)
-						.foregroundColor(.gray)
+						.foregroundColor(Color(hex: homeColor ?? "000000"))
 
-					 // Third column for home's score
-					 Text("\(viewModel.filteredEvents.first?.homeScore ?? "")")
-						.font(.system(size: scoreSize).weight(.bold))
-						.frame(width: UIScreen.main.bounds.width * 0.1, alignment: .leading)
-						.foregroundColor(.blue)
-						.padding(.trailing).padding(.trailing)
+					 Text("\(viewModel.filteredEvents.first?.homeRecord ?? "")")
+						.font(.caption)
+						.foregroundColor(.gray)
 				  }
+				  .frame(width: UIScreen.main.bounds.width * 0.35)
+
+				  // Fourth column for home's score (Left justified)
+				  Text("\(viewModel.filteredEvents.first?.homeScore ?? "")")
+					 .font(.system(size: scoreSize).weight(.bold))
+					 .frame(width: UIScreen.main.bounds.width * 0.15, alignment: .leading)
+					 .foregroundColor(.blue)
 			   }
+
 			   HStack {
-				  Text("Inning: \(event.inning)")
+				 
 				  if let lastPlay = event.lastPlay {
 					 Text("Last Play: \(lastPlay)")
 				  }
@@ -161,7 +209,9 @@ struct ContentView: View {
 							balls: event.balls ?? 0,
 							outs: event.outs ?? 0)
 			   }
-			   .frame(width: .infinity )
+			   HStack {
+				  Text("Inning: \(event.inning)")
+			   }
 			}
 		 }
 
@@ -179,8 +229,10 @@ struct ContentView: View {
 	  .onReceive(timer) { _ in
 		 viewModel.loadData()
 	  }
-	  .preferredColorScheme(/*@START_MENU_TOKEN@*/.dark/*@END_MENU_TOKEN@*/)
+
+//	  .preferredColorScheme(/*@START_MENU_TOKEN@*/.dark/*@END_MENU_TOKEN@*/)
    }
+
 
 }
 

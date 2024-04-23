@@ -25,6 +25,7 @@ struct BasesView: View {
 			   let size = min(geometry.size.width, geometry.size.height) / 2
 			   let strokeWidth: CGFloat = 2
 			   let onBaseColor: Color = .green
+			   let strokeColor: Color = .black
 
 			   ZStack {
 				  // Top middle (Second base)
@@ -33,7 +34,7 @@ struct BasesView: View {
 					 .frame(width: size, height: size)
 					 .overlay(
 						Circle()
-						   .stroke(Color.white, lineWidth: onSecond ? strokeWidth : strokeWidth)
+						   .stroke(!onSecond ? strokeColor : strokeColor, lineWidth: onSecond ? strokeWidth : strokeWidth)
 					 )
 					 .position(x: geometry.size.width / 2, y: geometry.size.height * 0.2)
 
@@ -43,7 +44,7 @@ struct BasesView: View {
 					 .frame(width: size, height: size)
 					 .overlay(
 						Circle()
-						   .stroke(Color.white, lineWidth: onFirst ? strokeWidth : strokeWidth)
+						   .stroke(!onFirst ? strokeColor : strokeColor, lineWidth: onFirst ? strokeWidth : strokeWidth)
 					 )
 					 .position(x: geometry.size.width * 0.2, y: geometry.size.height * 0.8)
 
@@ -53,20 +54,21 @@ struct BasesView: View {
 					 .frame(width: size, height: size)
 					 .overlay(
 						Circle()
-						   .stroke(Color.white, lineWidth: onThird ? strokeWidth : strokeWidth)
+						   .stroke(!onThird ? strokeColor : strokeColor, lineWidth: onThird ? strokeWidth : strokeWidth)
 					 )
 					 .position(x: geometry.size.width * 0.8, y: geometry.size.height * 0.8)
 			   }
 
 			}
-			.frame(width: 45, height: 40)
+			.frame(width: 40, height: 30)
 		 }
+		 
 		 HStack {
 		 Text("\nBalls: \(balls) - Strikes: \(strikes) - Outs: \(outs) ")
 		 }
 	  }
 
-	  .preferredColorScheme(/*@START_MENU_TOKEN@*/.dark/*@END_MENU_TOKEN@*/)
+//	  .preferredColorScheme(/*@START_MENU_TOKEN@*/.dark/*@END_MENU_TOKEN@*/)
    }
 }
 
