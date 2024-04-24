@@ -16,6 +16,7 @@ struct BasesView: View {
    var strikes: Int
    var balls: Int
    var outs: Int
+	var inningTxt: String
 
    var body: some View {
 	  VStack {
@@ -63,19 +64,22 @@ struct BasesView: View {
 			.frame(width: 40, height: 30)
 		 }
 		 
+		  HStack {
+			  Text("Inning: \(inningTxt)")
+				  .font(.caption)
+		  }
 		 HStack {
 		 Text("\nBalls: \(balls) - Strikes: \(strikes) - Outs: \(outs) ")
 		 }
 	  }
-	  .frame(width: .infinity, height: 80)
-
+	  .frame(width: UIScreen.main.bounds.width, height: 95)
 	  .preferredColorScheme(.light)
    }
 }
 
 struct BasesView_Previews: PreviewProvider {
    static var previews: some View {
-	  BasesView(onFirst: true, onSecond: false, onThird: true, strikes: 1, balls: 3, outs: 2)
+		BasesView(onFirst: true, onSecond: false, onThird: true, strikes: 1, balls: 3, outs: 2, inningTxt: "Top 3rd")
 		 .frame(width: 300, height: 300)
    }
 }

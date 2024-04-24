@@ -35,6 +35,16 @@ struct Competition: Codable {
    var competitors: [Competitor]
    /// Optional current situation of the game, such as player positions or current play.
    var situation: Situation?
+
+	var status: Status // Add this line assuming 'status' is part of the JSON
+
+	struct Status: Codable {
+		var type: TypeDetail
+
+		struct TypeDetail: Codable {
+			var detail: String
+		}
+	}
 }
 
 /// `Competitor` defines a participant in the competition, including the team details and current score.

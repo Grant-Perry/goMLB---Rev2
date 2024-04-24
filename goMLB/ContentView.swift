@@ -14,7 +14,7 @@ struct ContentView: View {
    let timer = Timer.publish(every: 20, on: .main, in: .common).autoconnect()
    let scoreColor = Color(.blue)
    let winners = Color(.green)
-	@State var lastPlayHist: [String] = []
+	
    let scoreSize = 40.0
    let titleSize = 35.0
 
@@ -30,7 +30,7 @@ struct ContentView: View {
 
    var body: some View {
 	  VStack {
-		  List(viewModel.filteredEvents, id: \.title) { event in
+		  List(viewModel.filteredEvents, id: \.ID) { event in
 			  let home = viewModel.filteredEvents.first?.home
 			  let visitors = viewModel.filteredEvents.first?.visitors
 			  let visitScore = viewModel.filteredEvents.first?.visitScore ?? "0"
@@ -66,7 +66,7 @@ struct ContentView: View {
 					  .padding()
 					  .lineSpacing(0)
 				  }
-				  .frame(width: .infinity, height: 150)
+				  .frame(width: UIScreen.main.bounds.width, height: 100)
 				  //			   .font(.system(size: 20))
 //				  .padding()
 				  //			   .lineLimit(2)
@@ -74,8 +74,9 @@ struct ContentView: View {
 //				  .scaledToFit()
 
 // MARK: Scores
+				  Spacer()
 				  HStack(spacing: 0) {
-					  // First column for visitor's score (Right justified)
+// MARK: First column - visitor's score (Right justified)
 					  Text("\(viewModel.filteredEvents.first?.visitScore ?? "0")")
 						  .font(.system(size: scoreSize).weight(.bold))
 						  .frame(width: UIScreen.main.bounds.width * 0.15, alignment: .trailing)
@@ -84,7 +85,7 @@ struct ContentView: View {
  // MARK: Second column - visitor's name and record
 					  VStack(alignment: .leading) {
 						  Text("\(visitors ?? "")")
-							  .font(.title2)
+							  .font(.title3)
 							  .foregroundColor(Color(hex: visitColor ?? "000000"))
 						  Text("\(viewModel.filteredEvents.first?.visitorRecord ?? "")")
 							  .font(.caption)
@@ -104,7 +105,7 @@ struct ContentView: View {
 					  // MARK: Third column - home's name and record
 					  VStack(alignment: .trailing) {
 						  Text("\(home ?? "")")
-							  .font(.title2)
+							  .font(.title3)
 							  .foregroundColor(Color(hex: homeColor ?? "000000"))
 
 						  Text("\(viewModel.filteredEvents.first?.homeRecord ?? "")")
@@ -134,7 +135,7 @@ struct ContentView: View {
 					  HStack {
 						  if let lastPlay = event.lastPlay {  // is there a lastPlay
 //							  Text("Last Play: \(lastPlay)")
-							  Text("")
+							  Text(lastPlay)
 								  .onAppear {
 									  addPlay(lastPlay)
 								  }
@@ -142,7 +143,6 @@ struct ContentView: View {
 								  .minimumScaleFactor(0.25)
 								  .scaledToFit()
 						  }
-
 					  }
 
 //					  Spacer()
@@ -155,21 +155,23 @@ struct ContentView: View {
 										onThird: event.on3,
 										strikes: event.strikes ?? 0,
 										balls: event.balls ?? 0,
-										outs: event.outs ?? 0)
+										outs: event.outs ?? 0,
+										inningTxt: event.inningTxt )
 					  }
 					  HStack {
 						  Text("Inning: \(event.inning)")
 							  .font(.caption)
+							  .background(.green)
 					  }
 				  }
-				  .padding(.top, -5)
+//				  .padding(.top, -5)
 			  }
-			  .frame(width: .infinity, height:300)
+			  .frame(width: UIScreen.main.bounds.width, height:300)
 		  }
 			  // MARK: // LastPlayHist list
 			  		  ScrollView {
 			  		  	NavigationView {
-			  				  List(lastPlayHist, id: \.self) { lastPlay in
+							List(viewModel.lastPlayHist, id: \.self) { lastPlay in
 			  					  HStack {
 			  						  Image(systemName: "baseball")
 			  						  Text(lastPlay)
@@ -189,7 +191,6 @@ struct ContentView: View {
 			  		  }
 
 		 Button("Refresh") {
-			 lastPlayHist.removeAll()
 			viewModel.loadData()
 		 }
 		 .padding()
@@ -206,25 +207,28 @@ struct ContentView: View {
 		 }
 		 .pickerStyle(MenuPickerStyle())
 		 .onChange(of: selectedTeam) { newValue in
-			print("newValue: \(newValue)")
+//			print("newValue: \(newValue)")
 			DispatchQueue.main.async {
+				viewModel.lastPlayHist.removeAll() // clear the lastPlayHist
 			   viewModel.updateTeamPlaying(with: newValue)
 			   viewModel.teamPlaying = newValue
-				lastPlayHist.removeAll() // clear the lastPlayHist
 //			   viewModel.loadData()
 			}
 		 }
 	  }
-
 	  .onAppear(perform: viewModel.loadData)
+	  
 	  .onReceive(timer) { _ in
 		 viewModel.loadData()
-	  }
+		print("Updating Timer")
 
+	  }
 	  	  .preferredColorScheme(.light)
    }
+
 	func addPlay(_ play: String) {
-		lastPlayHist.append(play)
+//		viewModel.lastPlayHist.append(play)
+		print("adding \(play) to lastPlayHist: \(play)")
 	}
 
 }
