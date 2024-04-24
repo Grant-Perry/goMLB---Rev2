@@ -38,23 +38,23 @@ struct BasesView: View {
 					 )
 					 .position(x: geometry.size.width / 2, y: geometry.size.height * 0.2)
 
-				  // Bottom left (First base)
-				  Circle()
-					 .fill(onFirst ? onBaseColor : Color.clear)
-					 .frame(width: size, height: size)
-					 .overlay(
-						Circle()
-						   .stroke(!onFirst ? strokeColor : strokeColor, lineWidth: onFirst ? strokeWidth : strokeWidth)
-					 )
-					 .position(x: geometry.size.width * 0.2, y: geometry.size.height * 0.8)
-
-				  // Bottom right (Third base)
+				  // Bottom left (Third base)
 				  Circle()
 					 .fill(onThird ? onBaseColor : Color.clear)
 					 .frame(width: size, height: size)
 					 .overlay(
 						Circle()
-						   .stroke(!onThird ? strokeColor : strokeColor, lineWidth: onThird ? strokeWidth : strokeWidth)
+						   .stroke(!onThird ? strokeColor : strokeColor, lineWidth: onFirst ? strokeWidth : strokeWidth)
+					 )
+					 .position(x: geometry.size.width * 0.2, y: geometry.size.height * 0.8)
+
+				  // Bottom right (First base)
+				  Circle()
+					 .fill(onFirst ? onBaseColor : Color.clear)
+					 .frame(width: size, height: size)
+					 .overlay(
+						Circle()
+						   .stroke(!onFirst ? strokeColor : strokeColor, lineWidth: onThird ? strokeWidth : strokeWidth)
 					 )
 					 .position(x: geometry.size.width * 0.8, y: geometry.size.height * 0.8)
 			   }

@@ -82,21 +82,20 @@ class EventViewModel: ObservableObject {
 
 					 // Accesses the current situation details of the first competition in each event.
 					 let situation = event.competitions[0].situation  // holds the entire "situation" JSON tree
-																	  // Constructs a new EventDisplay object, mapping event data and situation data into a flat, displayable structure.
-					 let homeCompetitor = event.competitions[0].competitors[0] // holds the entire home "competitors" JSON tree
-					 let visitorCompetitor = event.competitions[0].competitors[1] // holds the entire visitor "competitors" JSON tree
+					 let homeTeam = event.competitions[0].competitors[0] // holds the entire home "competitors" JSON tree
+					 let awayTeam = event.competitions[0].competitors[1] // holds the entire visitor "competitors" JSON tree
 					 return EventDisplay(
 						title: event.name,  // Sets the full title of the event.
 						shortTitle: event.shortName,  // Sets a shorter title for the event.
-						home: event.competitions[0].competitors[0].team.name,  // Sets the home team name using the first competitor's team name.
-						visitors: event.competitions[0].competitors[1].team.name,  // Sets the visiting team name using the second competitor's team name.
-						homeRecord: homeCompetitor.records.first?.summary ?? "0-0", // set the home season record
-						visitorRecord: visitorCompetitor.records.first?.summary ?? "0-0", // set the away season record
+						home: homeTeam.team.name,  // Sets the home team name using the first competitor's team name.
+						visitors: awayTeam.team.name,  // Sets the visiting team name using the second competitor's team name.
+						homeRecord: homeTeam.records.first?.summary ?? "0-0", // set the home season record
+						visitorRecord: awayTeam.records.first?.summary ?? "0-0", // set the away season record
 						inning: event.status.period,  // Sets the current inning number from the event status.
-						homeScore: event.competitions[0].competitors[0].score ?? "0",  // Sets the home team's score, defaulting to "0" if null.
-						visitScore: event.competitions[0].competitors[1].score ?? "0",  // Sets the visiting team's score, defaulting to "0" if null.
-						homeColor: event.competitions[0].competitors[0].team.color,
-						visitorColor: event.competitions[0].competitors[1].team.color,
+						homeScore: homeTeam.score ?? "0",  // Sets the home team's score, defaulting to "0" if null.
+						visitScore: awayTeam.score ?? "0",  // Sets the visiting team's score, defaulting to "0" if null.
+						homeColor: homeTeam.team.color,
+						visitorColor: awayTeam.team.color,
 						on1: situation?.onFirst ?? false,  // Indicates if there is a runner on first base, defaulting to false if null.
 						on2: situation?.onSecond ?? false,  // Indicates if there is a runner on second base, defaulting to false if null.
 						on3: situation?.onThird ?? false,  // Indicates if there is a runner on third base, defaulting to false if null.
@@ -104,8 +103,8 @@ class EventViewModel: ObservableObject {
 						balls: situation?.balls ?? 0,  // Sets the current number of balls, defaulting to 0 if null.
 						strikes: situation?.strikes ?? 0,  // Sets the current number of strikes, defaulting to 0 if null.
 						outs: situation?.outs ?? 0,  // Sets the current number of outs, defaulting to 0 if null.
-						homeLogo: homeCompetitor.team.logo,
-						visitorLogo: visitorCompetitor.team.logo
+						homeLogo: homeTeam.team.logo,
+						visitorLogo: awayTeam.team.logo
 					 )
 				  }
 			   }

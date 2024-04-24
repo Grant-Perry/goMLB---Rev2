@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ContentView: View {
    @ObservedObject var viewModel = EventViewModel()
-   let timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
+   let timer = Timer.publish(every: 20, on: .main, in: .common).autoconnect()
    let scoreColor = Color(.blue)
    let winners = Color(.green)
    let scoreSize = 50.0
@@ -24,7 +24,7 @@ struct ContentView: View {
 				"Philadelphia Phillies", "Pittsburgh Pirates", "San Diego Padres", "San Francisco Giants",
 				"Seattle Mariners", "St. Louis Cardinals", "Tampa Bay Rays", "Texas Rangers",
 				"Toronto Blue Jays", "Washington Nationals"]
-   @State var selectedTeam = "Dorks"
+   @State var selectedTeam = "New York Yankees"
 
    var body: some View {
 	  VStack {
@@ -33,7 +33,8 @@ struct ContentView: View {
 			let visitors = viewModel.filteredEvents.first?.visitors
 			let visitScore = viewModel.filteredEvents.first?.visitScore ?? "0"
 			let homeScore = viewModel.filteredEvents.first?.homeScore ?? "0"
-			let homeWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? true : false
+			let homeWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? false : true
+			let visitWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? true : false
 			let homeColor = viewModel.filteredEvents.first?.homeColor
 			let visitColor = viewModel.filteredEvents.first?.visitorColor
 			let winColor = Color.green
@@ -75,7 +76,7 @@ struct ContentView: View {
 				  Text("\(viewModel.filteredEvents.first?.visitScore ?? "0")")
 					 .font(.system(size: scoreSize).weight(.bold))
 					 .frame(width: UIScreen.main.bounds.width * 0.15, alignment: .trailing)
-					 .foregroundColor(homeWin ? winColor : .blue)
+					 .foregroundColor(visitWin ? winColor : .blue)
 				  //					 .padding(.leading)
 
 				  // Second column for visitor's name and record
@@ -123,7 +124,8 @@ struct ContentView: View {
 				  Text("\(viewModel.filteredEvents.first?.homeScore ?? "")")
 					 .font(.system(size: scoreSize).weight(.bold))
 					 .frame(width: UIScreen.main.bounds.width * 0.15, alignment: .leading)
-					 .foregroundColor(.blue)
+					 .foregroundColor(homeWin ? winColor : .blue)
+
 			   }
 
 			   HStack {
@@ -171,7 +173,7 @@ struct ContentView: View {
 			DispatchQueue.main.async {
 			   viewModel.updateTeamPlaying(with: newValue)
 			   viewModel.teamPlaying = newValue
-			   viewModel.loadData()
+//			   viewModel.loadData()
 			}
 		 }
 	  }
