@@ -91,7 +91,7 @@ class EventViewModel: ObservableObject {
 						let inningTxt = event.competitions[0].status.type.detail
 
 
-						if self.lastPlayHist.last != lastPlay {
+						if self.lastPlayHist.last != lastPlay { // don't add it again if it's the same play
 							self.lastPlayHist.append(lastPlay ?? "N/A")
 						}
 

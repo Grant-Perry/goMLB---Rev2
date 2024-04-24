@@ -17,6 +17,7 @@ struct ContentView: View {
 	
    let scoreSize = 40.0
    let titleSize = 35.0
+	let logoWidth = 70.0
 
    let teams = ["Arizona Diamondbacks", "Atlanta Braves", "Baltimore Orioles", "Boston Red Sox",
 				"Chicago Cubs", "Chicago White Sox", "Cincinnati Reds", "Cleveland Guardians",
@@ -66,7 +67,7 @@ struct ContentView: View {
 					  .padding()
 					  .lineSpacing(0)
 				  }
-				  .frame(width: UIScreen.main.bounds.width, height: 100)
+				  .frame(width: UIScreen.main.bounds.width, height: 75)
 				  //			   .font(.system(size: 20))
 //				  .padding()
 				  //			   .lineLimit(2)
@@ -74,6 +75,7 @@ struct ContentView: View {
 //				  .scaledToFit()
 
 // MARK: Scores
+				  Spacer()
 				  Spacer()
 				  HStack(spacing: 0) {
 // MARK: First column - visitor's score (Right justified)
@@ -96,7 +98,7 @@ struct ContentView: View {
 							  } placeholder: {
 								  Color.gray
 							  }
-							  .frame(width: 30)
+							  .frame(width: logoWidth)
 							  .clipShape(Circle())
 						  }
 					  }
@@ -117,7 +119,7 @@ struct ContentView: View {
 							  } placeholder: {
 								  Color.gray
 							  }
-							  .frame(width: 30)
+							  .frame(width: logoWidth)
 							  .clipShape(Circle())
 						  }
 					  }
@@ -171,7 +173,7 @@ struct ContentView: View {
 			  // MARK: // LastPlayHist list
 			  		  ScrollView {
 			  		  	NavigationView {
-							List(viewModel.lastPlayHist, id: \.self) { lastPlay in
+							List(viewModel.lastPlayHist.reversed(), id: \.self) { lastPlay in
 			  					  HStack {
 			  						  Image(systemName: "baseball")
 			  						  Text(lastPlay)
