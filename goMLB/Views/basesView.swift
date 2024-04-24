@@ -67,6 +67,7 @@ struct BasesView: View {
 		 Text("\nBalls: \(balls) - Strikes: \(strikes) - Outs: \(outs) ")
 		 }
 	  }
+	  .frame(width: .infinity, height: 80)
 
 	  .preferredColorScheme(.light)
    }
