@@ -42,11 +42,11 @@ struct ContentView: View {
 				let visitColor = viewModel.filteredEvents.first?.visitorColor
 				let winColor = Color.green
 
-				Spacer()
+				//				Spacer()
 				VStack(spacing: 0) {
- //	MARK: Title / Header Tile
+					//	MARK: Title / Header Tile
 					HStack(alignment: .center) {
-						VStack(spacing: 0) {  // Remove spacing between VStack elements
+						VStack(spacing: -4) {  // Remove spacing between VStack elements
 
 							Text("\(home ?? "")")
 								.font(.system(size: titleSize))
@@ -63,24 +63,26 @@ struct ContentView: View {
 								.foregroundColor(Color(hex: visitColor ?? "000000"))
 								.multilineTextAlignment(.center)
 						}
-//						.frame(width: .infinity, height: 250)
+						//						.frame(width: .infinity, height: 250)
 						.multilineTextAlignment(.center)
 						.padding()
 						.lineSpacing(0)
 					}
-					.frame(width: UIScreen.main.bounds.width, height: 75)
+					.padding(.top,30)
+					.frame(width: UIScreen.main.bounds.width, height: 150)
+					.minimumScaleFactor(0.25)
+					.scaledToFit()
 
- // MARK: Scores
-					Spacer()
-					Spacer()
-// MARK: First column - visitor's score (Right justified)
+					// MARK: Scores card
+
+					// MARK: First column - visitor's score (Right justified)
 					HStack(spacing: 0) {
 						Text("\(visitScore)")
 							.font(.system(size: scoreSize).weight(.bold))
 							.frame(width: UIScreen.main.bounds.width * 0.15, alignment: .trailing)
 							.foregroundColor(visitWin && Int(visitScore) ?? 0 > 0 ? winColor : .blue)
 
- // MARK: Second column - visitor's name and record
+						// MARK: Second column - visitor's name and record
 						VStack(alignment: .leading) {
 							Text("\(visitors ?? "")")
 								.font(.title3)
@@ -90,12 +92,12 @@ struct ContentView: View {
 								.foregroundColor(.gray)
 							VStack(alignment: .leading) {
 								TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
-								.clipShape(Circle())
+									.clipShape(Circle())
 							}
 						}
 						.frame(width: UIScreen.main.bounds.width * 0.35)
 
- // MARK: Third column - home's name and record
+						// MARK: Third column - home's name and record
 						VStack(alignment: .trailing) {
 							Text("\(home ?? "")")
 								.font(.title3)
@@ -106,13 +108,13 @@ struct ContentView: View {
 								.foregroundColor(.gray)
 							VStack(alignment: .leading) {
 								TeamIconView(teamColor: homeColor ?? "C4CED3", teamIcon: event.homeLogo)
-								.frame(width: logoWidth)
-								.clipShape(Circle())
+									.frame(width: logoWidth)
+									.clipShape(Circle())
 							}
 						}
 						.frame(width: UIScreen.main.bounds.width * 0.35)
 
- // MARK: Fourth column - HOME SCORE
+						// MARK: Fourth column - HOME SCORE
 						Text("\(homeScore)")
 							.font(.system(size: scoreSize).weight(.bold))
 							.frame(width: UIScreen.main.bounds.width * 0.15, alignment: .leading)
@@ -120,8 +122,12 @@ struct ContentView: View {
 
 							.padding(.trailing)
 					}
+					.padding()
+					.frame(width: UIScreen.main.bounds.width, height: 110) // for the score card
 
 					VStack {
+
+ // MARK: Last Play & Bases card
 						HStack {
 							if let lastPlay = event.lastPlay {  // is there a lastPlay
 								Text(lastPlay)
@@ -135,7 +141,6 @@ struct ContentView: View {
 						}
 
  // MARK: Bases View
-
 						HStack {
 							BasesView(onFirst: event.on1,
 										 onSecond: event.on2,
@@ -145,17 +150,19 @@ struct ContentView: View {
 										 outs: event.outs ?? 0,
 										 inningTxt: event.inningTxt )
 						}
-						HStack {
-							Text("Inning: \(event.inning)")
-								.font(.caption)
-							//							  .background(.green)
-						}
+//						HStack {
+//							Text("Inning: \(event.inningTxt)")
+//								.font(.caption)
+//						}
 					}
-					//				  .padding(.top, -5)
 				}
-				.frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 2.95)
 			}
- // MARK: // LastPlayHist list
+			.frame(width: UIScreen.main.bounds.width, height: 425)
+			.background(.green)
+			Spacer()
+
+
+			// MARK: // LastPlayHist list
 			ScrollView {
 				NavigationView {
 					List(viewModel.lastPlayHist.reversed(), id: \.self) { lastPlay in
@@ -172,7 +179,7 @@ struct ContentView: View {
 							//							  .background(.green)
 						}
 					}
-					.padding(.top, -30)
+//					.padding(.top, -30)
 				}
 
 			}

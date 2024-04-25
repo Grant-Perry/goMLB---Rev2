@@ -55,26 +55,28 @@ struct BasesView: View {
 					 .frame(width: size, height: size)
 					 .overlay(
 						Circle()
-						   .stroke(!onFirst ? strokeColor : strokeColor, lineWidth: onThird ? strokeWidth : strokeWidth)
+							.stroke(!onFirst ? strokeColor : strokeColor, lineWidth: onThird ? strokeWidth : strokeWidth)
 					 )
 					 .position(x: geometry.size.width * 0.8, y: geometry.size.height * 0.8)
-			   }
-
+				}
 			}
 			.frame(width: 40, height: 30)
 		 }
-		 
-		  HStack {
-			  Text("Inning: \(inningTxt)")
-				  .font(.caption)
+
+		  VStack(alignment: .center, spacing: 0) {
+		 	 VStack {
+				  Text("Inning: \(inningTxt)")
+					  .font(.caption)
+			  }
+			  VStack {
+				  Text("\nBalls: \(balls) - Strikes: \(strikes) - Outs: \(outs) ")
+			  }
+			  Spacer()
 		  }
-		 HStack {
-		 Text("\nBalls: \(balls) - Strikes: \(strikes) - Outs: \(outs) ")
-		 }
 	  }
-	  .frame(width: UIScreen.main.bounds.width, height: 95)
+	  .frame(width: UIScreen.main.bounds.width, height: 125)
 	  .preferredColorScheme(.light)
-   }
+	}
 }
 
 struct BasesView_Previews: PreviewProvider {
