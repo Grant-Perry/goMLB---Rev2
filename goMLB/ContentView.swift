@@ -63,20 +63,24 @@ struct ContentView: View {
 									.font(.system(size: titleSize))
 									.foregroundColor(Color(hex: visitColor ?? "000000"))
 									.multilineTextAlignment(.center)
+
+								Text("\n\(event.inningTxt)")
+									.font(.system(size: 14))
+									.foregroundColor(.white)
+
 							}
-							//						.frame(width: .infinity, height: 250)
 							.multilineTextAlignment(.center)
 							.padding()
 							.lineSpacing(0)
 						}
-						//						.padding(.top,30)
-						.frame(width: UIScreen.main.bounds.width, height: 150)
+						.frame(width: UIScreen.main.bounds.width, height: 200)
 						.minimumScaleFactor(0.25)
 						.scaledToFit()
 					}
-				}  // end section
-				.frame(width: UIScreen.main.bounds.width, height: 100, alignment: .trailing)
+				}  // end title section
+				.frame(width: UIScreen.main.bounds.width, height: 130, alignment: .trailing)
 				.cornerRadius(10)
+
 
 				// MARK: Scores card
 
