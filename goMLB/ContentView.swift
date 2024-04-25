@@ -10,231 +10,216 @@
 import SwiftUI
 
 struct ContentView: View {
-   @ObservedObject var viewModel = EventViewModel()
-   let timer = Timer.publish(every: 20, on: .main, in: .common).autoconnect()
-   let scoreColor = Color(.blue)
-   let winners = Color(.green)
-	
-   let scoreSize = 40.0
-   let titleSize = 35.0
-	let logoWidth = 70.0
+	@ObservedObject var viewModel = EventViewModel()
+	let timer = Timer.publish(every: 20, on: .main, in: .common).autoconnect()
+	let scoreColor = Color(.blue)
+	let winners = Color(.green)
 
-   let teams = ["Arizona Diamondbacks", "Atlanta Braves", "Baltimore Orioles", "Boston Red Sox",
-				"Chicago Cubs", "Chicago White Sox", "Cincinnati Reds", "Cleveland Guardians",
-				"Colorado Rockies", "Detroit Tigers", "Houston Astros", "Kansas City Royals",
-				"Los Angeles Angels", "Los Angeles Dodgers", "Miami Marlins", "Milwaukee Brewers",
-				"Minnesota Twins", "New York Mets", "New York Yankees", "Oakland Athletics",
-				"Philadelphia Phillies", "Pittsburgh Pirates", "San Diego Padres", "San Francisco Giants",
-				"Seattle Mariners", "St. Louis Cardinals", "Tampa Bay Rays", "Texas Rangers",
-				"Toronto Blue Jays", "Washington Nationals"]
-   @State var selectedTeam = "New York Yankees"
+	let scoreSize = 40.0
+	let titleSize = 35.0
+	let logoWidth = 90.0
 
-   var body: some View {
-	  VStack {
-		  List(viewModel.filteredEvents, id: \.ID) { event in
-			  let home = viewModel.filteredEvents.first?.home
-			  let visitors = viewModel.filteredEvents.first?.visitors
-			  let visitScore = viewModel.filteredEvents.first?.visitScore ?? "0"
-			  let homeScore = viewModel.filteredEvents.first?.homeScore ?? "0"
-			  let homeWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? false : true
-			  let visitWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? true : false
-			  let homeColor = viewModel.filteredEvents.first?.homeColor
-			  let visitColor = viewModel.filteredEvents.first?.visitorColor
-			  let winColor = Color.green
+	let teams = ["Arizona Diamondbacks", "Atlanta Braves", "Baltimore Orioles", "Boston Red Sox",
+					 "Chicago Cubs", "Chicago White Sox", "Cincinnati Reds", "Cleveland Guardians",
+					 "Colorado Rockies", "Detroit Tigers", "Houston Astros", "Kansas City Royals",
+					 "Los Angeles Angels", "Los Angeles Dodgers", "Miami Marlins", "Milwaukee Brewers",
+					 "Minnesota Twins", "New York Mets", "New York Yankees", "Oakland Athletics",
+					 "Philadelphia Phillies", "Pittsburgh Pirates", "San Diego Padres", "San Francisco Giants",
+					 "Seattle Mariners", "St. Louis Cardinals", "Tampa Bay Rays", "Texas Rangers",
+					 "Toronto Blue Jays", "Washington Nationals"]
+	@State var selectedTeam = "New York Yankees"
 
-			  VStack(spacing: 0) {
-//	MARK: Title / Header Tile
-				  HStack(alignment: .center) {
-					  VStack(spacing: 0) {  // Remove spacing between VStack elements
+	var body: some View {
+		VStack {
+			List(viewModel.filteredEvents, id: \.ID) { event in
+				let home = viewModel.filteredEvents.first?.home
+				let visitors = viewModel.filteredEvents.first?.visitors
+				let visitScore = viewModel.filteredEvents.first?.visitScore ?? "0"
+				let homeScore = viewModel.filteredEvents.first?.homeScore ?? "0"
+				let homeWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? false : true
+				let visitWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? true : false
+				let homeColor = viewModel.filteredEvents.first?.homeColor
+				let visitColor = viewModel.filteredEvents.first?.visitorColor
+				let winColor = Color.green
 
-						  Text("\(home ?? "")")
-							  .font(.system(size: titleSize))
-							  .foregroundColor(Color(hex: homeColor ?? "000000"))
-							  .multilineTextAlignment(.center)
+				Spacer()
+				VStack(spacing: 0) {
+ //	MARK: Title / Header Tile
+					HStack(alignment: .center) {
+						VStack(spacing: 0) {  // Remove spacing between VStack elements
 
-						  Text("vs.")
-							  .font(.footnote)
-							  .multilineTextAlignment(.center)
-							  .padding(.vertical, 2)  // Minimal padding to reduce space
+							Text("\(home ?? "")")
+								.font(.system(size: titleSize))
+								.foregroundColor(Color(hex: homeColor ?? "000000"))
+								.multilineTextAlignment(.center)
 
-						  Text("\(visitors ?? "")")
-							  .font(.system(size: titleSize))
-							  .foregroundColor(Color(hex: visitColor ?? "000000"))
-							  .multilineTextAlignment(.center)
-					  }
-					  .frame(maxWidth: .infinity, maxHeight: 120)
-					  .multilineTextAlignment(.center)
-					  .padding()
-					  .lineSpacing(0)
-				  }
-				  .frame(width: UIScreen.main.bounds.width, height: 75)
-				  //			   .font(.system(size: 20))
-//				  .padding()
-				  //			   .lineLimit(2)
-//				  .minimumScaleFactor(0.15)
-//				  .scaledToFit()
+							Text("vs.")
+								.font(.footnote)
+								.multilineTextAlignment(.center)
+								.padding(.vertical, 2)  // Minimal padding to reduce space
 
-// MARK: Scores
-				  Spacer()
-				  Spacer()
-				  HStack(spacing: 0) {
+							Text("\(visitors ?? "")")
+								.font(.system(size: titleSize))
+								.foregroundColor(Color(hex: visitColor ?? "000000"))
+								.multilineTextAlignment(.center)
+						}
+//						.frame(width: .infinity, height: 250)
+						.multilineTextAlignment(.center)
+						.padding()
+						.lineSpacing(0)
+					}
+					.frame(width: UIScreen.main.bounds.width, height: 75)
+
+ // MARK: Scores
+					Spacer()
+					Spacer()
 // MARK: First column - visitor's score (Right justified)
-					  Text("\(viewModel.filteredEvents.first?.visitScore ?? "0")")
-						  .font(.system(size: scoreSize).weight(.bold))
-						  .frame(width: UIScreen.main.bounds.width * 0.15, alignment: .trailing)
-						  .foregroundColor(visitWin ? winColor : .blue)
+					HStack(spacing: 0) {
+						Text("\(visitScore)")
+							.font(.system(size: scoreSize).weight(.bold))
+							.frame(width: UIScreen.main.bounds.width * 0.15, alignment: .trailing)
+							.foregroundColor(visitWin && Int(visitScore) ?? 0 > 0 ? winColor : .blue)
 
  // MARK: Second column - visitor's name and record
-					  VStack(alignment: .leading) {
-						  Text("\(visitors ?? "")")
-							  .font(.title3)
-							  .foregroundColor(Color(hex: visitColor ?? "000000"))
-						  Text("\(viewModel.filteredEvents.first?.visitorRecord ?? "")")
-							  .font(.caption)
-							  .foregroundColor(.gray)
-						  VStack(alignment: .leading) {
-							  AsyncImage(url: URL(string: event.visitorLogo)) { image in
-								  image.resizable().scaledToFit()
-							  } placeholder: {
-								  Color.gray
-							  }
-							  .frame(width: logoWidth)
-							  .clipShape(Circle())
-						  }
-					  }
-					  .frame(width: UIScreen.main.bounds.width * 0.35)
+						VStack(alignment: .leading) {
+							Text("\(visitors ?? "")")
+								.font(.title3)
+								.foregroundColor(Color(hex: visitColor ?? "000000"))
+							Text("\(viewModel.filteredEvents.first?.visitorRecord ?? "")")
+								.font(.caption)
+								.foregroundColor(.gray)
+							VStack(alignment: .leading) {
+								TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
+								.clipShape(Circle())
+							}
+						}
+						.frame(width: UIScreen.main.bounds.width * 0.35)
 
-					  // MARK: Third column - home's name and record
-					  VStack(alignment: .trailing) {
-						  Text("\(home ?? "")")
-							  .font(.title3)
-							  .foregroundColor(Color(hex: homeColor ?? "000000"))
+ // MARK: Third column - home's name and record
+						VStack(alignment: .trailing) {
+							Text("\(home ?? "")")
+								.font(.title3)
+								.foregroundColor(Color(hex: homeColor ?? "000000"))
 
-						  Text("\(viewModel.filteredEvents.first?.homeRecord ?? "")")
-							  .font(.caption)
-							  .foregroundColor(.gray)
-						  VStack(alignment: .leading) {
-							  AsyncImage(url: URL(string: event.homeLogo)) { image in
-								  image.resizable().scaledToFit()
-							  } placeholder: {
-								  Color.gray
-							  }
-							  .frame(width: logoWidth)
-							  .clipShape(Circle())
-						  }
-					  }
-					  .frame(width: UIScreen.main.bounds.width * 0.35)
+							Text("\(viewModel.filteredEvents.first?.homeRecord ?? "")")
+								.font(.caption)
+								.foregroundColor(.gray)
+							VStack(alignment: .leading) {
+								TeamIconView(teamColor: homeColor ?? "C4CED3", teamIcon: event.homeLogo)
+								.frame(width: logoWidth)
+								.clipShape(Circle())
+							}
+						}
+						.frame(width: UIScreen.main.bounds.width * 0.35)
 
- // MARK: Fourth column home's score (Left justified)
-					  Text("\(viewModel.filteredEvents.first?.homeScore ?? "")")
-						  .font(.system(size: scoreSize).weight(.bold))
-						  .frame(width: UIScreen.main.bounds.width * 0.15, alignment: .leading)
-						  .foregroundColor(homeWin ? winColor : .blue)
-						  .padding(.trailing)
-				  }
+ // MARK: Fourth column - HOME SCORE
+						Text("\(homeScore)")
+							.font(.system(size: scoreSize).weight(.bold))
+							.frame(width: UIScreen.main.bounds.width * 0.15, alignment: .leading)
+							.foregroundColor(homeWin && Int(homeScore) ?? 0 > 0 ? winColor : .blue)
 
-				  VStack {
-					  HStack {
-						  if let lastPlay = event.lastPlay {  // is there a lastPlay
-//							  Text("Last Play: \(lastPlay)")
-							  Text(lastPlay)
-								  .onAppear {
-									  addPlay(lastPlay)
-								  }
-								  .lineLimit(2)
-								  .minimumScaleFactor(0.25)
-								  .scaledToFit()
-						  }
-					  }
+							.padding(.trailing)
+					}
 
-//					  Spacer()
+					VStack {
+						HStack {
+							if let lastPlay = event.lastPlay {  // is there a lastPlay
+								Text(lastPlay)
+									.onAppear {
+										addPlay(lastPlay)
+									}
+									.lineLimit(2)
+									.minimumScaleFactor(0.25)
+									.scaledToFit()
+							}
+						}
 
  // MARK: Bases View
 
-					  HStack {
-						  BasesView(onFirst: event.on1,
-										onSecond: event.on2,
-										onThird: event.on3,
-										strikes: event.strikes ?? 0,
-										balls: event.balls ?? 0,
-										outs: event.outs ?? 0,
-										inningTxt: event.inningTxt )
-					  }
-					  HStack {
-						  Text("Inning: \(event.inning)")
-							  .font(.caption)
-							  .background(.green)
-					  }
-				  }
-//				  .padding(.top, -5)
-			  }
-			  .frame(width: UIScreen.main.bounds.width, height:300)
-		  }
-			  // MARK: // LastPlayHist list
-			  		  ScrollView {
-			  		  	NavigationView {
-							List(viewModel.lastPlayHist.reversed(), id: \.self) { lastPlay in
-			  					  HStack {
-			  						  Image(systemName: "baseball")
-			  						  Text(lastPlay)
-			  					  }
-			  				  }
-			  				  .toolbar {
-			  					  ToolbarItem(placement: .topBarLeading) {
-			  						  Text("Play History")
-			  							  .font(.headline) // Smaller font style
-			  							  .foregroundColor(.primary)
-			  //							  .background(.green)
-			  					  }
-			  				  }
-			  				  .padding(.top, -30)
-			  			  }
+						HStack {
+							BasesView(onFirst: event.on1,
+										 onSecond: event.on2,
+										 onThird: event.on3,
+										 strikes: event.strikes ?? 0,
+										 balls: event.balls ?? 0,
+										 outs: event.outs ?? 0,
+										 inningTxt: event.inningTxt )
+						}
+						HStack {
+							Text("Inning: \(event.inning)")
+								.font(.caption)
+							//							  .background(.green)
+						}
+					}
+					//				  .padding(.top, -5)
+				}
+				.frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 2.95)
+			}
+ // MARK: // LastPlayHist list
+			ScrollView {
+				NavigationView {
+					List(viewModel.lastPlayHist.reversed(), id: \.self) { lastPlay in
+						HStack {
+							Image(systemName: "baseball")
+							Text(lastPlay)
+						}
+					}
+					.toolbar {
+						ToolbarItem(placement: .topBarLeading) {
+							Text("Play History")
+								.font(.headline) // Smaller font style
+								.foregroundColor(.primary)
+							//							  .background(.green)
+						}
+					}
+					.padding(.top, -30)
+				}
 
-			  		  }
+			}
 
-		 Button("Refresh") {
+			Button("Refresh") {
+				viewModel.loadData()
+			}
+			.padding()
+			.background(Color.blue)
+			.foregroundColor(.white)
+			.clipShape(Capsule())
+		}
+
+		.safeAreaInset(edge: .bottom) {
+			Picker("Select a team:", selection: $selectedTeam) {
+				ForEach(teams, id: \.self) { team in
+					Text(team).tag(team)
+				}
+			}
+			.pickerStyle(MenuPickerStyle())
+			.onChange(of: selectedTeam) { newValue in
+				//			print("newValue: \(newValue)")
+				DispatchQueue.main.async {
+					viewModel.lastPlayHist.removeAll() // clear the lastPlayHist
+					viewModel.updateTeamPlaying(with: newValue)
+					viewModel.teamPlaying = newValue
+					//			   viewModel.loadData()
+				}
+			}
+		}
+		.onAppear(perform: viewModel.loadData)
+
+		.onReceive(timer) { _ in
 			viewModel.loadData()
-		 }
-		 .padding()
-		 .background(Color.blue)
-		 .foregroundColor(.white)
-		 .clipShape(Capsule())
-	  }
+			print("Updating Timer")
 
-	  .safeAreaInset(edge: .bottom) {
-		 Picker("Select a team:", selection: $selectedTeam) {
-			ForEach(teams, id: \.self) { team in
-			   Text(team).tag(team)
-			}
-		 }
-		 .pickerStyle(MenuPickerStyle())
-		 .onChange(of: selectedTeam) { newValue in
-//			print("newValue: \(newValue)")
-			DispatchQueue.main.async {
-				viewModel.lastPlayHist.removeAll() // clear the lastPlayHist
-			   viewModel.updateTeamPlaying(with: newValue)
-			   viewModel.teamPlaying = newValue
-//			   viewModel.loadData()
-			}
-		 }
-	  }
-	  .onAppear(perform: viewModel.loadData)
-	  
-	  .onReceive(timer) { _ in
-		 viewModel.loadData()
-		print("Updating Timer")
-
-	  }
-	  	  .preferredColorScheme(.light)
-   }
+		}
+		.preferredColorScheme(.light)
+	}
 
 	func addPlay(_ play: String) {
-//		viewModel.lastPlayHist.append(play)
+		//		viewModel.lastPlayHist.append(play)
 		print("adding \(play) to lastPlayHist: \(play)")
 	}
 
 }
 
 #Preview {
-   ContentView()
+	ContentView()
 }

@@ -17,6 +17,7 @@
 		9B585FFB2BD7024600BE2E4B /* scoreBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFA2BD7024600BE2E4B /* scoreBoardView.swift */; };
 		9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFC2BD8439700BE2E4B /* colorMod.swift */; };
 		9B585FFF2BD8536300BE2E4B /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFE2BD8536300BE2E4B /* EventViewModel.swift */; };
+		E71035F62BDAA07E00F1F3B7 /* teamIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 		9B585FFA2BD7024600BE2E4B /* scoreBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = scoreBoardView.swift; sourceTree = "<group>"; };
 		9B585FFC2BD8439700BE2E4B /* colorMod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = colorMod.swift; sourceTree = "<group>"; };
 		9B585FFE2BD8536300BE2E4B /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
+		E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = teamIconView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +115,7 @@
 			children = (
 				9B585FF62BD6EB4200BE2E4B /* basesView.swift */,
 				9B585FFA2BD7024600BE2E4B /* scoreBoardView.swift */,
+				E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -191,6 +194,7 @@
 				9B585FF42BD5C86400BE2E4B /* NetworkManager.swift in Sources */,
 				9B1D63532BD5B09B00066D30 /* ContentView.swift in Sources */,
 				9B585FF02BD5C70900BE2E4B /* JSONModels.swift in Sources */,
+				E71035F62BDAA07E00F1F3B7 /* teamIconView.swift in Sources */,
 				9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */,
 				9B585FFF2BD8536300BE2E4B /* EventViewModel.swift in Sources */,
 				9B585FFB2BD7024600BE2E4B /* scoreBoardView.swift in Sources */,
@@ -341,7 +345,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -371,7 +375,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

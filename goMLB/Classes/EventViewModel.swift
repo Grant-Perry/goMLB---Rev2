@@ -108,8 +108,8 @@ class EventViewModel: ObservableObject {
 							inning: event.status.period,  // Sets the current inning number from the event status.
 							homeScore: homeTeam.score ?? "0",  // Sets the home team's score, defaulting to "0" if null.
 							visitScore: awayTeam.score ?? "0",  // Sets the visiting team's score, defaulting to "0" if null.
-							homeColor: homeTeam.team.color,
-							visitorColor: awayTeam.team.color,
+							homeColor: homeTeam.team.alternateColor,
+							visitorColor: awayTeam.team.alternateColor,
 							on1: situation?.onFirst ?? false,  // Indicates if there is a runner on first base, defaulting to false if null.
 							on2: situation?.onSecond ?? false,  // Indicates if there is a runner on second base, defaulting to false if null.
 							on3: situation?.onThird ?? false,  // Indicates if there is a runner on third base, defaulting to false if null.
