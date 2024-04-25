@@ -19,7 +19,7 @@ struct BasesView: View {
 	var inningTxt: String
 
    var body: some View {
-	  VStack {
+	  ScrollView {
 
 		 HStack(alignment: .center) {
 			GeometryReader { geometry in
