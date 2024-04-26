@@ -60,7 +60,9 @@ struct BasesView: View {
 					 .position(x: geometry.size.width * 0.8, y: geometry.size.height * 0.8)
 				}
 			}
-			.frame(width: 40, height: 30)
+			.frame(width: 35, height: 30)
+			.padding(10)
+
 		 }
 
 		  VStack(alignment: .center, spacing: 0) {
@@ -74,7 +76,7 @@ struct BasesView: View {
 			  Spacer()
 		  }
 	  }
-	  .frame(width: UIScreen.main.bounds.width, height: 125)
+	  .frame(width: UIScreen.main.bounds.width, height: 120)
 	  .preferredColorScheme(.light)
 	}
 }

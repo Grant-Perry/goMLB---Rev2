@@ -18,6 +18,7 @@
 		9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFC2BD8439700BE2E4B /* colorMod.swift */; };
 		9B585FFF2BD8536300BE2E4B /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFE2BD8536300BE2E4B /* EventViewModel.swift */; };
 		E71035F62BDAA07E00F1F3B7 /* teamIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */; };
+		E71035F82BDBD27E00F1F3B7 /* teamNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71035F72BDBD27E00F1F3B7 /* teamNames.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 		9B585FFC2BD8439700BE2E4B /* colorMod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = colorMod.swift; sourceTree = "<group>"; };
 		9B585FFE2BD8536300BE2E4B /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
 		E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = teamIconView.swift; sourceTree = "<group>"; };
+		E71035F72BDBD27E00F1F3B7 /* teamNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = teamNames.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +91,7 @@
 			isa = PBXGroup;
 			children = (
 				9B585FEF2BD5C70900BE2E4B /* JSONModels.swift */,
+				E71035F72BDBD27E00F1F3B7 /* teamNames.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -199,6 +202,7 @@
 				9B585FFF2BD8536300BE2E4B /* EventViewModel.swift in Sources */,
 				9B585FFB2BD7024600BE2E4B /* scoreBoardView.swift in Sources */,
 				9B1D63512BD5B09B00066D30 /* goMLBApp.swift in Sources */,
+				E71035F82BDBD27E00F1F3B7 /* teamNames.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
