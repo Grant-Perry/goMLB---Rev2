@@ -10,13 +10,14 @@
 import SwiftUI
 
 struct ContentView: View {
+	
 	@ObservedObject var viewModel = EventViewModel()
 	let timer = Timer.publish(every: 20, on: .main, in: .common).autoconnect()
 	let scoreColor = Color(.blue)
 	let winners = Color(.green)
 
 	let scoreSize = 40.0
-	let titleSize = 35.0
+	let titleSize = 25.0
 	let logoWidth = 90.0
 //	var teams = MLBTeams.teams
 	@State var selectedTeam = "New York Yankees"
@@ -34,7 +35,6 @@ struct ContentView: View {
 				let visitColor = viewModel.filteredEvents.first?.visitorColor
 				let winColor = Color.green
 
-				//				Spacer()
 				//	MARK: Title / Header Tile
 				Section {
 					VStack(spacing: 0) {
@@ -152,13 +152,14 @@ struct ContentView: View {
 										 strikes: event.strikes ?? 0,
 										 balls: event.balls ?? 0,
 										 outs: event.outs ?? 0,
-										 inningTxt: event.inningTxt )
+										 inningTxt: event.inningTxt,
+										 thisSubStrike:	event.thisSubStrike)
 						}
 					}
 				} // end bases section
 			} // end list
 		}
-		.frame(width: UIScreen.main.bounds.width, height: 500)
+		.frame(width: UIScreen.main.bounds.width, height: 570)
 		Spacer()
 
  // MARK: // LastPlayHist list
@@ -230,7 +231,7 @@ struct ContentView: View {
 
 	func addPlay(_ play: String) {
 		//		viewModel.lastPlayHist.append(play)
-		print("adding \(play) to lastPlayHist: \(play)")
+//		print("adding \(play) to lastPlayHist: \(play)")
 	}
 
 }

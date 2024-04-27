@@ -10,12 +10,13 @@
 import SwiftUI
 
 /// ViewModel responsible for loading and managing baseball event data.
+/// @Observable
 class EventViewModel: ObservableObject {
 	// Published array of filtered events based on specific criteria.
 	@Published var filteredEvents: [EventDisplay] = []
 	@Published var teamPlaying: String = "New York Yankees"
-	@Published var lastPlayHist: [String] = []
-
+	@Published  var lastPlayHist: [String] = []
+	@Published var subStrike = 0
 
 	// Structure representing the displayable details of a baseball event.
 	struct EventDisplay {
@@ -41,6 +42,7 @@ class EventViewModel: ObservableObject {
 		var homeLogo: String
 		var visitorLogo: String
 		var inningTxt: String
+		var thisSubStrike: Int
 	}
 
 	func updateTeamPlaying(with team: String) {
@@ -51,7 +53,7 @@ class EventViewModel: ObservableObject {
 	/// Loads baseball event data from an API, filters it, and updates the view model.
 	func loadData() {
 
-		let eventViewModel: EventViewModel = EventViewModel()
+//		let eventViewModel: EventViewModel = EventViewModel
 
 		//  MARK: Team Playing
 		//	  let teamPlaying = "Dodgers"
@@ -90,13 +92,23 @@ class EventViewModel: ObservableObject {
 						let lastPlay = situation?.lastPlay?.text
 						let inningTxt = event.competitions[0].status.type.detail
 
-
+ // MARK: update lastPlay stack
 						if self.lastPlayHist.last != lastPlay { // don't add it again if it's the same play
-							self.lastPlayHist.append(lastPlay ?? "N/A")
+							self.lastPlayHist.append(lastPlay ?? "")
 						}
+						print("strikeStack Prior: \(subStrike)")
 
-						//					  eventViewModel.lastPlayHist.append(situation?.lastPlay?.text ?? "N/A")
-						print("Trying to add: \(situation?.lastPlay?.text ?? "")")
+ // MARK: subStrike calculation
+						if situation?.strikes ?? 0 == 0 { // clean up/reset subStrike if strike count back to 0
+							self.subStrike = 0
+						} else {
+							if let lowerCasedLastPlay = lastPlay?.lowercased() {
+								if lowerCasedLastPlay.contains("strike 2 foul") && situation?.strikes ?? 0 > 1 { // this is a strike 2 foul
+									self.subStrike += 1
+								}
+							}
+						}
+						print("strikeStack After: \(subStrike)")
 
 						return EventDisplay(
 							title: event.name,  // Sets the full title of the event.
@@ -113,13 +125,14 @@ class EventViewModel: ObservableObject {
 							on1: situation?.onFirst ?? false,  // Indicates if there is a runner on first base, defaulting to false if null.
 							on2: situation?.onSecond ?? false,  // Indicates if there is a runner on second base, defaulting to false if null.
 							on3: situation?.onThird ?? false,  // Indicates if there is a runner on third base, defaulting to false if null.
-							lastPlay: situation?.lastPlay?.text ?? "N/A",  // Sets the text of the last play, defaulting to "N/A" if null.
+							lastPlay: situation?.lastPlay?.text ?? inningTxt,  // Sets the text of the last play, defaulting to "" if null.
 							balls: situation?.balls ?? 0,  // Sets the current number of balls, defaulting to 0 if null.
 							strikes: situation?.strikes ?? 0,  // Sets the current number of strikes, defaulting to 0 if null.
 							outs: situation?.outs ?? 0,  // Sets the current number of outs, defaulting to 0 if null.
 							homeLogo: homeTeam.team.logo,
 							visitorLogo: awayTeam.team.logo,
-							inningTxt: inningTxt
+							inningTxt: inningTxt,
+							thisSubStrike: subStrike
 						)
 
 					}

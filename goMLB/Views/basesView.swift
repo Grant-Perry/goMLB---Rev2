@@ -10,6 +10,8 @@
 import SwiftUI
 
 struct BasesView: View {
+	@Environment(\.colorScheme) var colorScheme
+	var eventViewModel: EventViewModel = EventViewModel()
    var onFirst: Bool
    var onSecond: Bool
    var onThird: Bool
@@ -17,73 +19,54 @@ struct BasesView: View {
    var balls: Int
    var outs: Int
 	var inningTxt: String
+	var thisSubStrike: Int
 
    var body: some View {
 	  ScrollView {
 
 		 HStack(alignment: .center) {
+			 
 			GeometryReader { geometry in
-			   let size = min(geometry.size.width, geometry.size.height) / 2
-			   let strokeWidth: CGFloat = 2
-			   let onBaseColor: Color = .green
-			   let strokeColor: Color = .black
 
 			   ZStack {
 				  // Top middle (Second base)
-				  Circle()
-					 .fill(onSecond ? onBaseColor : Color.clear)
-					 .frame(width: size, height: size)
-					 .overlay(
-						Circle()
-						   .stroke(!onSecond ? strokeColor : strokeColor, lineWidth: onSecond ? strokeWidth : strokeWidth)
-					 )
+					Image(systemName: onSecond ? "diamond.fill" : "diamond")
 					 .position(x: geometry.size.width / 2, y: geometry.size.height * 0.2)
 
 				  // Bottom left (Third base)
-				  Circle()
-					 .fill(onThird ? onBaseColor : Color.clear)
-					 .frame(width: size, height: size)
-					 .overlay(
-						Circle()
-						   .stroke(!onThird ? strokeColor : strokeColor, lineWidth: onFirst ? strokeWidth : strokeWidth)
-					 )
+					Image(systemName: onThird ? "diamond.fill" : "diamond")
 					 .position(x: geometry.size.width * 0.2, y: geometry.size.height * 0.8)
 
 				  // Bottom right (First base)
-				  Circle()
-					 .fill(onFirst ? onBaseColor : Color.clear)
-					 .frame(width: size, height: size)
-					 .overlay(
-						Circle()
-							.stroke(!onFirst ? strokeColor : strokeColor, lineWidth: onThird ? strokeWidth : strokeWidth)
-					 )
+					Image(systemName: onFirst ? "diamond.fill" : "diamond")
 					 .position(x: geometry.size.width * 0.8, y: geometry.size.height * 0.8)
 				}
 			}
-			.frame(width: 35, height: 30)
+			.frame(width: 50, height: 30)
 			.padding(10)
-
 		 }
-
 		  VStack(alignment: .center, spacing: 0) {
-		 	 VStack {
+			  VStack(spacing: 0) {
 				  Text("Inning: \(inningTxt)")
-					  .font(.caption)
+					 .font(.caption)
 			  }
-			  VStack {
-				  Text("\nBalls: \(balls) - Strikes: \(strikes) - Outs: \(outs) ")
+			  VStack(spacing: 0) {
+
+				  Text("Balls: \(balls) - Strikes: \(strikes)" +
+						 "\(thisSubStrike  > 0 ? ".\(thisSubStrike)" : "") - Outs: \(outs)")
 			  }
-			  Spacer()
+			  .padding(.top)
 		  }
 	  }
-	  .frame(width: UIScreen.main.bounds.width, height: 120)
-	  .preferredColorScheme(.light)
+	  .frame(width: UIScreen.main.bounds.width, height: 135)
+	  .preferredColorScheme(.dark)
 	}
 }
 
+
 struct BasesView_Previews: PreviewProvider {
    static var previews: some View {
-		BasesView(onFirst: true, onSecond: false, onThird: true, strikes: 1, balls: 3, outs: 2, inningTxt: "Top 3rd")
+		BasesView(onFirst: true, onSecond: false, onThird: true, strikes: 1, balls: 3, outs: 2, inningTxt: "Top 3rd", thisSubStrike: 2)
 		 .frame(width: 300, height: 300)
    }
 }
