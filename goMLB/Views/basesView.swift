@@ -10,7 +10,7 @@
 import SwiftUI
 
 struct BasesView: View {
-	@Environment(\.colorScheme) var colorScheme
+	
 	var eventViewModel: EventViewModel = EventViewModel()
    var onFirst: Bool
    var onSecond: Bool

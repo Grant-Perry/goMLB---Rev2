@@ -37,7 +37,7 @@ struct TeamIconView: View {
 			.frame(width: frameSize - 5) // This frame will apply to the AsyncImage view itself, including the placeholder and error state
 			.foregroundColor(.white)
 		}
-		.preferredColorScheme(/*@START_MENU_TOKEN@*/.dark/*@END_MENU_TOKEN@*/)
+		.preferredColorScheme(.dark)
 	}
 }
 
