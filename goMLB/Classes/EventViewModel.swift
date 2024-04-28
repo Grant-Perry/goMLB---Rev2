@@ -18,6 +18,8 @@ class EventViewModel: ObservableObject {
    @Published  var lastPlayHist: [String] = []
    @Published var subStrike = 0
    @Published var foulStrike2: Bool = false
+   @Published var startDate: String = ""
+   @Published var startTime: String = ""
 
 
    // Structure representing the displayable details of a baseball event.
@@ -46,11 +48,21 @@ class EventViewModel: ObservableObject {
 	  var inningTxt: String
 	  var thisSubStrike: Int
 	  var thisCalledStrike2: Bool
+	  var startDate: String
+	  var startTime: String
    }
 
    func updateTeamPlaying(with team: String) {
 	  teamPlaying = team // Update the teamPlaying with the new team
 	  loadData() // Reload data based on the new team
+   }
+
+   private func extractDateAndTime(from dateString: String) { // split up the date string
+	  let parts = dateString.split(separator: "T")
+	  if parts.count == 2 {
+		 self.startDate = String(parts[0])
+		 self.startTime = String(parts[1].dropLast())  // Removes the 'Z' if present
+	  }
    }
 
    /// Loads baseball event data from an API, filters it, and updates the view model.
@@ -94,6 +106,7 @@ class EventViewModel: ObservableObject {
 				  let awayTeam = event.competitions[0].competitors[1] // holds the entire visitor "competitors" JSON tree
 				  let lastPlay = situation?.lastPlay?.text
 				  let inningTxt = event.competitions[0].status.type.detail
+				  self.extractDateAndTime(from: event.date)
 
  // MARK: update lastPlay stack
 				  if self.lastPlayHist.last != lastPlay { // don't add it again if it's the same play
@@ -118,6 +131,10 @@ class EventViewModel: ObservableObject {
 					 }
 				  }
 				  print("strikeStack After: \(subStrike)")
+				  startTime = convertTimeTo12HourFormat(time24: startTime, DST: true)
+				  print("startDate: \(startDate) - startTime: \(startTime)")
+
+
 
 				  return EventDisplay(
 					 title: event.name,  // Sets the full title of the event.
@@ -142,9 +159,10 @@ class EventViewModel: ObservableObject {
 					 visitorLogo: awayTeam.team.logo,
 					 inningTxt: inningTxt,
 					 thisSubStrike: subStrike,
-					 thisCalledStrike2: foulStrike2
+					 thisCalledStrike2: foulStrike2,
+					 startDate: startDate,
+					 startTime: startTime
 				  )
-
 			   }
 			}
 		 } catch {
@@ -153,4 +171,35 @@ class EventViewModel: ObservableObject {
 	  }.resume()
    }
 }
+
+// MARK:  Helpers
+
+extension EventViewModel {
+   func convertTimeTo12HourFormat(time24: String, DST: Bool) -> String {
+	  // Create a DateFormatter to parse the input time in 24-hour format
+	  let inputFormatter = DateFormatter()
+	  inputFormatter.dateFormat = "HH:mm"
+	  inputFormatter.timeZone = TimeZone(abbreviation: "UTC") // Assume the input is in UTC
+	  inputFormatter.locale = Locale(identifier: "en_US_POSIX")  // Use POSIX to ensure the format is interpreted correctly
+
+	  // Parse the input time string to a Date object
+	  guard let date = inputFormatter.date(from: time24) else {
+		 return "Invalid time"  // Return an error message or handle appropriately
+	  }
+
+	  // If DST is true, add one hour to the date
+	  let adjustedDate = DST ? date.addingTimeInterval(3600) : date
+
+	  // Create another DateFormatter to format the Date object to 12-hour time format with AM/PM
+	  let outputFormatter = DateFormatter()
+	  outputFormatter.dateFormat = "h:mm a"
+	  outputFormatter.timeZone = TimeZone.current  // Set to user's current timezone
+	  outputFormatter.locale = Locale.current  // Adjust to the current locale for correct AM/PM
+
+	  // Convert the adjusted Date object to the desired time format string
+	  let time12 = outputFormatter.string(from: adjustedDate)
+	  return time12
+   }
+}
+
 

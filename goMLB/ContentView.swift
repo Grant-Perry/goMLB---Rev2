@@ -13,9 +13,6 @@ struct ContentView: View {
 
    @ObservedObject var viewModel = EventViewModel()
    @Environment(\.colorScheme) var colorScheme
-
-
-
    let timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
    let scoreColor = Color(.blue)
    let winners = Color(.green)
@@ -23,21 +20,27 @@ struct ContentView: View {
    let scoreSize = 40.0
    let titleSize = 25.0
    let logoWidth = 90.0
+   let version = "99.8"
+
    //	var teams = MLBTeams.teams
    @State var selectedTeam = "New York Yankees"
 
    var body: some View {
 	  VStack(spacing: 0) {
 		 List(viewModel.filteredEvents, id: \.ID) { event in
-			let home = viewModel.filteredEvents.first?.home
-			let visitors = viewModel.filteredEvents.first?.visitors
-			let visitScore = viewModel.filteredEvents.first?.visitScore ?? "0"
-			let homeScore = viewModel.filteredEvents.first?.homeScore ?? "0"
+			let vm = viewModel.filteredEvents.first
+			let home = vm?.home
+			let visitors = vm?.visitors
+			let visitScore = vm?.visitScore ?? "0"
+			let homeScore = vm?.homeScore ?? "0"
 			let homeWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? false : true
 			let visitWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? true : false
-			let homeColor = viewModel.filteredEvents.first?.homeColor
-			let visitColor = viewModel.filteredEvents.first?.visitorColor
-			let inningTxt = viewModel.filteredEvents.first?.inningTxt
+			let homeColor = vm?.homeColor
+			let visitColor = vm?.visitorColor
+			let inningTxt = vm?.inningTxt
+			let startDate = vm?.startDate
+			let startTime = vm?.startTime
+
 			let winColor = Color.green
 
 			//	MARK: Title / Header Tile
@@ -63,19 +66,27 @@ struct ContentView: View {
 						   .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000000", comparedTo: "#919191") ? visitColor! : "#919191"))
 						   .multilineTextAlignment(.center)
 
-						Text("\n\(inningTxt ?? "")")
-						   .font(.system(size: 14))
-						   .foregroundColor(.white)
+						if ((inningTxt?.contains("Scheduled")) != nil) { // show start time if scheduled
+						   Text("\nStarting: \(startTime ?? "")")
+							  .font(.system(size: 14))
+							  .foregroundColor(.white)
+						}
+						else {
+						   Text("\nStarting: \(startTime ?? "Not Determined")")
+							  .font(.system(size: 14))
+							  .foregroundColor(.white)
+						}
+
 						// MARK: Outs view
 
-//						if let lowerCaseInningTxt = inningTxt {
-//						   if (lowerCaseInningTxt.contains("top")) || (lowerCaseInningTxt.contains("bot"))  {
+						if let lowerInningTxt = inningTxt {
+						   if lowerInningTxt.contains("Top") || lowerInningTxt.contains("Bot")  {
 							  outsView(outs: event.outs ?? 0 )
 								 .frame(width: UIScreen.main.bounds.width, height: 20)
 								 .padding(.top, 6)
 								 .font(.system(size: 11))
-//						   }
-//						}
+						   }
+						}
 					 }
 					 .multilineTextAlignment(.center)
 					 .padding()
@@ -109,7 +120,7 @@ struct ContentView: View {
 //						.foregroundColor(Color(hex: visitColor ?? "000000"))
 						.foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000000", comparedTo: "#919191") ? visitColor! : "#919191"))
 
-					 Text("\(viewModel.filteredEvents.first?.visitorRecord ?? "")")
+					 Text("\(vm?.visitorRecord ?? "")")
 						.font(.caption)
 						.foregroundColor(.gray)
 					 VStack(alignment: .leading) {
@@ -127,7 +138,7 @@ struct ContentView: View {
 
 //						.foregroundColor(Color(hex: homeColor ?? "000000"))
 
-					 Text("\(viewModel.filteredEvents.first?.homeRecord ?? "")")
+					 Text("\(vm?.homeRecord ?? "")")
 						.font(.caption)
 						.foregroundColor(.gray)
 					 VStack(alignment: .leading) {
@@ -244,6 +255,10 @@ struct ContentView: View {
 			   viewModel.teamPlaying = newValue
 			}
 		 }
+		 VStack {
+			Text("Version: \(getAppVersion())")
+			   .font(.system(size: 10))
+		 }
 	  }
 
 	  .onAppear(perform: viewModel.loadData)
@@ -295,6 +310,13 @@ extension ContentView {
 	  //		print("adding \(play) to lastPlayHist: \(play)")
    }
 
+   func getAppVersion() -> String {
+	  if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+		 return version
+	  } else {
+		 return "Unknown version"
+	  }
+   }
 
 
 }

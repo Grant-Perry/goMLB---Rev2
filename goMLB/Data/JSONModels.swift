@@ -27,6 +27,7 @@ struct Event: Codable {
    var competitions: [Competition]
    /// Status of the event, such as current period or inning.
    var status: EventStatus
+   var date: String  
 }
 
 /// `Competition` includes participants (competitors) and potentially the current game situation.
