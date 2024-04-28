@@ -13,6 +13,8 @@ struct ContentView: View {
 
    @ObservedObject var viewModel = EventViewModel()
    @Environment(\.colorScheme) var colorScheme
+   @State private var showPicker = false
+
    let timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
    let scoreColor = Color(.blue)
    let winners = Color(.green)
@@ -25,6 +27,8 @@ struct ContentView: View {
    //	var teams = MLBTeams.teams
    @State var selectedTeam = "New York Yankees"
 
+
+   
    var body: some View {
 	  VStack(spacing: 0) {
 		 List(viewModel.filteredEvents, id: \.ID) { event in
@@ -44,61 +48,61 @@ struct ContentView: View {
 			let winColor = Color.green
 
 			//	MARK: Title / Header Tile
-			Section {
-			   VStack(spacing: 0) {
-				  HStack(alignment: .center) {
-					 VStack(spacing: -4) {  // Remove spacing between VStack elements
+			VStack {
+			   Section {
+				  VStack(spacing: 0) {
+					 HStack(alignment: .center) {
+						VStack(spacing: -4) {  // Remove spacing between VStack elements
 
-						Text("\(home ?? "")")
-						   .font(.system(size: titleSize))
-						   .foregroundColor(Color(hex: isHexGreaterThan(homeColor ?? "#000000", comparedTo: "#919191") ? homeColor! : "#919191"))
-						//	.foregroundColor(Color(hex: homeColor ?? "000000"))
-//						   .foregroundColor(.black)
-						   .multilineTextAlignment(.center)
+						   Text("\(home ?? "")")
+							  .font(.system(size: titleSize))
+							  .foregroundColor(Color(hex: isHexGreaterThan(homeColor ?? "#000000", comparedTo: "#919191") ? homeColor! : "#919191"))
+							  .multilineTextAlignment(.center)
 
-						Text("vs.")
-						   .font(.footnote)
-						   .multilineTextAlignment(.center)
-						   .padding(.vertical, 2)  // Minimal padding to reduce space
+						   Text("vs.")
+							  .font(.footnote)
+							  .multilineTextAlignment(.center)
+							  .padding(.vertical, 2)  // Minimal padding to reduce space
 
-						Text("\(visitors ?? "")")
-						   .font(.system(size: titleSize))
-						   .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000000", comparedTo: "#919191") ? visitColor! : "#919191"))
-						   .multilineTextAlignment(.center)
+						   Text("\(visitors ?? "")")
+							  .font(.system(size: titleSize))
+							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000000", comparedTo: "#919191") ? visitColor! : "#919191"))
+							  .multilineTextAlignment(.center)
 
-						if ((inningTxt?.contains("Scheduled")) != nil) { // show start time if scheduled
-						   Text("\nStarting: \(startTime ?? "")")
-							  .font(.system(size: 14))
-							  .foregroundColor(.white)
-						}
-						else {
-						   Text("\nStarting: \(startTime ?? "Not Determined")")
-							  .font(.system(size: 14))
-							  .foregroundColor(.white)
-						}
+						   if ((inningTxt?.contains("Scheduled")) != nil) { // show start time if scheduled
+							  Text("\nStarting: \(startTime ?? "")")
+								 .font(.system(size: 14))
+								 .foregroundColor(.white)
+						   }
+						   else {
+							  Text("\nStarting: \(startTime ?? "Not Determined")")
+								 .font(.system(size: 14))
+								 .foregroundColor(.white)
+						   }
 
-						// MARK: Outs view
+						   // MARK: Outs view
 
-						if let lowerInningTxt = inningTxt {
-						   if lowerInningTxt.contains("Top") || lowerInningTxt.contains("Bot")  {
-							  outsView(outs: event.outs ?? 0 )
-								 .frame(width: UIScreen.main.bounds.width, height: 20)
-								 .padding(.top, 6)
-								 .font(.system(size: 11))
+						   if let lowerInningTxt = inningTxt {
+							  if lowerInningTxt.contains("Top") || lowerInningTxt.contains("Bot")  {
+								 outsView(outs: event.outs ?? 0 )
+									.frame(width: UIScreen.main.bounds.width, height: 20)
+									.padding(.top, 6)
+									.font(.system(size: 11))
+							  }
 						   }
 						}
+						.multilineTextAlignment(.center)
+						.padding()
+						.lineSpacing(0)
 					 }
-					 .multilineTextAlignment(.center)
-					 .padding()
-					 .lineSpacing(0)
+					 .frame(width: UIScreen.main.bounds.width, height: 200)
+					 .minimumScaleFactor(0.25)
+					 .scaledToFit()
 				  }
-				  .frame(width: UIScreen.main.bounds.width, height: 200)
-				  .minimumScaleFactor(0.25)
-				  .scaledToFit()
-			   }
-			}  // end title section
-			.frame(width: UIScreen.main.bounds.width, height: 130, alignment: .trailing)
-			.cornerRadius(10)
+			   }  // end title section
+			   .frame(width: UIScreen.main.bounds.width, height: 130, alignment: .trailing)
+			   .cornerRadius(10)
+			}
 
 
 			// MARK: Scores card
@@ -196,70 +200,55 @@ struct ContentView: View {
 		 } // end list
 	  }
 	  .frame(width: UIScreen.main.bounds.width, height: 570)
+
 	  Spacer()
 
 	  // MARK: // LastPlayHist list
-	  Section {
-		 ScrollView {
-			NavigationView {
-			   List(Array(viewModel.lastPlayHist.reversed().enumerated()), id: \.1) { index, lastPlay in
-				  HStack {
-					 Image(systemName: "baseball")
-					 Text(lastPlay)
-						.font(index == 0 ? .body : .footnote)
-						.foregroundColor(index == 0 ? .green : .white)
-						.fontWeight(index == 0 ? .bold : .regular)
-						.minimumScaleFactor(0.5)
-						.scaledToFit()
+	  VStack {
+	     Section {
+			ScrollView {
+			   NavigationView {
+				  List(Array(viewModel.lastPlayHist.reversed().enumerated()), id: \.1) { index, lastPlay in
+					 HStack {
+						Image(systemName: "baseball")
+						Text(lastPlay)
+						   .font(index == 0 ? .body : .footnote)
+						   .foregroundColor(index == 0 ? .green : .white)
+						   .fontWeight(index == 0 ? .bold : .regular)
+						   .minimumScaleFactor(0.5)
+						   .scaledToFit()
+					 }
 				  }
-			   }
-//			   List(viewModel.lastPlayHist.reversed(), id: \.self) { lastPlay in
-//				  HStack {
-//
-//					 Image(systemName: "baseball")
-//					 Text(lastPlay)
-//						.font(.headline).fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
-//				  }
-//			   }
-
-			   .toolbar {
-				  ToolbarItem(placement: .topBarLeading) {
-					 Text("Play History")
-						.font(.callout)
-						.foregroundColor(.primary)
+				  .toolbar {
+					 ToolbarItem(placement: .topBarLeading) {
+						Text("Play History")
+						   .font(.callout)
+						   .foregroundColor(.primary)
+					 }
 				  }
 			   }
 			}
-		 }
-		 .font(.footnote)
-		 .frame(width: UIScreen.main.bounds.width, height: 200)
-	  }
+			.font(.footnote)
+   //		 .frame(maxHeight: .infinity) // Ensure ScrollView uses all available space
 
-	  .safeAreaInset(edge: .bottom) {
-		 Picker("Select a team:", selection: $selectedTeam) {
-			ForEach(teams, id: \.self) { team in
-			   Text(team).tag(team)
-			}
+			.frame(width: UIScreen.main.bounds.width, height: 200)
 		 }
-		 .pickerStyle(MenuPickerStyle())
-		 .padding()
-		 .background(Color.gray.opacity(0.2))
-		 .cornerRadius(10)
-		 .padding(.horizontal)
 
-		 .onChange(of: selectedTeam) { newValue in
-			//			print("newValue: \(newValue)")
-			DispatchQueue.main.async {
-			   viewModel.lastPlayHist.removeAll() // clear the lastPlayHist
-			   viewModel.updateTeamPlaying(with: newValue)
-			   viewModel.teamPlaying = newValue
-			}
-		 }
 		 VStack {
 			Text("Version: \(getAppVersion())")
 			   .font(.system(size: 10))
+			   .padding(.bottom, 10)
 		 }
+		 VStack {
+			pickTeam()
+			   .frame(width: UIScreen.main.bounds.width, height: 20)
+			   .padding(.top, -15)
+		 }
+//		 .safeAreaInset(edge: .bottom) {
+//		 }
 	  }
+
+
 
 	  .onAppear(perform: viewModel.loadData)
 
@@ -280,6 +269,7 @@ struct ContentView: View {
 
 		 .preferredColorScheme(.dark)
    }
+
 }
 
 // MARK: Helpers
@@ -315,6 +305,28 @@ extension ContentView {
 		 return version
 	  } else {
 		 return "Unknown version"
+	  }
+   }
+
+   func pickTeam() -> some View {
+	  return Picker("Select a team:", selection: $selectedTeam) {
+		 ForEach(teams, id: \.self) { team in
+			Text(team).tag(team)
+		 }
+	  }
+	  .pickerStyle(MenuPickerStyle())
+	  .padding()
+	  .background(Color.gray.opacity(0.2))
+	  .cornerRadius(10)
+	  .padding(.horizontal)
+
+	  .onChange(of: selectedTeam) { newValue in
+		 //			print("newValue: \(newValue)")
+		 DispatchQueue.main.async {
+			viewModel.lastPlayHist.removeAll() // clear the lastPlayHist
+			viewModel.updateTeamPlaying(with: newValue)
+			viewModel.teamPlaying = newValue
+		 }
 	  }
    }
 
