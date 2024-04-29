@@ -17,26 +17,17 @@ struct APIResponse: Codable {
    var events: [Event]
 }
 
-/// `Event` represents a sports event, including its name, status, and competitions involved.
 struct Event: Codable {
-   /// The full name of the event.
    var name: String
-   /// A shortened version of the event's name.
    var shortName: String
-   /// An array of competitions associated with the event.
    var competitions: [Competition]
-   /// Status of the event, such as current period or inning.
    var status: EventStatus
    var date: String  
 }
 
-/// `Competition` includes participants (competitors) and potentially the current game situation.
 struct Competition: Codable {
-   /// Competitors participating in this competition, typically representing teams.
    var competitors: [Competitor]
-   /// Optional current situation of the game, such as player positions or current play.
    var situation: Situation?
-
 	var status: Status // Add this line assuming 'status' is part of the JSON
 
 	struct Status: Codable {
@@ -48,7 +39,6 @@ struct Competition: Codable {
 	}
 }
 
-/// `Competitor` defines a participant in the competition, including the team details and current score.
 struct Competitor: Codable {
    var team: Team
    var score: String?  // Current score for the competitor; optional because a game might not have started.
@@ -59,42 +49,37 @@ struct Record: Codable {
    var summary: String // holds the team's season record prior to current game i.e. 18-6
 }
 
-/// `Team` provides basic information about a team including its name and logo URL.
 struct Team: Codable {
-   /// Name of the team.
    var name: String
-   /// URL string of the team's logo.
    var logo: String
    var color: String // team's color
    var alternateColor: String // team's color
 }
 
-/// `Situation` represents the current state of play, providing detailed game conditions.
 struct Situation: Codable {
-   /// Current number of balls in the ongoing baseball play; optional because it may not be applicable to all sports.
    var balls: Int?
-   /// Current number of strikes in the ongoing play; optional for the same reason as balls.
    var strikes: Int?
-   /// Current number of outs in the ongoing play; optional and specific to sports like baseball.
    var outs: Int?
-   /// Indicates if there is a player on first base; optional and baseball-specific.
    var onFirst: Bool?
-   /// Indicates if there is a player on second base; optional and specific to baseball.
    var onSecond: Bool?
-   /// Indicates if there is a player on third base; optional and specific to baseball.
    var onThird: Bool?
-   /// Details of the last play that occurred in the game; optional and can provide context like play descriptions.
    var lastPlay: LastPlay?
+	var batter: Batter?
 }
 
-/// `LastPlay` describes the most recent action or play that occurred in the game.
+struct Batter: Codable {
+	var athlete: Athlete
+}
+
+struct Athlete: Codable {
+	var shortName: String
+	var headshot: String
+	var summary: String? //events[6].competitions[0].situation.batter.summary
+}
 struct LastPlay: Codable {
-   /// Descriptive text of the last play; optional as it may not always be relevant or available.
    var text: String?
 }
 
-/// `EventStatus` provides details about the current period or stage of the event.
 struct EventStatus: Codable {
-   /// Represents the current period of the event, such as an inning in baseball.
    var period: Int
 }

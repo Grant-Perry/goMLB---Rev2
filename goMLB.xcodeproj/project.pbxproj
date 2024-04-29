@@ -16,7 +16,7 @@
 		9B585FF72BD6EB4200BE2E4B /* basesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FF62BD6EB4200BE2E4B /* basesView.swift */; };
 		9B585FFB2BD7024600BE2E4B /* scoreBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFA2BD7024600BE2E4B /* scoreBoardView.swift */; };
 		9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFC2BD8439700BE2E4B /* colorMod.swift */; };
-		9B585FFF2BD8536300BE2E4B /* EventViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFE2BD8536300BE2E4B /* EventViewModel.swift */; };
+		9B585FFF2BD8536300BE2E4B /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFE2BD8536300BE2E4B /* GameViewModel.swift */; };
 		9BD920FE2BDD9AB1007D558F /* outsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD920FD2BDD9AB1007D558F /* outsView.swift */; };
 		E71035F62BDAA07E00F1F3B7 /* teamIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */; };
 		E71035F82BDBD27E00F1F3B7 /* teamNames.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71035F72BDBD27E00F1F3B7 /* teamNames.swift */; };
@@ -33,7 +33,7 @@
 		9B585FF62BD6EB4200BE2E4B /* basesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = basesView.swift; sourceTree = "<group>"; };
 		9B585FFA2BD7024600BE2E4B /* scoreBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = scoreBoardView.swift; sourceTree = "<group>"; };
 		9B585FFC2BD8439700BE2E4B /* colorMod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = colorMod.swift; sourceTree = "<group>"; };
-		9B585FFE2BD8536300BE2E4B /* EventViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventViewModel.swift; sourceTree = "<group>"; };
+		9B585FFE2BD8536300BE2E4B /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
 		9BD920FD2BDD9AB1007D558F /* outsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = outsView.swift; sourceTree = "<group>"; };
 		E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = teamIconView.swift; sourceTree = "<group>"; };
 		E71035F72BDBD27E00F1F3B7 /* teamNames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = teamNames.swift; sourceTree = "<group>"; };
@@ -110,7 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				9B585FF32BD5C86400BE2E4B /* NetworkManager.swift */,
-				9B585FFE2BD8536300BE2E4B /* EventViewModel.swift */,
+				9B585FFE2BD8536300BE2E4B /* GameViewModel.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -202,7 +202,7 @@
 				9B585FF02BD5C70900BE2E4B /* JSONModels.swift in Sources */,
 				E71035F62BDAA07E00F1F3B7 /* teamIconView.swift in Sources */,
 				9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */,
-				9B585FFF2BD8536300BE2E4B /* EventViewModel.swift in Sources */,
+				9B585FFF2BD8536300BE2E4B /* GameViewModel.swift in Sources */,
 				9B585FFB2BD7024600BE2E4B /* scoreBoardView.swift in Sources */,
 				9B1D63512BD5B09B00066D30 /* goMLBApp.swift in Sources */,
 				9BD920FE2BDD9AB1007D558F /* outsView.swift in Sources */,
@@ -353,7 +353,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.01;
+				MARKETING_VERSION = 2.02;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -383,7 +383,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.01;
+				MARKETING_VERSION = 2.02;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

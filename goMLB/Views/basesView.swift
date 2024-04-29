@@ -11,7 +11,7 @@ import SwiftUI
 
 struct BasesView: View {
 	
-	var eventViewModel: EventViewModel = EventViewModel()
+	var eventViewModel: GameViewModel = GameViewModel()
    var onFirst: Bool
    var onSecond: Bool
    var onThird: Bool
@@ -20,6 +20,8 @@ struct BasesView: View {
    var outs: Int
 	var inningTxt: String
 	var thisSubStrike: Int
+	var atBat: String
+	var atBatPic: String
 
    var body: some View {
 	  ScrollView {
@@ -51,11 +53,27 @@ struct BasesView: View {
 					 .font(.caption)
 			  }
 			  VStack(spacing: 0) {
+				  Text("\(balls)-\(strikes)\(thisSubStrike  > 0 ? ".\(thisSubStrike)" : "")")
+					  .font(.system(size: 20))
+//				  Spacer()
+				  outsView(outs: outs)
 
-				  Text("Balls: \(balls) - Strikes: \(strikes)" +
-						 "\(thisSubStrike  > 0 ? ".\(thisSubStrike)" : "") - Outs: \(outs)")
+					  .font(.system(size: 10))
+					  .padding(.top, 1)
+
+				  Text("\(atBat)")
+
+				  if let atBatPicURL = URL(string: atBatPic), let imageData = try? Data(contentsOf: atBatPicURL), let image = UIImage(data: imageData) {
+					  Image(uiImage: image)
+						  .resizable()
+						  .scaledToFit()
+						  .frame(width: 100, height: 100)
+				  }
+
+//				  Text("Balls: \(balls) - Strikes: \(strikes)" +
+//						 "\(thisSubStrike  > 0 ? ".\(thisSubStrike)" : "") - Outs: \(outs)")
 			  }
-			  .padding(.top)
+			  .padding(.top, 7)
 		  }
 	  }
 	  .frame(width: UIScreen.main.bounds.width, height: 135)
@@ -66,8 +84,8 @@ struct BasesView: View {
 
 struct BasesView_Previews: PreviewProvider {
    static var previews: some View {
-		BasesView(onFirst: true, onSecond: false, onThird: true, strikes: 1, balls: 3, outs: 2, inningTxt: "Top 3rd", thisSubStrike: 2)
-		 .frame(width: 300, height: 300)
+		BasesView(onFirst: true, onSecond: false, onThird: true, strikes: 2, balls: 3, outs: 2, inningTxt: "Top 3rd", thisSubStrike: 2, atBat: "J. Soto", atBatPic: "")
+			.frame(width: 300, height: 300)
    }
 }
 

@@ -24,7 +24,7 @@ struct outsView: View {
 	  HStack(spacing: 2) {
 		 Image(systemName: outs >= 1 ? iconDark : iconLight)
 		 Image(systemName: outs >= 2 ? iconDark : iconLight)
-		 Image(systemName: outs >= 3 ? iconDark : iconLight)
+//		 Image(systemName: outs >= 3 ? iconDark : iconLight)
 	  }
 //	  .font(.largeTitle)  // Makes the circles larger for better visibility
    }
