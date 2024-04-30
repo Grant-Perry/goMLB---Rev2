@@ -47,36 +47,80 @@ struct BasesView: View {
 			.frame(width: 50, height: 30)
 			.padding(10)
 		 }
-		  VStack(alignment: .center, spacing: 0) {
-			  VStack(spacing: 0) {
+
+		 VStack(alignment: .center, spacing: 2) {
+
+			VStack(spacing: 0) {
+			   Text("\(balls)-\(strikes)\(thisSubStrike  > 0 ? ".\(thisSubStrike)" : "")")
+				  .font(.system(size: 14))
+			   //			   Spacer()
+
+			   VStack {
+				  outsView(outs: outs)
+					 .font(.system(size: 10))
+					 .padding(.top, 1)
+			   }
+			   Spacer()
+			   VStack {
 				  Text("Inning: \(inningTxt)")
 					 .font(.caption)
-			  }
-			  VStack(spacing: 0) {
-				  Text("\(balls)-\(strikes)\(thisSubStrike  > 0 ? ".\(thisSubStrike)" : "")")
-					  .font(.system(size: 20))
-//				  Spacer()
-				  outsView(outs: outs)
+			   }
+			   Spacer()
 
-					  .font(.system(size: 10))
-					  .padding(.top, 1)
+			   // MARK: at bat player card
+			   HStack(spacing: 0) {
+				  HStack {
+					 if let url = URL(string: atBatPic) {
+						AsyncImage(url: url) { phase in
+						   switch phase {
+							  case .empty:
+								 // While the image is loading (e.g., show an activity indicator or a placeholder image)
+								 ProgressView()
+									.progressViewStyle(CircularProgressViewStyle())
+									.frame(width: 100, height: 100)
 
-				  Text("\(atBat)")
+							  case .success(let image):
+								 // On successful image load
+								 image.resizable()
+									.scaledToFit()
+									.frame(width: 60)
+									.clipShape(Circle())
 
-				  if let atBatPicURL = URL(string: atBatPic), let imageData = try? Data(contentsOf: atBatPicURL), let image = UIImage(data: imageData) {
-					  Image(uiImage: image)
-						  .resizable()
-						  .scaledToFit()
-						  .frame(width: 100, height: 100)
+
+							  case .failure:
+								 // If the image fails to load (e.g., show an error image or a default image)
+								 Image(systemName: "photo")
+									.resizable()
+									.scaledToFit()
+									.frame(width: 100, height: 100)
+									.foregroundColor(.gray)
+									.clipShape(Circle())
+
+
+							  @unknown default:
+								 // Future proofing for additional cases that are not covered
+								 EmptyView()
+						   }
+						}
+					 } else {
+						// In case the URL is not valid
+						Text("")
+					 }
 				  }
 
-//				  Text("Balls: \(balls) - Strikes: \(strikes)" +
-//						 "\(thisSubStrike  > 0 ? ".\(thisSubStrike)" : "") - Outs: \(outs)")
-			  }
-			  .padding(.top, 7)
-		  }
+
+				  HStack {
+					 Text("\(atBat)")
+						.font(.system(size: 14)) +
+					 Text("\nBatting")
+						.font(.system(size: 10))
+
+				  }
+			   }
+			}
+		 }
 	  }
-	  .frame(width: UIScreen.main.bounds.width, height: 135)
+	  .frame(width: UIScreen.main.bounds.width, height: 165)
 	  .preferredColorScheme(.dark)
 	}
 }
@@ -84,7 +128,7 @@ struct BasesView: View {
 
 struct BasesView_Previews: PreviewProvider {
    static var previews: some View {
-		BasesView(onFirst: true, onSecond: false, onThird: true, strikes: 2, balls: 3, outs: 2, inningTxt: "Top 3rd", thisSubStrike: 2, atBat: "J. Soto", atBatPic: "")
+		BasesView(onFirst: true, onSecond: false, onThird: true, strikes: 2, balls: 3, outs: 2, inningTxt: "Top 3rd", thisSubStrike: 2, atBat: "J. Soto", atBatPic: "https://a.espncdn.com/i/headshots/mlb/players/full/31027.png")
 			.frame(width: 300, height: 300)
    }
 }
