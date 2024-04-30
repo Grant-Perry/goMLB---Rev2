@@ -164,7 +164,6 @@ struct ContentView: View {
 				  //					 .minimumScaleFactor(0.8)
 				  //					 .scaledToFit()
 					 .foregroundColor(homeWin && Int(homeScore) ?? 0 > 0 ? winColor : .blue)
-
 					 .padding(.trailing)
 			   }
 			   .padding()
@@ -189,7 +188,6 @@ struct ContentView: View {
 					 }
 
 					 // MARK: Bases View
-					 // if not an active at bat don't show basesView
 
 						HStack {
 						   BasesView(onFirst: event.on1,
