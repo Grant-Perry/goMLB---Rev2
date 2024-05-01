@@ -83,7 +83,7 @@ struct BasesView: View {
 								 // On successful image load
 								 image.resizable()
 									.scaledToFit()
-									.frame(width: 60)
+									.frame(width: 70)
 									.clipShape(Circle())
 
 

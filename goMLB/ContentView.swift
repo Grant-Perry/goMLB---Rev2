@@ -19,11 +19,11 @@ struct ContentView: View {
    let scoreColor = Color(.blue)
    let winners = Color(.green)
 
-   let scoreSize = 45.0
+   let scoreSize = 55.0
    let titleSize = 25.0
    let logoWidth = 90.0
    let version = "99.8"
-   let tooDark = "#919191"
+   let tooDark = "#555555"
 
    //	var teams = MLBTeams.teams
    @State var selectedTeam = "New York Yankees"
@@ -61,7 +61,7 @@ struct ContentView: View {
 
 						   Text("\(visitors ?? "")")
 							  .font(.system(size: titleSize))
-							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000000", comparedTo: tooDark) ? visitColor! : tooDark))
+							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000", comparedTo: tooDark) ? visitColor! : tooDark))
 							  .multilineTextAlignment(.center)
 
 						   Text("vs.")
@@ -71,7 +71,7 @@ struct ContentView: View {
 
 						   Text("\(home ?? "")")
 							  .font(.system(size: titleSize))
-							  .foregroundColor(Color(hex: isHexGreaterThan(homeColor ?? "#000000", comparedTo: tooDark) ? homeColor! : tooDark))
+							  .foregroundColor(Color(hex: isHexGreaterThan(homeColor ?? "#000", comparedTo: tooDark) ? homeColor! : tooDark))
 							  .multilineTextAlignment(.center)
 
 						   if (inningTxt?.contains("Scheduled") ?? false ) {
@@ -111,60 +111,62 @@ struct ContentView: View {
 
 			// MARK: Scores card
 			// MARK: First column - visitor's score (Right justified)
+
 			Section {
 			   HStack(spacing: 0) {
-				  Text("\(visitScore)")
-					 .font(.system(size: scoreSize).weight(.bold))
-					 .frame(width: UIScreen.main.bounds.width * 0.15, alignment: .trailing)
-				  //											 .minimumScaleFactor(0.8)
-				  //											 .scaledToFit()
-					 .padding(.leading, 35)
-					 .foregroundColor(visitWin && Int(visitScore) ?? 0 > 0 ? winColor : .blue)
 
-				  // MARK: Second column - visitor's name and record
-				  VStack(alignment: .leading) {
-					 Text("\(visitors ?? "")")
-						.font(.title3)
-					 //						.foregroundColor(Color(hex: visitColor ?? "000000"))
-						.foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000000", comparedTo: tooDark) ? visitColor! : tooDark))
-
-					 Text("\(vm?.visitorRecord ?? "")")
-						.font(.caption)
-						.foregroundColor(.gray)
+				  HStack { // Visitor Side
 					 VStack(alignment: .leading) {
-						TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
-						   .clipShape(Circle())
+						VStack {
+						   Text("\(visitors ?? "")")
+							  .font(.title3)
+							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000", comparedTo: tooDark) ? visitColor! : tooDark))
+						   Text("\(vm?.visitorRecord ?? "")")
+							  .font(.caption)
+							  .foregroundColor(.gray)
+						   Spacer()
+						}
+						
+						VStack {
+						   TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
+							  .clipShape(Circle())
+						}
 					 }
-				  }
-				  .frame(width: UIScreen.main.bounds.width * 0.35)
+// MARK: Visitor Score
+					 Text("\(visitScore)")
+						.font(.system(size: scoreSize))
+						.padding(.trailing)
+						.foregroundColor(visitWin && Int(visitScore) ?? 0 > 0 ? winColor : Color(hex: visitColor!))
 
-				  // MARK: Third column - home's name and record
-				  VStack(alignment: .trailing) {
-					 Text("\(home ?? "")")
-						.font(.title3)
-						.foregroundColor(Color(hex: isHexGreaterThan(homeColor ?? "#000000", comparedTo: tooDark) ? homeColor! : tooDark))
+				  } // end Visitor Side
 
-					 //						.foregroundColor(Color(hex: homeColor ?? "000000"))
 
-					 Text("\(vm?.homeRecord ?? "")")
-						.font(.caption)
-						.foregroundColor(.gray)
-					 VStack(alignment: .leading) {
-						TeamIconView(teamColor: homeColor ?? "C4CED3", teamIcon: event.homeLogo)
-						   .frame(width: logoWidth)
-						   .clipShape(Circle())
+				  HStack { // Home side
+					 Text("\(homeScore)")
+						.font(.system(size: scoreSize))
+						.padding(.leading)
+						.foregroundColor(homeWin && Int(homeScore) ?? 0 > 0 ? winColor : Color(hex: homeColor!))
+
+				     VStack(alignment: .leading) {
+						Text("\(home ?? "")")
+						   .font(.title3)
+						   .foregroundColor(Color(hex: isHexGreaterThan(homeColor ?? "#000", comparedTo: tooDark) ? homeColor! : tooDark))
+
+						Text("\(vm?.homeRecord ?? "")")
+						   .font(.caption)
+						   .foregroundColor(.gray)
+
+						VStack(alignment: .leading) {
+						   TeamIconView(teamColor: homeColor ?? "C4CED3", teamIcon: event.homeLogo)
+							  .frame(width: logoWidth)
+							  .clipShape(Circle())
+						}
 					 }
-				  }
-				  .frame(width: UIScreen.main.bounds.width * 0.35)
+//					 .frame(width: UIScreen.main.bounds.width * 0.35)
+				  } // end Home side
 
-				  // MARK: Fourth column - HOME SCORE
-				  Text("\(homeScore)")
-					 .font(.system(size: scoreSize).weight(.bold))
-					 .frame(width: UIScreen.main.bounds.width * 0.15, alignment: .leading)
-				  //					 .minimumScaleFactor(0.8)
-				  //					 .scaledToFit()
-					 .foregroundColor(homeWin && Int(homeScore) ?? 0 > 0 ? winColor : .blue)
-					 .padding(.trailing)
+
+
 			   }
 			   .padding()
 			   .frame(width: UIScreen.main.bounds.width, height: 110) // for the score card
