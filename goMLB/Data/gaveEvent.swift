@@ -21,7 +21,9 @@ struct gameEvent {
    var homeScore: String    // Home team's current score.
    var visitScore: String   // Visitor team's current score.
    var homeColor: String 	// home colors
+   var homeAltColor: String
    var visitorColor: String 	// visitors colors
+   var visitorAltColor: String
    var on1: Bool            // Runner on first base.
    var on2: Bool            // Runner on second base.
    var on3: Bool            // Runner on third base.

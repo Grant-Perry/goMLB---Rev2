@@ -60,31 +60,63 @@ class GameViewModel: ObservableObject {
 				  }
 
 				  // MARK: subStrike calculation
-				  if situation?.strikes ?? 0 == 0 { // clean up/reset subStrike if strike count back to 0
-					 self.subStrike = 0
-					 self.foulStrike2 = false
-				  } else {
-					 if let thisLastPlay = lastPlay, let situationStrikes = situation?.strikes {
-						// Check if the play was a "strike 2 foul" and the strike count is exactly 2
-						if thisLastPlay.lowercased().contains("strike 2 foul") && situationStrikes == 2 {
 
-						   // Set foulStrike2 to true to indicate that this was a strike due to a foul
-						   self.foulStrike2 = true
-
-						   // Only increment subStrike if foulStrike2 was already true,
-						   // meaning it has been previously set in another play
-						   if self.foulStrike2 {
-							  self.subStrike += 1
+				  if let situationStrikes = situation?.strikes {
+					 if situationStrikes == 0 {
+						// Reset when strikes are cleared (new batter or other event)
+						self.subStrike = 0
+						self.foulStrike2 = false
+					 } else {
+						if let thisLastPlay = lastPlay {
+						   if thisLastPlay.lowercased().contains("strike 2 foul") && situationStrikes == 2 {
+							  // Check if this is the first "strike 2 foul" after the last reset
+							  if !self.foulStrike2 {
+								 self.foulStrike2 = true  // Indicate that a "strike 2 foul" has occurred
+							  } else {
+								 // If already marked as "strike 2 foul" and it happens again, increment subStrike
+								 self.subStrike += 1
+							  }
+						   } else {
+							  // If the current play is not a "strike 2 foul" or strikes aren't exactly 2, reset foulStrike2
+							  self.foulStrike2 = false
 						   }
 						} else {
-						   // If not a "strike 2 foul" or strikes aren't 2, ensure foulStrike2 is reset
+						   // Handle the case where lastPlay is nil
 						   self.foulStrike2 = false
 						}
-					 } else {
-						// Handle the case where lastPlay or strikes is nil
-						self.foulStrike2 = false
 					 }
+				  } else {
+					 // Handle the case where strikes information is nil
+					 self.foulStrike2 = false
 				  }
+
+
+
+//				  if situation?.strikes ?? 0 == 0 { // clean up/reset subStrike if strike count back to 0
+//					 self.subStrike = 0
+//					 self.foulStrike2 = false
+//				  } else {
+//					 if let thisLastPlay = lastPlay, let situationStrikes = situation?.strikes {
+//						// Check if the play was a "strike 2 foul" and the strike count is exactly 2
+//						if thisLastPlay.lowercased().contains("strike 2 foul") && situationStrikes == 2 {
+//
+//						   // Set foulStrike2 to true to indicate that this was a strike due to a foul
+//						   self.foulStrike2 = true
+//
+//						   // Only increment subStrike if foulStrike2 was already true,
+//						   // meaning it has been previously set in another play
+//						   if self.foulStrike2 {
+//							  self.subStrike += 1
+//						   }
+//						} else {
+//						   // If not a "strike 2 foul" or strikes aren't 2, ensure foulStrike2 is reset
+//						   self.foulStrike2 = false
+//						}
+//					 } else {
+//						// Handle the case where lastPlay or strikes is nil
+//						self.foulStrike2 = false
+//					 }
+//				  }
 				  startTime = convertTimeTo12HourFormat(time24: startTime, DST: true)
 
 				  return gameEvent(
@@ -98,7 +130,9 @@ class GameViewModel: ObservableObject {
 					 homeScore: homeTeam.score ?? "0",  // Sets the home team's score, defaulting to "0" if null.
 					 visitScore: awayTeam.score ?? "0",  // Sets the visiting team's score, defaulting to "0" if null.
 					 homeColor: homeTeam.team.color,
-					 visitorColor: awayTeam.team.alternateColor,
+					 homeAltColor: homeTeam.team.alternateColor,
+					 visitorColor: awayTeam.team.color,
+					 visitorAltColor: awayTeam.team.alternateColor,
 					 on1: situation?.onFirst ?? false,  // Indicates if there is a runner on first base, defaulting to false if null.
 					 on2: situation?.onSecond ?? false,  // Indicates if there is a runner on second base, defaulting to false if null.
 					 on3: situation?.onThird ?? false,  // Indicates if there is a runner on third base, defaulting to false if null.

@@ -23,7 +23,7 @@ struct ContentView: View {
    let titleSize = 25.0
    let logoWidth = 90.0
    let version = "99.8"
-   let tooDark = "#555555"
+   let tooDark = "#333333"
 
    //	var teams = MLBTeams.teams
    @State var selectedTeam = "New York Yankees"
@@ -37,7 +37,7 @@ struct ContentView: View {
 			let homeColor = vm?.homeColor
 			let visitors = vm?.visitors
 			let visitScore = vm?.visitScore ?? "0"
-			let visitColor = vm?.visitorColor
+			let visitColor = vm?.visitorAltColor
 			let homeWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? false : true
 			let visitWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? true : false
 			let inningTxt = vm?.inningTxt
@@ -45,11 +45,9 @@ struct ContentView: View {
 			let atBat = vm?.atBat
 			let atBatPic = vm?.atBatPic
 			let atBatSummary = vm?.atBatSummary
-
 			let winColor = Color.green
-
 			let liveAction: Bool = true // event.inningTxt.lowercased().contains("Start") || event.inningTxt.lowercased().contains("Sch")
-			let midInning: Bool = event.inningTxt.lowercased().contains("Top") || event.inningTxt.lowercased().contains("Bottom")
+//			let midInning: Bool = event.inningTxt.lowercased().contains("Top") || event.inningTxt.lowercased().contains("Bottom")
 
 
 			//	MARK: Title / Header Tile
@@ -61,7 +59,8 @@ struct ContentView: View {
 
 						   Text("\(visitors ?? "")")
 							  .font(.system(size: titleSize))
-							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000", comparedTo: tooDark) ? visitColor! : tooDark))
+//							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000", comparedTo: tooDark) ? visitColor! : tooDark))
+							  .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
 							  .multilineTextAlignment(.center)
 
 						   Text("vs.")
@@ -71,7 +70,8 @@ struct ContentView: View {
 
 						   Text("\(home ?? "")")
 							  .font(.system(size: titleSize))
-							  .foregroundColor(Color(hex: isHexGreaterThan(homeColor ?? "#000", comparedTo: tooDark) ? homeColor! : tooDark))
+//							  .foregroundColor(Color(hex: isHexGreaterThan(homeColor ?? "#000", comparedTo: tooDark) ? homeColor! : tooDark))
+							  .foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
 							  .multilineTextAlignment(.center)
 
 						   if (inningTxt?.contains("Scheduled") ?? false ) {
@@ -106,6 +106,7 @@ struct ContentView: View {
 				  }
 			   }  // end title section
 			   .frame(width: UIScreen.main.bounds.width, height: 130, alignment: .trailing)
+//			   .shadow(color: .white, radius: 10, x: 0, y: 0)
 			   .cornerRadius(10)
 			}
 
@@ -120,16 +121,20 @@ struct ContentView: View {
 						VStack {
 						   Text("\(visitors ?? "")")
 							  .font(.title3)
-							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000", comparedTo: tooDark) ? visitColor! : tooDark))
+//							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000", comparedTo: tooDark) ? visitColor! : tooDark))
+							  .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
+
 						   Text("\(vm?.visitorRecord ?? "")")
 							  .font(.caption)
 							  .foregroundColor(.gray)
 						   Spacer()
 						}
-						
 						VStack {
 						   TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
 							  .clipShape(Circle())
+//							  .shadow(color: .gray, radius: 10, x: 0, y: 0)
+//							  .shadow(color: Color(hex: visitColor ?? "#000000"), radius: 10, x: 0, y: 0)
+
 						}
 					 }
 // MARK: Visitor Score
@@ -137,6 +142,10 @@ struct ContentView: View {
 						.font(.system(size: scoreSize))
 						.padding(.trailing)
 						.foregroundColor(visitWin && Int(visitScore) ?? 0 > 0 ? winColor : Color(hex: visitColor!))
+
+//						.shadow(color: .white, radius: 10, x: 0, y: 0)
+//						.shadow(color: Color(hex: visitColor ?? "#000000"), radius: 10, x: 0, y: 0)
+
 
 				  } // end Visitor Side
 
@@ -146,11 +155,14 @@ struct ContentView: View {
 						.font(.system(size: scoreSize))
 						.padding(.leading)
 						.foregroundColor(homeWin && Int(homeScore) ?? 0 > 0 ? winColor : Color(hex: homeColor!))
+//						.shadow(color: .white, radius: 10, x: 0, y: 0)
+
 
 				     VStack(alignment: .leading) {
 						Text("\(home ?? "")")
 						   .font(.title3)
-						   .foregroundColor(Color(hex: isHexGreaterThan(homeColor ?? "#000", comparedTo: tooDark) ? homeColor! : tooDark))
+						   .foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
+
 
 						Text("\(vm?.homeRecord ?? "")")
 						   .font(.caption)
@@ -160,6 +172,9 @@ struct ContentView: View {
 						   TeamIconView(teamColor: homeColor ?? "C4CED3", teamIcon: event.homeLogo)
 							  .frame(width: logoWidth)
 							  .clipShape(Circle())
+//							  .shadow(color: .gray, radius: 10, x: 0, y: 0)
+//							  .shadow(color: Color(hex: homeColor ?? "#000000"), radius: 10, x: 0, y: 0)
+
 						}
 					 }
 //					 .frame(width: UIScreen.main.bounds.width * 0.35)
