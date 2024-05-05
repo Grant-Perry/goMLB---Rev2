@@ -62,7 +62,7 @@ class GameViewModel: ObservableObject {
 				  // MARK: subStrike calculation
 
 				  if let situationStrikes = situation?.strikes {
-					 if situationStrikes == 0 {
+					 if situationStrikes < 2 {
 						// Reset when strikes are cleared (new batter or other event)
 						self.subStrike = 0
 						self.foulStrike2 = false
@@ -79,6 +79,7 @@ class GameViewModel: ObservableObject {
 						   } else {
 							  // If the current play is not a "strike 2 foul" or strikes aren't exactly 2, reset foulStrike2
 							  self.foulStrike2 = false
+								self.subStrike = 0 // remove this line if issues
 						   }
 						} else {
 						   // Handle the case where lastPlay is nil

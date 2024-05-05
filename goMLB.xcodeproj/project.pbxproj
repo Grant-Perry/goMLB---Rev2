@@ -12,7 +12,6 @@
 		9B1D63552BD5B09C00066D30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B1D63542BD5B09C00066D30 /* Assets.xcassets */; };
 		9B1D63582BD5B09C00066D30 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B1D63572BD5B09C00066D30 /* Preview Assets.xcassets */; };
 		9B585FF02BD5C70900BE2E4B /* JSONModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FEF2BD5C70900BE2E4B /* JSONModels.swift */; };
-		9B585FF42BD5C86400BE2E4B /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FF32BD5C86400BE2E4B /* NetworkManager.swift */; };
 		9B585FF72BD6EB4200BE2E4B /* basesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FF62BD6EB4200BE2E4B /* basesView.swift */; };
 		9B585FFB2BD7024600BE2E4B /* scoreBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFA2BD7024600BE2E4B /* scoreBoardView.swift */; };
 		9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFC2BD8439700BE2E4B /* colorMod.swift */; };
@@ -31,7 +30,6 @@
 		9B1D63542BD5B09C00066D30 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9B1D63572BD5B09C00066D30 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		9B585FEF2BD5C70900BE2E4B /* JSONModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONModels.swift; sourceTree = "<group>"; };
-		9B585FF32BD5C86400BE2E4B /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		9B585FF62BD6EB4200BE2E4B /* basesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = basesView.swift; sourceTree = "<group>"; };
 		9B585FFA2BD7024600BE2E4B /* scoreBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = scoreBoardView.swift; sourceTree = "<group>"; };
 		9B585FFC2BD8439700BE2E4B /* colorMod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = colorMod.swift; sourceTree = "<group>"; };
@@ -114,7 +112,6 @@
 		9B585FF22BD5C84E00BE2E4B /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				9B585FF32BD5C86400BE2E4B /* NetworkManager.swift */,
 				9B585FFE2BD8536300BE2E4B /* GameViewModel.swift */,
 			);
 			path = Classes;
@@ -203,7 +200,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				9B585FF72BD6EB4200BE2E4B /* basesView.swift in Sources */,
-				9B585FF42BD5C86400BE2E4B /* NetworkManager.swift in Sources */,
 				9B1D63532BD5B09B00066D30 /* ContentView.swift in Sources */,
 				9BBF49822BE54CD700E27A5F /* stupidView.swift in Sources */,
 				9B585FF02BD5C70900BE2E4B /* JSONModels.swift in Sources */,
@@ -361,7 +357,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.01;
+				MARKETING_VERSION = 3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -391,7 +387,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.01;
+				MARKETING_VERSION = 3.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

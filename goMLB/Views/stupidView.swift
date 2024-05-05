@@ -62,6 +62,7 @@ struct PlayerProfileView: View {
    var tabView: some View {
 	  TabView {
 		 summarySection
+
 			.tabItem {
 			   Text("Summary")
 			}
@@ -74,6 +75,7 @@ struct PlayerProfileView: View {
 			   Text("Awards")
 			}
 	  }
+	  .foregroundColor(.white)
    }
 
    var summarySection: some View {
@@ -83,6 +85,7 @@ struct PlayerProfileView: View {
 		 InfoBox(titleTxt: "Age", labelTxt: "33")
 	  }
    }
+
 
    var bioSection: some View {
 	  Text(playerBio)
