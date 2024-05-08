@@ -14,7 +14,9 @@ struct ContentView: View {
    @ObservedObject var gameViewModel = GameViewModel()
    @Environment(\.colorScheme) var colorScheme
    @State private var showPicker = false
-
+   @State private var refreshGame = true // refetch JSON
+   @State var timeRemaining = 15
+   
    let timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
    let scoreColor = Color(.blue)
    let winners = Color(.green)
@@ -24,6 +26,8 @@ struct ContentView: View {
    let logoWidth = 90.0
    let version = "99.8"
    let tooDark = "#333333"
+
+
 
    //	var teams = MLBTeams.teams
    @State var selectedTeam = "New York Yankees"
@@ -47,19 +51,21 @@ struct ContentView: View {
 			let atBatSummary = vm?.atBatSummary
 			let winColor = Color.green
 			let liveAction: Bool = true // event.inningTxt.lowercased().contains("Start") || event.inningTxt.lowercased().contains("Sch")
-//			let midInning: Bool = event.inningTxt.lowercased().contains("Top") || event.inningTxt.lowercased().contains("Bottom")
+										//			let midInning: Bool = event.inningTxt.lowercased().contains("Top") || event.inningTxt.lowercased().contains("Bottom")
 
 
 			//	MARK: Title / Header Tile
 			VStack {
+
 			   Section {
 				  VStack(spacing: 0) {
+
 					 HStack(alignment: .center) {
 						VStack(spacing: -4) {  // Remove spacing between VStack elements
 
 						   Text("\(visitors ?? "")")
 							  .font(.system(size: titleSize))
-//							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000", comparedTo: tooDark) ? visitColor! : tooDark))
+						   //							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000", comparedTo: tooDark) ? visitColor! : tooDark))
 							  .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
 							  .multilineTextAlignment(.center)
 							  .scaledToFit()
@@ -72,7 +78,7 @@ struct ContentView: View {
 
 						   Text("\(home ?? "")")
 							  .font(.system(size: titleSize))
-//							  .foregroundColor(Color(hex: isHexGreaterThan(homeColor ?? "#000", comparedTo: tooDark) ? homeColor! : tooDark))
+						   //							  .foregroundColor(Color(hex: isHexGreaterThan(homeColor ?? "#000", comparedTo: tooDark) ? homeColor! : tooDark))
 							  .foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
 							  .multilineTextAlignment(.center)
 							  .minimumScaleFactor(0.5)
@@ -98,6 +104,30 @@ struct ContentView: View {
 									.font(.system(size: 11))
 							  }
 						   }
+
+						   Button(action: {
+							  refreshGame.toggle() // Toggle the state of refreshGame on click
+						   }) {
+							  Text((refreshGame ? "Updating" : "Not Updating") + "\n")
+								 .foregroundColor(refreshGame ? .green : .red) // Change color based on refreshGame
+								 .font(.caption) // Set the font size
+								 .frame(width: 200, height: 20, alignment: .trailing) // Frame for the text, right aligned
+								 .padding(.trailing) // Padding inside the button to the right
+
+							  if refreshGame {
+							     timerRemaingView(timeRemaining: $timeRemaining)
+									.font(.headline)
+									.frame(width: 200, height: 10, alignment: .trailing) // Frame for the text, right aligned
+									.padding(.top, -17)
+							  }
+						   }
+						   .frame(maxWidth: .infinity, alignment: .trailing) // Ensure the button itself is right-aligned
+						   .padding(.trailing, 20) // Padding from the right edge of the container
+						   .cornerRadius(10) // Rounded corners for the button
+
+
+
+
 						}
 						.multilineTextAlignment(.center)
 						.padding()
@@ -109,7 +139,7 @@ struct ContentView: View {
 				  }
 			   }  // end title section
 			   .frame(width: UIScreen.main.bounds.width, height: 130, alignment: .trailing)
-//			   .shadow(color: .white, radius: 10, x: 0, y: 0)
+			   //			   .shadow(color: .white, radius: 10, x: 0, y: 0)
 			   .cornerRadius(10)
 			}
 
@@ -124,8 +154,8 @@ struct ContentView: View {
 						VStack {
 						   Text("\(visitors ?? "")")
 							  .font(.title3)
-//							  .frame(minWidth: 0, maxWidth: .infinity)
-//							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000", comparedTo: tooDark) ? visitColor! : tooDark))
+						   //							  .frame(minWidth: 0, maxWidth: .infinity)
+						   //							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000", comparedTo: tooDark) ? visitColor! : tooDark))
 							  .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
 
 						   Text("\(vm?.visitorRecord ?? "")")
@@ -136,19 +166,19 @@ struct ContentView: View {
 						VStack {
 						   TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
 							  .clipShape(Circle())
-//							  .shadow(color: .gray, radius: 10, x: 0, y: 0)
-//							  .shadow(color: Color(hex: visitColor ?? "#000000"), radius: 10, x: 0, y: 0)
+						   //							  .shadow(color: .gray, radius: 10, x: 0, y: 0)
+						   //							  .shadow(color: Color(hex: visitColor ?? "#000000"), radius: 10, x: 0, y: 0)
 
 						}
 					 }
-// MARK: Visitor Score
+					 // MARK: Visitor Score
 					 Text("\(visitScore)")
 						.font(.system(size: scoreSize))
 						.padding(.trailing)
 						.foregroundColor(visitWin && Int(visitScore) ?? 0 > 0 ? winColor : Color(hex: visitColor!))
 
-//						.shadow(color: .white, radius: 10, x: 0, y: 0)
-//						.shadow(color: Color(hex: visitColor ?? "#000000"), radius: 10, x: 0, y: 0)
+					 //						.shadow(color: .white, radius: 10, x: 0, y: 0)
+					 //						.shadow(color: Color(hex: visitColor ?? "#000000"), radius: 10, x: 0, y: 0)
 
 
 				  } // end Visitor Side
@@ -159,10 +189,10 @@ struct ContentView: View {
 						.font(.system(size: scoreSize))
 						.padding(.leading)
 						.foregroundColor(homeWin && Int(homeScore) ?? 0 > 0 ? winColor : Color(hex: homeColor!))
-//						.shadow(color: .white, radius: 10, x: 0, y: 0)
+					 //						.shadow(color: .white, radius: 10, x: 0, y: 0)
 
 
-				     VStack(alignment: .leading) {
+					 VStack(alignment: .leading) {
 						Text("\(home ?? "")")
 						   .font(.title3)
 						   .foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
@@ -176,12 +206,12 @@ struct ContentView: View {
 						   TeamIconView(teamColor: homeColor ?? "C4CED3", teamIcon: event.homeLogo)
 							  .frame(width: logoWidth)
 							  .clipShape(Circle())
-//							  .shadow(color: .gray, radius: 10, x: 0, y: 0)
-//							  .shadow(color: Color(hex: homeColor ?? "#000000"), radius: 10, x: 0, y: 0)
+						   //							  .shadow(color: .gray, radius: 10, x: 0, y: 0)
+						   //							  .shadow(color: Color(hex: homeColor ?? "#000000"), radius: 10, x: 0, y: 0)
 
 						}
 					 }
-//					 .frame(width: UIScreen.main.bounds.width * 0.35)
+					 //					 .frame(width: UIScreen.main.bounds.width * 0.35)
 				  } // end Home side
 
 
@@ -210,19 +240,19 @@ struct ContentView: View {
 
 					 // MARK: Bases View
 
-						HStack {
-						   BasesView(onFirst: event.on1,
-									 onSecond: event.on2,
-									 onThird: event.on3,
-									 strikes: event.strikes ?? 0,
-									 balls: event.balls ?? 0,
-									 outs: event.outs ?? 0,
-									 inningTxt: event.inningTxt,
-									 thisSubStrike:	event.thisSubStrike,
-									 atBat: atBat ?? "N/A",
-									 atBatPic: atBatPic ?? "N/A URL")
-						}
+					 HStack {
+						BasesView(onFirst: event.on1,
+								  onSecond: event.on2,
+								  onThird: event.on3,
+								  strikes: event.strikes ?? 0,
+								  balls: event.balls ?? 0,
+								  outs: event.outs ?? 0,
+								  inningTxt: event.inningTxt,
+								  thisSubStrike:	event.thisSubStrike,
+								  atBat: atBat ?? "N/A",
+								  atBatPic: atBatPic ?? "N/A URL")
 					 }
+				  }
 
 			   } // end bases section
 			} // end list
@@ -248,9 +278,9 @@ struct ContentView: View {
 						}
 					 }
 					 .toolbar {
-						 ToolbarItem(placement: .topBarLeading) {
+						ToolbarItem(placement: .topBarLeading) {
 
-							Text("\(Image(systemName: "figure.baseball")) \(gameViewModel.filteredEvents.first?.atBat ?? "")\(gameViewModel.filteredEvents.first?.atBatSummary ?? "")")
+						   Text("\(Image(systemName: "figure.baseball")) \(gameViewModel.filteredEvents.first?.atBat ?? "")\(gameViewModel.filteredEvents.first?.atBatSummary ?? "")")
 							  .font(.headline)
 							  .foregroundColor(.blue)
 						}
@@ -262,7 +292,7 @@ struct ContentView: View {
 
 			   .frame(width: UIScreen.main.bounds.width, height: 150)
 			}
-			}
+		 }
 
 		 VStack {
 			Text("Version: \(getAppVersion())")
@@ -278,7 +308,9 @@ struct ContentView: View {
 	  .onAppear(perform: gameViewModel.loadData)
 
 	  .onReceive(timer) { _ in
-		 gameViewModel.loadData()
+		 if self.refreshGame {
+			gameViewModel.loadData()
+		 }
 	  }
 
 	  Button("Refresh") {
@@ -290,12 +322,13 @@ struct ContentView: View {
 	  .background(Color.blue)
 	  .foregroundColor(.white)
 	  .clipShape(Capsule())
-	  Spacer()
+	  //	  Spacer()
 
-		 .preferredColorScheme(.dark)
+	  .preferredColorScheme(.dark)
    }
 
 }
+
 
 // MARK: Helpers
 

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9B12539E2BEC264000A7B422 /* timerRemaingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B12539D2BEC264000A7B422 /* timerRemaingView.swift */; };
 		9B1D63512BD5B09B00066D30 /* goMLBApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1D63502BD5B09B00066D30 /* goMLBApp.swift */; };
 		9B1D63532BD5B09B00066D30 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1D63522BD5B09B00066D30 /* ContentView.swift */; };
 		9B1D63552BD5B09C00066D30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B1D63542BD5B09C00066D30 /* Assets.xcassets */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9B12539D2BEC264000A7B422 /* timerRemaingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = timerRemaingView.swift; sourceTree = "<group>"; };
 		9B1D634D2BD5B09B00066D30 /* goMLB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = goMLB.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B1D63502BD5B09B00066D30 /* goMLBApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = goMLBApp.swift; sourceTree = "<group>"; };
 		9B1D63522BD5B09B00066D30 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -125,6 +127,7 @@
 				E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */,
 				9BD920FD2BDD9AB1007D558F /* outsView.swift */,
 				9BBF49812BE54CD700E27A5F /* stupidView.swift */,
+				9B12539D2BEC264000A7B422 /* timerRemaingView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -208,6 +211,7 @@
 				9B585FFF2BD8536300BE2E4B /* GameViewModel.swift in Sources */,
 				9B585FFB2BD7024600BE2E4B /* scoreBoardView.swift in Sources */,
 				9B1D63512BD5B09B00066D30 /* goMLBApp.swift in Sources */,
+				9B12539E2BEC264000A7B422 /* timerRemaingView.swift in Sources */,
 				9BD920FE2BDD9AB1007D558F /* outsView.swift in Sources */,
 				E71035F82BDBD27E00F1F3B7 /* teamNames.swift in Sources */,
 				9BD921002BE18DFD007D558F /* gaveEvent.swift in Sources */,
@@ -357,7 +361,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.3;
+				MARKETING_VERSION = 3.4a;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -387,7 +391,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 3.3;
+				MARKETING_VERSION = 3.4a;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
