@@ -62,6 +62,8 @@ struct ContentView: View {
 //							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000", comparedTo: tooDark) ? visitColor! : tooDark))
 							  .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
 							  .multilineTextAlignment(.center)
+							  .scaledToFit()
+							  .minimumScaleFactor(0.6)
 
 						   Text("vs.")
 							  .font(.footnote)
@@ -73,6 +75,7 @@ struct ContentView: View {
 //							  .foregroundColor(Color(hex: isHexGreaterThan(homeColor ?? "#000", comparedTo: tooDark) ? homeColor! : tooDark))
 							  .foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
 							  .multilineTextAlignment(.center)
+							  .minimumScaleFactor(0.5)
 
 						   if (inningTxt?.contains("Scheduled") ?? false ) {
 							  Text("\nStarting: \(startTime ?? "")")
@@ -121,6 +124,7 @@ struct ContentView: View {
 						VStack {
 						   Text("\(visitors ?? "")")
 							  .font(.title3)
+//							  .frame(minWidth: 0, maxWidth: .infinity)
 //							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000", comparedTo: tooDark) ? visitColor! : tooDark))
 							  .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
 
@@ -244,8 +248,9 @@ struct ContentView: View {
 						}
 					 }
 					 .toolbar {
-						ToolbarItem(placement: .topBarLeading) {
-						   Text("Batting: \(gameViewModel.filteredEvents.first?.atBat ?? "") - \(gameViewModel.filteredEvents.first?.atBatSummary ?? "")")
+						 ToolbarItem(placement: .topBarLeading) {
+
+							Text("\(Image(systemName: "figure.baseball")) \(gameViewModel.filteredEvents.first?.atBat ?? "")\(gameViewModel.filteredEvents.first?.atBatSummary ?? "")")
 							  .font(.headline)
 							  .foregroundColor(.blue)
 						}
