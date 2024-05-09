@@ -49,7 +49,7 @@ struct ContentView: View {
 			let startTime = vm?.startTime
 			let atBat = vm?.atBat
 			let atBatPic = vm?.atBatPic
-			let atBatSummary = vm?.atBatSummary
+//			let atBatSummary = vm?.atBatSummary
 			let winColor = Color.green
 			let liveAction: Bool = true // event.inningTxt.lowercased().contains("Start") || event.inningTxt.lowercased().contains("Sch")
 										//			let midInning: Bool = event.inningTxt.lowercased().contains("Top") || event.inningTxt.lowercased().contains("Bottom")
@@ -115,14 +115,20 @@ struct ContentView: View {
 								 .frame(width: 200, height: 22, alignment: .trailing) // Frame for the text, right aligned
 								 .padding(.trailing) // Padding inside the button to the right
 
+			// MARK: updating time remaining
+								 .onReceive(fakeTimer) { _ in
+									if self.thisTimeRemaining > 0 {
+									   self.thisTimeRemaining -= 1
+									} else  {
+									   self.thisTimeRemaining = 15
+									}
+								 }
+
 							  if refreshGame {
 							     timerRemaingView(timeRemaining: $thisTimeRemaining)
 									  .font(.system(size: 20))
 									.frame(width: 200, height: 11, alignment: .trailing) // Frame for the text, right aligned
 									.padding(.top, -17)
-
-
-
 							  }
 						   }
 						   .frame(maxWidth: .infinity, alignment: .trailing) // Ensure the button itself is right-aligned
@@ -142,28 +148,56 @@ struct ContentView: View {
 			   //			   .shadow(color: .white, radius: 10, x: 0, y: 0)
 			   .cornerRadius(10)
 			}
-			.onReceive(fakeTimer) { _ in
-				if self.thisTimeRemaining > 0 {
-					self.thisTimeRemaining -= 1
-				} else  {
-					self.thisTimeRemaining = 15
-				}
-			}
+
 
 			// MARK: Scores card
 			// MARK: First column - visitor's score (Right justified)
 
 			Section {
 			   HStack(spacing: 0) {
+				  HStack {
+					 HStack {
+						Text("\(visitors ?? "")")
+						   .font(.title3)
+//						   .frame(width: .infinity, height: 30, alignment: .trailing)
+						   .frame(width: UIScreen.main.bounds.width * 0.95 / 2, height: 30, alignment: .trailing)
+						   .minimumScaleFactor(0.5)
+						   .lineLimit(1)
+						   .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
+						   .padding()
+						   .border(.white)
+					 }
+					 Spacer()
+					 
+					 HStack {
+						Text("\(home ?? "")")
+						   .font(.title3)
+						   .frame(width: UIScreen.main.bounds.width / 2, height: 30, alignment: .leading)
+						   .minimumScaleFactor(0.5)
+						   .lineLimit(1)
+						   .foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
 
+					 }
+
+				  }
+			   }
+			   .frame(maxWidth: .infinity, maxHeight: 20, alignment: .trailing)
+//			   .border(.green)
+
+
+			   HStack(spacing: 0) {
+ // MARK: Visitor's Side
 				  HStack { // Visitor Side
-					 VStack(alignment: .leading) {
+					 VStack(alignment: .leading, spacing: 0) {
 						VStack {
 						   Text("\(visitors ?? "")")
 							  .font(.title3)
-						   //							  .frame(minWidth: 0, maxWidth: .infinity)
-						   //							  .foregroundColor(Color(hex: isHexGreaterThan(visitColor ?? "#000", comparedTo: tooDark) ? visitColor! : tooDark))
+
+							  .minimumScaleFactor(0.5)
+							  .lineLimit(1)
+							  .frame(width: 110, alignment: .leading)
 							  .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
+//							  .border(.red)
 
 						   Text("\(vm?.visitorRecord ?? "")")
 							  .font(.caption)
@@ -171,62 +205,68 @@ struct ContentView: View {
 						   Spacer()
 						}
 						VStack {
-						   TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
-							  .clipShape(Circle())
-						   //							  .shadow(color: .gray, radius: 10, x: 0, y: 0)
-						   //							  .shadow(color: Color(hex: visitColor ?? "#000000"), radius: 10, x: 0, y: 0)
-
+						   HStack { // Aligns content to the trailing edge (right)
+							  Spacer()
+							  TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
+								 .clipShape(Circle())
+						   }
+						   .frame(width: 90, alignment: .leading)
 						}
 					 }
-					 // MARK: Visitor Score
+ // MARK: Visitor Score
 					 Text("\(visitScore)")
 						.font(.system(size: scoreSize))
 						.padding(.trailing)
 						.foregroundColor(visitWin && Int(visitScore) ?? 0 > 0 ? winColor : Color(hex: visitColor!))
-
-					 //						.shadow(color: .white, radius: 10, x: 0, y: 0)
-					 //						.shadow(color: Color(hex: visitColor ?? "#000000"), radius: 10, x: 0, y: 0)
-
-
 				  } // end Visitor Side
+				  .frame(maxWidth: .infinity, alignment: .trailing)
+//				  .border(.green)
 
-
+ // MARK: HOME (right) side
 				  HStack { // Home side
 					 Text("\(homeScore)")
 						.font(.system(size: scoreSize))
 						.padding(.leading)
 						.foregroundColor(homeWin && Int(homeScore) ?? 0 > 0 ? winColor : Color(hex: homeColor!))
-					 //						.shadow(color: .white, radius: 10, x: 0, y: 0)
 
 
 					 VStack(alignment: .leading) {
-						Text("\(home ?? "")")
-						   .font(.title3)
-						   .foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
+						VStack {
+						   Text("\(home ?? "")")
+							  .font(.title3)
+							  .foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
+							  .minimumScaleFactor(0.5)
+							  .lineLimit(1)
 
+						   Text("\(vm?.homeRecord ?? "")")
+							  .font(.caption)
+							  .foregroundColor(.gray)
+						}
 
-						Text("\(vm?.homeRecord ?? "")")
-						   .font(.caption)
-						   .foregroundColor(.gray)
-
-						VStack(alignment: .leading) {
-						   TeamIconView(teamColor: homeColor ?? "C4CED3", teamIcon: event.homeLogo)
-							  .frame(width: logoWidth)
-							  .clipShape(Circle())
-						   //							  .shadow(color: .gray, radius: 10, x: 0, y: 0)
-						   //							  .shadow(color: Color(hex: homeColor ?? "#000000"), radius: 10, x: 0, y: 0)
-
+						VStack {
+						   HStack { // Aligns content to the trailing edge (right)
+//							  Spacer()
+							  TeamIconView(teamColor: homeColor ?? "C4CED3", teamIcon: event.homeLogo)
+								 .clipShape(Circle())
+						   }
+						   .frame(width: 90, alignment: .trailing)
+//						   .border(.green)
 						}
 					 }
-					 //					 .frame(width: UIScreen.main.bounds.width * 0.35)
+					 
 				  } // end Home side
+				  .frame(maxWidth: .infinity, alignment: .leading)
+//				  .border(.red)
+
+			   } // end Visitor Home sides
+			   .frame(width: UIScreen.main.bounds.width, height: 110)
+//			   .border(.blue)
 
 
-
-			   }
-			   .padding()
-			   .frame(width: UIScreen.main.bounds.width, height: 110) // for the score card
-			}
+			}  // full card
+			.frame(width: UIScreen.main.bounds.width  * 0.9, height: .infinity) // for the score card
+//			.padding()
+//			.border(.red)
 
 			if liveAction {
 			   Section {
@@ -264,7 +304,7 @@ struct ContentView: View {
 			   } // end bases section
 			} // end list
 		 }
-		 .frame(width: UIScreen.main.bounds.width, height: 600)
+		 .frame(width: UIScreen.main.bounds.width, height: 680)
 
 		 Spacer()
 
