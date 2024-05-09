@@ -15,19 +15,20 @@ struct ContentView: View {
    @Environment(\.colorScheme) var colorScheme
    @State private var showPicker = false
    @State private var refreshGame = true // refetch JSON
-   @State var timeRemaining = 15
-   
+   @State var thisTimeRemaining = 15
+	let timerValue = 15
+
    let timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
+   let fakeTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
    let scoreColor = Color(.blue)
    let winners = Color(.green)
+
 
    let scoreSize = 55.0
    let titleSize = 25.0
    let logoWidth = 90.0
    let version = "99.8"
    let tooDark = "#333333"
-
-
 
    //	var teams = MLBTeams.teams
    @State var selectedTeam = "New York Yankees"
@@ -111,23 +112,22 @@ struct ContentView: View {
 							  Text((refreshGame ? "Updating" : "Not Updating") + "\n")
 								 .foregroundColor(refreshGame ? .green : .red) // Change color based on refreshGame
 								 .font(.caption) // Set the font size
-								 .frame(width: 200, height: 20, alignment: .trailing) // Frame for the text, right aligned
+								 .frame(width: 200, height: 22, alignment: .trailing) // Frame for the text, right aligned
 								 .padding(.trailing) // Padding inside the button to the right
 
 							  if refreshGame {
-							     timerRemaingView(timeRemaining: $timeRemaining)
-									.font(.headline)
-									.frame(width: 200, height: 10, alignment: .trailing) // Frame for the text, right aligned
+							     timerRemaingView(timeRemaining: $thisTimeRemaining)
+									  .font(.system(size: 20))
+									.frame(width: 200, height: 11, alignment: .trailing) // Frame for the text, right aligned
 									.padding(.top, -17)
+
+
+
 							  }
 						   }
 						   .frame(maxWidth: .infinity, alignment: .trailing) // Ensure the button itself is right-aligned
 						   .padding(.trailing, 20) // Padding from the right edge of the container
 						   .cornerRadius(10) // Rounded corners for the button
-
-
-
-
 						}
 						.multilineTextAlignment(.center)
 						.padding()
@@ -138,9 +138,16 @@ struct ContentView: View {
 					 .scaledToFit()
 				  }
 			   }  // end title section
-			   .frame(width: UIScreen.main.bounds.width, height: 130, alignment: .trailing)
+			   .frame(width: UIScreen.main.bounds.width, height: 170, alignment: .trailing)
 			   //			   .shadow(color: .white, radius: 10, x: 0, y: 0)
 			   .cornerRadius(10)
+			}
+			.onReceive(fakeTimer) { _ in
+				if self.thisTimeRemaining > 0 {
+					self.thisTimeRemaining -= 1
+				} else  {
+					self.thisTimeRemaining = 15
+				}
 			}
 
 			// MARK: Scores card
@@ -311,6 +318,7 @@ struct ContentView: View {
 		 if self.refreshGame {
 			gameViewModel.loadData()
 		 }
+		  self.thisTimeRemaining = timerValue
 	  }
 
 	  Button("Refresh") {
