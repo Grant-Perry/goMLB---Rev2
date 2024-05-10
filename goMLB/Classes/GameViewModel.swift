@@ -48,9 +48,9 @@ class GameViewModel: ObservableObject {
 
 				  // MARK: situation vars
 				  let lastPlay = situation?.lastPlay?.text
-				  let atBat = situation?.batter?.athlete.shortName ?? ""
-				  let atBatPic = situation?.batter?.athlete.headshot ?? ""
-				  let atBatSummary = situation?.batter?.athlete.summary ?? ""
+				  var atBat = situation?.batter?.athlete.shortName ?? ""
+				  var atBatPic = situation?.batter?.athlete.headshot ?? ""
+				  var atBatSummary = situation?.batter?.athlete.summary ?? ""
 
 				  self.extractDateAndTime(from: event.date)
 
