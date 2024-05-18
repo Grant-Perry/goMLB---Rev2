@@ -72,6 +72,7 @@ func getColorForUI(hex: String, thresholdHex: String) -> Color {
    if isColorTooDark(colorHex: hex, thresholdHex: thresholdHex) {
 	  return Color.white // Use white if the color is too dark
    } else {
-	  return Color(hex: hex) // Use the original color if it's not too dark
+	  return Color.white  // REMOVE - this was for debugging
+//	  return Color(hex: hex) // Use the original color if it's not too dark
    }
 }

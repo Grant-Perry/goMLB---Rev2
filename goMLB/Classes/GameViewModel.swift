@@ -9,7 +9,9 @@
 
 import SwiftUI
 
-/// `GameViewModel` manages the state and operations related to game data, particularly fetching and displaying filtered game events from an external API.
+/// `GameViewModel` manages the state and operations related to game data, particularly fetching 
+/// and displaying filtered game events from an external API.
+
 class GameViewModel: ObservableObject {
    // Published array of filtered events based on specific criteria.
    @Published var filteredEvents: [gameEvent] = []
@@ -20,7 +22,6 @@ class GameViewModel: ObservableObject {
    @Published var startDate: String = ""
    @Published var startTime: String = ""
 
-   /// Loads baseball event data from an API, filters it, and updates the view model.
    func loadData() {
 	  guard let url = URL(string: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard") else { return }
 	  URLSession.shared.dataTask(with: url) { data, response, error in
@@ -29,28 +30,23 @@ class GameViewModel: ObservableObject {
 			return
 		 }
 		 do {
-			// MARK:  Decoding JSON into APIResponse structure.
+			// MARK:  JSON decoding into APIResponse structure.
 			let decodedResponse = try JSONDecoder().decode(APIResponse.self, from: data)
 			// Switches the execution context to the main thread.
 			DispatchQueue.main.async { [self] in
 			   self.filteredEvents = decodedResponse.events.filter { $0.name.contains(teamPlaying) }.map { event in
 
-				  // Filtering and Mapping: The filter method screens the events based on the condition that their names contain teamPlaying.
-				  // This is followed by the map method, it transforms each filtered event into an EventDisplay object structured to
-				  // fit the UI's needs. This includes extracting and simplifying data from nested structures (like competitors and situations).
-
-				  // Accesses the current situation details of the first competition in each event.
 				  // MARK: event tree vars
-				  let situation = event.competitions[0].situation  // holds the entire "situation" JSON tree
-				  let homeTeam = event.competitions[0].competitors[0] // holds the entire home "competitors" JSON tree
-				  let awayTeam = event.competitions[0].competitors[1] // holds the entire visitor "competitors" JSON tree
+				  let situation = event.competitions[0].situation
+				  let homeTeam = event.competitions[0].competitors[0]
+				  let awayTeam = event.competitions[0].competitors[1]
 				  let inningTxt = event.competitions[0].status.type.detail
 
 				  // MARK: situation vars
 				  let lastPlay = situation?.lastPlay?.text
-				  var atBat = situation?.batter?.athlete.shortName ?? ""
-				  var atBatPic = situation?.batter?.athlete.headshot ?? ""
-				  var atBatSummary = situation?.batter?.athlete.summary ?? ""
+//				  var atBat = situation?.batter?.athlete.shortName ?? ""
+//				  var atBatPic = situation?.batter?.athlete.headshot ?? ""
+//				  var atBatSummary = situation?.batter?.athlete.summary ?? ""
 
 				  self.extractDateAndTime(from: event.date)
 
@@ -91,33 +87,6 @@ class GameViewModel: ObservableObject {
 					 self.foulStrike2 = false
 				  }
 
-
-
-//				  if situation?.strikes ?? 0 == 0 { // clean up/reset subStrike if strike count back to 0
-//					 self.subStrike = 0
-//					 self.foulStrike2 = false
-//				  } else {
-//					 if let thisLastPlay = lastPlay, let situationStrikes = situation?.strikes {
-//						// Check if the play was a "strike 2 foul" and the strike count is exactly 2
-//						if thisLastPlay.lowercased().contains("strike 2 foul") && situationStrikes == 2 {
-//
-//						   // Set foulStrike2 to true to indicate that this was a strike due to a foul
-//						   self.foulStrike2 = true
-//
-//						   // Only increment subStrike if foulStrike2 was already true,
-//						   // meaning it has been previously set in another play
-//						   if self.foulStrike2 {
-//							  self.subStrike += 1
-//						   }
-//						} else {
-//						   // If not a "strike 2 foul" or strikes aren't 2, ensure foulStrike2 is reset
-//						   self.foulStrike2 = false
-//						}
-//					 } else {
-//						// Handle the case where lastPlay or strikes is nil
-//						self.foulStrike2 = false
-//					 }
-//				  }
 				  startTime = convertTimeTo12HourFormat(time24: startTime, DST: true)
 
 				  return gameEvent(

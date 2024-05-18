@@ -26,7 +26,7 @@ struct ContentView: View {
    @State var titleSize = 35.0
    @State var logoWidth = 90.0
    @State var version = "99.8"
-   @State var tooDark = "#333333"
+   @State var tooDark = "#bababa"
 
    //	var teams = MLBTeams.teams
 
@@ -34,20 +34,9 @@ struct ContentView: View {
 	  VStack(spacing: -15) {
 		 List(gameViewModel.filteredEvents, id: \.ID) { event in
 			let vm = gameViewModel.filteredEvents.first
-			let home = vm?.home
-			let homeScore = vm?.homeScore ?? "0"
-			let homeColor = vm?.homeColor
-			let visitors = vm?.visitors
-			let visitScore = vm?.visitScore ?? "0"
-			let visitColor = vm?.visitorAltColor
-			let homeWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? false : true
-			let visitWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) ? true : false
-			let inningTxt = vm?.inningTxt
-			let startTime = vm?.startTime
 			let atBat = vm?.atBat
 			let atBatPic = vm?.atBatPic
-			//			let atBatSummary = vm?.atBatSummary
-			let winColor = Color.green
+//			let winColor = Color.green
 			let liveAction: Bool = true
 
 //	MARK: Title / Header Tile
@@ -85,10 +74,12 @@ struct ContentView: View {
 							   strikes: event.strikes ?? 0,
 							   balls: event.balls ?? 0,
 							   outs: event.outs ?? 0,
+							   inning: event.inning,
 							   inningTxt: event.inningTxt,
 							   thisSubStrike:	event.thisSubStrike,
 							   atBat: atBat ?? "N/A",
-							   atBatPic: atBatPic ?? "N/A URL")
+							   atBatPic: atBatPic ?? "N/A URL",
+							   showPic: true)
 				  }
 			   }
 			   //			   } // end bases section
