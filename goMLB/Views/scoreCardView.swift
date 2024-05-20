@@ -42,94 +42,118 @@ struct scoreCardView: View {
 
    //   ScoreCardView(visitors: visitors, visitColor: visitColor, titleSize: titleSize, tooDark: tooDark)
 
-   var body: some View {
-	  VStack {
+	var body: some View {
+		VStack {
 			headerView()
-//		 }  // end title section
-		 // MARK: Scores card
-		 HStack(spacing: 0) {
-			// MARK: Visitor's Side
-			HStack { // Visitor Side
-			   VStack(alignment: .leading, spacing: 0) {
-				  VStack {
-					 Text("\(visitors ?? "")")
-						.font(.title3)
 
-						.minimumScaleFactor(0.5)
-						.lineLimit(1)
-						.frame(width: 110, alignment: .leading)
-						.foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
-					 //							  .border(.red)
+			// MARK: Scores card
+			HStack(spacing: 0) {
+				// MARK: Visitor's Side
+				HStack { // Visitor Side
+					VStack(alignment: .leading, spacing: 0) {
+						VStack {
+							Text("\(visitors ?? "")")
+								.font(.title3)
+								.minimumScaleFactor(0.5)
+								.lineLimit(1)
+								.frame(maxWidth: .infinity, alignment: .trailing)
+								.frame(width: 110, alignment: .leading)
+								.foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
 
-					 Text("\(visitorRecord ?? "")")
-						.font(.caption)
-						.foregroundColor(.gray)
-					 Spacer()
-				  }
-				  VStack {
-					 HStack { // Aligns content to the trailing edge (right)
-						Spacer()
-						TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
-						   .clipShape(Circle())
-					 }
-					 .frame(width: 90, alignment: .leading)
-				  }
-			   }
-			   // MARK: Visitor Score
-			   Text("\(visitScore)")
-				  .font(.system(size: CGFloat(scoreSize)))
-				  .padding(.trailing)
-				  .foregroundColor(visitWin && Int(visitScore) ?? 0 > 0 ? winColor : Color(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark)))
-//				  .foregroundColor(visitWin && Int(visitScore) ?? 0 > 0 ? winColor : Color(hex: visitColor!))
-			} // end Visitor Side
-			.frame(maxWidth: .infinity, alignment: .trailing)
-			//				  .border(.green)
-
-			// MARK: HOME (right) side
-			HStack { // Home side
-			   Text("\(homeScore)")
-				  .font(.system(size: CGFloat(scoreSize)))
-				  .padding(.leading)
-				  .foregroundColor(homeWin && Int(homeScore) ?? 0 > 0 ? winColor : Color(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark)))
-//				  .foregroundColor(homeWin && Int(homeScore) ?? 0 > 0 ? winColor : Color(hex: homeColor!))
+							Text("\(visitorRecord ?? "")")
+								.font(.caption)
+								.padding(.trailing, 5)
+								.foregroundColor(.gray)
+								.frame(maxWidth: .infinity, alignment: .trailing)
 
 
-			   VStack(alignment: .leading) {
-				  VStack {
-					 Text("\(home ?? "")")
-						.font(.title3)
-						.foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
-						.minimumScaleFactor(0.5)
-						.lineLimit(1)
+							Spacer()
+						}
+						VStack {
+							HStack {
+								Spacer()
+								TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
+									.clipShape(Circle())
+							}
+							.frame(width: 90, alignment: .leading)
+							.padding(.bottom, 2)
+						}
+					}
+					// MARK: Visitor Score
+					Text("\(visitScore)")
+						.font(.system(size: CGFloat(scoreSize)))
+						.padding(.trailing)
+						.foregroundColor(visitWin && Int(visitScore) ?? 0 > 0 ? winColor : Color(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark)))
+				} // end Visitor Side
+				.frame(maxWidth: .infinity, alignment: .trailing)
+				.background(
+					Group {
+						if visitWin, Int(visitScore) ?? 0 > 0 {
+							LinearGradient(
+								gradient: Gradient(colors: [Color.clear, Color.green.opacity(0.5)]),
+								startPoint: .trailing,
+								endPoint: .leading
+							)
+						} else {
+							Color.clear
+						}
+					}
+				)
 
-					 Text("\(vm.filteredEvents.first?.homeRecord ?? "")")
-						.font(.caption)
-						.foregroundColor(.gray)
-				  }
+				// MARK: HOME (right) side
+				HStack { // Home side
+					Text("\(homeScore)")
+						.font(.system(size: CGFloat(scoreSize)))
+						.padding(.leading)
+						.foregroundColor(homeWin && Int(homeScore) ?? 0 > 0 ? winColor : Color(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark)))
 
-				  VStack {
-					 HStack { // Aligns content to the trailing edge (right)
-							  //							  Spacer()
-						TeamIconView(teamColor: homeColor ?? "C4CED3", teamIcon: event.homeLogo)
-						   .clipShape(Circle())
-					 }
-					 .frame(width: 90, alignment: .trailing)
-					 //						   .border(.green)
-				  }
-			   }
-
-			} // end Home side
-			.frame(maxWidth: .infinity, alignment: .leading)
-			//				  .border(.red)
-
-		 } // end Visitor Home sides
-		 .frame(width: UIScreen.main.bounds.width, height: 110)
-		 //			   .border(.blue)
+					VStack(alignment: .leading) {
+						VStack {
+							Text("\(home ?? "")")
+								.font(.title3)
+								.foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
+								.minimumScaleFactor(0.5)
+								.frame(maxWidth: .infinity, alignment: .leading)
+								.lineLimit(1)
+//								.border(.red)
 
 
-	  }  // full card
-	  .frame(width: UIScreen.main.bounds.width  * 0.9, height: .infinity)
-   }
+							Text("\(vm.filteredEvents.first?.homeRecord ?? "")")
+								.font(.caption)
+								.foregroundColor(.gray)
+								.frame(maxWidth: .infinity, alignment: .leading)
+
+						}
+
+						VStack {
+							HStack {
+								TeamIconView(teamColor: homeColor ?? "C4CED3", teamIcon: event.homeLogo)
+									.clipShape(Circle())
+							}
+							.frame(width: 90, alignment: .leading)
+							.padding(.bottom, 2)
+						}
+					}
+				} // end Home side
+				.frame(maxWidth: .infinity, alignment: .leading)
+				.background(
+					Group {
+						if homeWin, Int(homeScore) ?? 0 > 0 {
+							LinearGradient(
+								gradient: Gradient(colors: [Color.clear, Color.green.opacity(0.5)]),
+								startPoint: .leading,
+								endPoint: .trailing
+							)
+						} else {
+							Color.clear
+						}
+					}
+				)
+			} // end Visitor Home sides
+		}  // full card
+		.frame(width: UIScreen.main.bounds.width * 0.9, height: .infinity)
+	}
+
 
    func headerView() -> some View {
 	  return VStack(spacing: 0) {

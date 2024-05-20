@@ -30,139 +30,120 @@ struct ContentView: View {
 
    //	var teams = MLBTeams.teams
 
-   var body: some View {
-	  VStack(spacing: -15) {
-		 List(gameViewModel.filteredEvents, id: \.ID) { event in
-			let vm = gameViewModel.filteredEvents.first
-			let atBat = vm?.atBat
-			let atBatPic = vm?.atBatPic
-//			let winColor = Color.green
-			let liveAction: Bool = true
+	var body: some View {
+		VStack(spacing: -15) {
+			List(gameViewModel.filteredEvents, id: \.ID) { event in
+				let vm = gameViewModel.filteredEvents.first
+				let atBat = vm?.atBat
+				let atBatPic = vm?.atBatPic
+				let liveAction: Bool = true
 
-//	MARK: Title / Header Tile
-			scoreCardView(vm: gameViewModel,
-						  titleSize: titleSize,
-						  tooDark: tooDark,
-						  event: event,
-						  scoreSize: Int(scoreSize),
-						  refreshGame: $refreshGame,
-						  timeRemaining: $thisTimeRemaining)
+				// MARK: Title / Header Tile
+				scoreCardView(vm: gameViewModel,
+								  titleSize: titleSize,
+								  tooDark: tooDark,
+								  event: event,
+								  scoreSize: Int(scoreSize),
+								  refreshGame: $refreshGame,
+								  timeRemaining: $thisTimeRemaining)
 
-
-			if liveAction {
-			   //			   Section {
-			   VStack {
-				  // MARK: Last Play & Bases card
-				  HStack {
-					 if let lastPlay = event.lastPlay {  // is there a lastPlay
-						Text(lastPlay)
-//						   .onAppear {
-//							  addPlay(lastPlay)
-//						   }
-						   .font(.footnote)
-						   .lineLimit(1)
-						   .minimumScaleFactor(0.5)
-						   .scaledToFit()
-					 }
-				  }
-
- // MARK: Bases View
-				  HStack {
-					 BasesView(onFirst: event.on1,
-							   onSecond: event.on2,
-							   onThird: event.on3,
-							   strikes: event.strikes ?? 0,
-							   balls: event.balls ?? 0,
-							   outs: event.outs ?? 0,
-							   inning: event.inning,
-							   inningTxt: event.inningTxt,
-							   thisSubStrike:	event.thisSubStrike,
-							   atBat: atBat ?? "N/A",
-							   atBatPic: atBatPic ?? "N/A URL",
-							   showPic: true)
-				  }
-			   }
-			   //			   } // end bases section
-			} // end list
-		 }
-		 .frame(width: UIScreen.main.bounds.width, height: 580)
-
-		 // MARK: // LastPlayHist list
-		 VStack {
-//			Section {
-			   ScrollView {
-				  NavigationView {
-					 List(Array(gameViewModel.lastPlayHist.reversed().enumerated()), id: \.1) { index, lastPlay in
+				if liveAction {
+					VStack {
+						// MARK: Last Play & Bases card
 						HStack {
-						   Image(systemName: "baseball")
-						   Text(lastPlay)
-							  .font(index == 0 ? .body : .footnote)
-							  .foregroundColor(index == 0 ? .green : .white)
-							  .fontWeight(index == 0 ? .bold : .regular)
-							  .minimumScaleFactor(0.5)
-							  .scaledToFit()
+							if let lastPlay = event.lastPlay {
+								Text(lastPlay)
+									.font(.footnote)
+									.lineLimit(1)
+									.minimumScaleFactor(0.5)
+									.scaledToFit()
+							}
 						}
-					 }
-					 .toolbar {
-						ToolbarItem(placement: .topBarLeading) {
 
-						   Text("\(Image(systemName: "figure.baseball")) \(gameViewModel.filteredEvents.first?.atBat ?? "")\(gameViewModel.filteredEvents.first?.atBatSummary ?? "")")
-							  .font(.headline)
-							  .foregroundColor(.blue)
+						// MARK: Bases View
+						HStack {
+							BasesView(onFirst: event.on1,
+										 onSecond: event.on2,
+										 onThird: event.on3,
+										 strikes: event.strikes ?? 0,
+										 balls: event.balls ?? 0,
+										 outs: event.outs ?? 0,
+										 inning: event.inning,
+										 inningTxt: event.inningTxt,
+										 thisSubStrike: event.thisSubStrike,
+										 atBat: atBat ?? "N/A",
+										 atBatPic: atBatPic ?? "N/A URL",
+										 showPic: true)
 						}
-					 }
-				  }
-//			   }
-			   .font(.footnote)
-			   //		 .frame(maxHeight: .infinity) // Ensure ScrollView uses all available space
-
-			   .frame(width: UIScreen.main.bounds.width, height: 150)
-//			   .border(.red)
+					}
+				}
 			}
-		 }
+			.frame(width: UIScreen.main.bounds.width, height: 580)
 
-		 VStack {
-			Text("Version: \(getAppVersion())")
-			   .font(.system(size: 10))
-			   .padding(.bottom, 10)
-		 }
-		 VStack {
-			pickTeam()
-			   .frame(width: UIScreen.main.bounds.width, height: 20)
-			   .padding(.top, -15)
-		 }
-	  }
-	  .onAppear(perform: gameViewModel.loadData)
+			// MARK: LastPlayHist list
+			VStack {
+				ScrollView {
+					NavigationView {
+						List(Array(gameViewModel.lastPlayHist.reversed().enumerated()), id: \.1) { index, lastPlay in
+							HStack {
+								Image(systemName: "baseball")
+								Text(lastPlay)
+									.font(index == 0 ? .body : .footnote)
+									.foregroundColor(index == 0 ? .green : .white)
+									.fontWeight(index == 0 ? .bold : .regular)
+									.minimumScaleFactor(0.5)
+									.scaledToFit()
+							}
+						}
+						.toolbar {
+							ToolbarItem(placement: .topBarLeading) {
+								Text("\(Image(systemName: "figure.baseball")) \(gameViewModel.filteredEvents.first?.atBat ?? "")\(gameViewModel.filteredEvents.first?.atBatSummary ?? "")")
+									.font(.headline)
+									.foregroundColor(.blue)
+							}
+						}
+					}
+				}
+				.font(.footnote)
+				.frame(width: UIScreen.main.bounds.width, height: 150)
+			}
 
-	  .onReceive(timer) { _ in
-		 if self.refreshGame {
+			VStack {
+				Text("Version: \(getAppVersion())")
+					.font(.system(size: 10))
+					.padding(.bottom, 10)
+			}
+			VStack {
+				pickTeam()
+					.frame(width: UIScreen.main.bounds.width, height: 20)
+					.padding(.top, -15)
+			}
+		}
+		.onAppear(perform: gameViewModel.loadData)
+		.onReceive(timer) { _ in
+			if self.refreshGame {
+				gameViewModel.loadData()
+			}
+			self.thisTimeRemaining = timerValue
+		}
+		.onReceive(fakeTimer) { _ in
+			if self.thisTimeRemaining > 0 {
+				self.thisTimeRemaining -= 1
+			} else {
+				self.thisTimeRemaining = 15
+			}
+		}
+		Button("Refresh") {
 			gameViewModel.loadData()
-		 }
-		 self.thisTimeRemaining = timerValue
-	  }
+		}
+		.font(.footnote)
+		.padding(4)
+		.background(Color.blue)
+		.foregroundColor(.white)
+		.clipShape(Capsule())
+		.preferredColorScheme(.dark)
+	}
 
-	  // MARK: updating time remaining
-	  .onReceive(fakeTimer) { _ in
-		 if self.thisTimeRemaining > 0 {
-			self.thisTimeRemaining -= 1
-		 } else  {
-			self.thisTimeRemaining = 15
-		 }
-	  }
-
-	  Button("Refresh") {
-		 gameViewModel.loadData()
-	  }
-	  .font(.footnote)
-	  .padding(4)
-
-	  .background(Color.blue)
-	  .foregroundColor(.white)
-	  .clipShape(Capsule())
-	  //	  Spacer()
-
-	  .preferredColorScheme(.dark)
-   }
 
 }
 
