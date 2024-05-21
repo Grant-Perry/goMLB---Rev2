@@ -21,6 +21,8 @@ class GameViewModel: ObservableObject {
    @Published var foulStrike2: Bool = false
    @Published var startDate: String = ""
    @Published var startTime: String = ""
+   @Published var isToday = false
+//   private var isToday: Bool = false
 
    func loadData() {
 	  guard let url = URL(string: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard") else { return }
@@ -169,6 +171,12 @@ extension GameViewModel {
 
 	  // Convert the adjusted Date object to the desired time format string
 	  let time12 = outputFormatter.string(from: adjustedDate)
+
+	  // Check if the the date is today and if so, the game is over so display FINAL
+	  // isToday is utilized in the ScoreCardView to display Final vs. Starting at: ...
+	  let calendar = Calendar.current
+	  isToday = calendar.isDateInToday(adjustedDate)
+
 	  return time12
    }
 }

@@ -38,7 +38,7 @@ struct scoreCardView: View {
    private var atBat: String? { vm.filteredEvents.first?.atBat }
    private var atBatPic: String? { vm.filteredEvents.first?.atBatPic }
    private var winColor: Color { .green }
-   private var liveAction: Bool { true }
+  
 
    //   ScoreCardView(visitors: visitors, visitColor: visitColor, titleSize: titleSize, tooDark: tooDark)
 
@@ -151,7 +151,7 @@ struct scoreCardView: View {
 				)
 			} // end Visitor Home sides
 		}  // full card
-		.frame(width: UIScreen.main.bounds.width * 0.9, height: .infinity)
+		.frame(width: UIScreen.main.bounds.width * 0.9)  //, height: .infinity)
 	}
 
 
@@ -190,8 +190,8 @@ struct scoreCardView: View {
 				  Spacer()
 			   }
 
-			   if (inningTxt?.contains("Scheduled") ?? false ) {
-				  Text("\nStarting: \(startTime ?? "")")
+			   if (inningTxt?.contains("Scheduled") ?? false || inningTxt?.contains("Final") ?? false ) &&  !vm.isToday {
+				  Text("\nScheduled: \(startTime ?? "")")
 					 .font(.system(size: 14))
 					 .foregroundColor(.white)
 			   }

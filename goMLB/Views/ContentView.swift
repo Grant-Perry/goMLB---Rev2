@@ -27,16 +27,25 @@ struct ContentView: View {
    @State var logoWidth = 90.0
    @State var version = "99.8"
    @State var tooDark = "#bababa"
+   let dateFormatter = DateFormatter()
+
 
    //	var teams = MLBTeams.teams
 
 	var body: some View {
 		VStack(spacing: -15) {
-			List(gameViewModel.filteredEvents, id: \.ID) { event in
+		   List(gameViewModel.filteredEvents.prefix(1), id: \.ID) { event in // i don't know why i had to use prefix(1) but some games repeat
 				let vm = gameViewModel.filteredEvents.first
 				let atBat = vm?.atBat
 				let atBatPic = vm?.atBatPic
-				let liveAction: Bool = true
+			    var liveAction: Bool { // determine if this is a live game or not
+				   print("inningTxt: \(event.inningTxt) -- lastPlay: \(String(describing: event.lastPlay))")
+				   if event.inningTxt.contains("Final")  || event.inningTxt.contains("Scheduled") {
+					 return false
+				  } else {
+					 return true
+				  }
+			   }
 
 				// MARK: Title / Header Tile
 				scoreCardView(vm: gameViewModel,
@@ -52,11 +61,11 @@ struct ContentView: View {
 						// MARK: Last Play & Bases card
 						HStack {
 							if let lastPlay = event.lastPlay {
-								Text(lastPlay)
-									.font(.footnote)
-									.lineLimit(1)
-									.minimumScaleFactor(0.5)
-									.scaledToFit()
+								   Text(lastPlay)
+									   .font(.footnote)
+									   .lineLimit(1)
+									   .minimumScaleFactor(0.5)
+									   .scaledToFit()
 							}
 						}
 
@@ -75,10 +84,19 @@ struct ContentView: View {
 										 atBatPic: atBatPic ?? "N/A URL",
 										 showPic: true)
 						}
+//						.frame(maxWidth: .infinity, maxHeight: 160)
+//						.scaleEffect(0.8)
 					}
+				}  else { // not liveAction so show next game
+
+				   Text("Next Game: \(event.startTime)")
+					  .font(.subheadline)
+					  .frame(maxWidth: .infinity, alignment: .trailing)
 				}
 			}
-			.frame(width: UIScreen.main.bounds.width, height: 580)
+			.frame(width: UIScreen.main.bounds.width, height: 565)
+//			.border(.red)
+			.padding(.top,-35)
 
 			// MARK: LastPlayHist list
 			VStack {
@@ -107,17 +125,6 @@ struct ContentView: View {
 				.font(.footnote)
 				.frame(width: UIScreen.main.bounds.width, height: 150)
 			}
-
-			VStack {
-				Text("Version: \(getAppVersion())")
-					.font(.system(size: 10))
-					.padding(.bottom, 10)
-			}
-			VStack {
-				pickTeam()
-					.frame(width: UIScreen.main.bounds.width, height: 20)
-					.padding(.top, -15)
-			}
 		}
 		.onAppear(perform: gameViewModel.loadData)
 		.onReceive(timer) { _ in
@@ -133,6 +140,12 @@ struct ContentView: View {
 				self.thisTimeRemaining = 15
 			}
 		}
+	   VStack {
+		  pickTeam()
+		  Text("Version: \(getAppVersion())")
+			 .font(.system(size: 10))
+		  //			 .padding(.bottom, -20)
+	   }
 		Button("Refresh") {
 			gameViewModel.loadData()
 		}
@@ -142,6 +155,8 @@ struct ContentView: View {
 		.foregroundColor(.white)
 		.clipShape(Capsule())
 		.preferredColorScheme(.dark)
+
+
 	}
 
 
@@ -171,11 +186,6 @@ extension ContentView {
 	  return Int(intValue)
    }
 
-   func addPlayd(_ play: String) {
-	  //		viewModel.lastPlayHist.append(play)
-	  //		print("adding \(play) to lastPlayHist: \(play)")
-   }
-
    func getAppVersion() -> String {
 	  if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
 		 return version
@@ -195,6 +205,7 @@ extension ContentView {
 	  .background(Color.gray.opacity(0.2))
 	  .cornerRadius(10)
 	  .padding(.horizontal)
+	  .lineLimit(1)
 
 	  .onChange(of: selectedTeam) {
 		 DispatchQueue.main.async {
