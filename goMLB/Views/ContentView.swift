@@ -10,7 +10,6 @@
 import SwiftUI
 
 struct ContentView: View {
-
    @ObservedObject var gameViewModel = GameViewModel()
    @Environment(\.colorScheme) var colorScheme
    @State private var showPicker = false
@@ -27,139 +26,171 @@ struct ContentView: View {
    @State var logoWidth = 90.0
    @State var version = "99.8"
    @State var tooDark = "#bababa"
+   @State private var selectedEventID: String?
+
    let dateFormatter = DateFormatter()
 
+   var body: some View {
+	  VStack(spacing: -15) {
+		 List(gameViewModel.filteredEvents.prefix(1), id: \.ID) { event in
+			let vm = gameViewModel.filteredEvents.first
+			let atBat = vm?.atBat
+			let atBatPic = vm?.atBatPic
+			var liveAction: Bool {
+			   if event.inningTxt.contains("Final") || event.inningTxt.contains("Scheduled") {
+				  return false
+			   } else {
+				  return true
+			   }
+			}
 
-   //	var teams = MLBTeams.teams
+			// MARK: Title / Header Tile
+			scoreCardView(vm: gameViewModel,
+						  titleSize: titleSize,
+						  tooDark: tooDark,
+						  event: event,
+						  scoreSize: Int(scoreSize),
+						  refreshGame: $refreshGame,
+						  timeRemaining: $thisTimeRemaining)
 
-	var body: some View {
-		VStack(spacing: -15) {
-		   List(gameViewModel.filteredEvents.prefix(1), id: \.ID) { event in // i don't know why i had to use prefix(1) but some games repeat
-				let vm = gameViewModel.filteredEvents.first
-				let atBat = vm?.atBat
-				let atBatPic = vm?.atBatPic
-			    var liveAction: Bool { // determine if this is a live game or not
-				   print("inningTxt: \(event.inningTxt) -- lastPlay: \(String(describing: event.lastPlay))")
-				   if event.inningTxt.contains("Final")  || event.inningTxt.contains("Scheduled") {
-					 return false
-				  } else {
-					 return true
+			if liveAction {
+			   VStack {
+				  // MARK: Last Play & Bases card
+				  HStack {
+					 if let lastPlay = event.lastPlay {
+						Text(lastPlay)
+						   .font(.footnote)
+						   .lineLimit(1)
+						   .minimumScaleFactor(0.5)
+						   .scaledToFit()
+					 }
+				  }
+
+				  // MARK: Bases View
+				  HStack {
+					 BasesView(onFirst: event.on1,
+							   onSecond: event.on2,
+							   onThird: event.on3,
+							   strikes: event.strikes ?? 0,
+							   balls: event.balls ?? 0,
+							   outs: event.outs ?? 0,
+							   inning: event.inning,
+							   inningTxt: event.inningTxt,
+							   thisSubStrike: event.thisSubStrike,
+							   atBat: atBat ?? "N/A",
+							   atBatPic: atBatPic ?? "N/A URL",
+							   showPic: true)
 				  }
 			   }
-
-				// MARK: Title / Header Tile
-				scoreCardView(vm: gameViewModel,
-								  titleSize: titleSize,
-								  tooDark: tooDark,
-								  event: event,
-								  scoreSize: Int(scoreSize),
-								  refreshGame: $refreshGame,
-								  timeRemaining: $thisTimeRemaining)
-
-				if liveAction {
-					VStack {
-						// MARK: Last Play & Bases card
-						HStack {
-							if let lastPlay = event.lastPlay {
-								   Text(lastPlay)
-									   .font(.footnote)
-									   .lineLimit(1)
-									   .minimumScaleFactor(0.5)
-									   .scaledToFit()
-							}
-						}
-
-						// MARK: Bases View
-						HStack {
-							BasesView(onFirst: event.on1,
-										 onSecond: event.on2,
-										 onThird: event.on3,
-										 strikes: event.strikes ?? 0,
-										 balls: event.balls ?? 0,
-										 outs: event.outs ?? 0,
-										 inning: event.inning,
-										 inningTxt: event.inningTxt,
-										 thisSubStrike: event.thisSubStrike,
-										 atBat: atBat ?? "N/A",
-										 atBatPic: atBatPic ?? "N/A URL",
-										 showPic: true)
-						}
-//						.frame(maxWidth: .infinity, maxHeight: 160)
-//						.scaleEffect(0.8)
-					}
-				}  else { // not liveAction so show next game
-
-				   Text("Next Game: \(event.startTime)")
-					  .font(.subheadline)
-					  .frame(maxWidth: .infinity, alignment: .trailing)
-				}
+			} else { // not liveAction so show next game
+			   Text("Next Game: \(event.startTime)")
+				  .font(.subheadline)
+				  .frame(maxWidth: .infinity, alignment: .trailing)
 			}
-			.frame(width: UIScreen.main.bounds.width, height: 565)
-//			.border(.red)
-			.padding(.top,-35)
+		 }
+		 .frame(width: UIScreen.main.bounds.width, height: 565)
+		 .padding(.top, -35)
 
-			// MARK: LastPlayHist list
-			VStack {
-				ScrollView {
-					NavigationView {
-						List(Array(gameViewModel.lastPlayHist.reversed().enumerated()), id: \.1) { index, lastPlay in
-							HStack {
-								Image(systemName: "baseball")
-								Text(lastPlay)
-									.font(index == 0 ? .body : .footnote)
-									.foregroundColor(index == 0 ? .green : .white)
-									.fontWeight(index == 0 ? .bold : .regular)
-									.minimumScaleFactor(0.5)
-									.scaledToFit()
-							}
-						}
-						.toolbar {
-							ToolbarItem(placement: .topBarLeading) {
-								Text("\(Image(systemName: "figure.baseball")) \(gameViewModel.filteredEvents.first?.atBat ?? "")\(gameViewModel.filteredEvents.first?.atBatSummary ?? "")")
-									.font(.headline)
-									.foregroundColor(.blue)
-							}
-						}
-					}
-				}
-				.font(.footnote)
-				.frame(width: UIScreen.main.bounds.width, height: 150)
+		 // MARK: LastPlayHist list
+		 VStack {
+			ScrollView {
+			   NavigationView {
+				  List(Array(gameViewModel.lastPlayHist.reversed().enumerated()), id: \.1) { index, lastPlay in
+					 HStack {
+						Image(systemName: "baseball")
+						Text(lastPlay)
+						   .font(index == 0 ? .body : .footnote)
+						   .foregroundColor(index == 0 ? .green : .white)
+						   .fontWeight(index == 0 ? .bold : .regular)
+						   .minimumScaleFactor(0.5)
+						   .scaledToFit()
+					 }
+				  }
+				  .toolbar {
+					 ToolbarItem(placement: .topBarLeading) {
+						Text("\(Image(systemName: "figure.baseball")) \(gameViewModel.filteredEvents.first?.atBat ?? "")\(gameViewModel.filteredEvents.first?.atBatSummary ?? "")")
+						   .font(.headline)
+						   .foregroundColor(.blue)
+					 }
+				  }
+			   }
 			}
-		}
-		.onAppear(perform: gameViewModel.loadData)
-		.onReceive(timer) { _ in
-			if self.refreshGame {
-				gameViewModel.loadData()
-			}
-			self.thisTimeRemaining = timerValue
-		}
-		.onReceive(fakeTimer) { _ in
-			if self.thisTimeRemaining > 0 {
-				self.thisTimeRemaining -= 1
+			.font(.footnote)
+			.frame(width: UIScreen.main.bounds.width, height: 150)
+		 }
+	  }
+	  .onAppear {
+		 gameViewModel.loadAllGames()
+	  }
+	  .onReceive(timer) { _ in
+		 if self.refreshGame {
+			gameViewModel.loadAllGames()
+		 }
+		 self.thisTimeRemaining = timerValue
+	  }
+	  .onReceive(fakeTimer) { _ in
+		 if self.thisTimeRemaining > 0 {
+			self.thisTimeRemaining -= 1
+		 } else {
+			self.thisTimeRemaining = 15
+		 }
+	  }
+	  VStack {
+		 pickTeam(selectedEventID: $selectedEventID)
+		 Text("Version: \(getAppVersion())")
+			.font(.system(size: 10))
+	  }
+	  Button("Refresh") {
+		 gameViewModel.loadAllGames()
+	  }
+	  .font(.footnote)
+	  .padding(4)
+	  .background(Color.blue)
+	  .foregroundColor(.white)
+	  .clipShape(Capsule())
+	  .preferredColorScheme(.dark)
+   }
+
+   func pickTeam(selectedEventID: Binding<String?>) -> some View {
+	  Picker("Select a matchup:", selection: selectedEventID) {
+		 ForEach(gameViewModel.allEvents, id: \.ID) { event in
+			let awayTeam = event.visitors
+			let homeTeam = event.home
+			let awayScore = event.visitScore
+			let homeScore = event.homeScore
+			let startTime = event.startTime
+			let inningTxt = event.inningTxt
+			let isFinal = inningTxt.contains("Final")
+			let scoreString = isFinal ? "\(awayScore) | \(homeScore) (Final)" : "\(awayScore) - \(homeScore)"
+
+			if awayScore != "0" || homeScore != "0" {
+			   Text("\(awayTeam) vs. \(homeTeam)\n\(scoreString)").tag(event.ID.uuidString as String?)
+
 			} else {
-				self.thisTimeRemaining = 15
+			   Text("\(awayTeam) vs. \(homeTeam)\n\(startTime)").tag(event.ID.uuidString as String?)
+
+
 			}
-		}
-	   VStack {
-		  pickTeam()
-		  Text("Version: \(getAppVersion())")
-			 .font(.system(size: 10))
-		  //			 .padding(.bottom, -20)
-	   }
-		Button("Refresh") {
-			gameViewModel.loadData()
-		}
-		.font(.footnote)
-		.padding(4)
-		.background(Color.blue)
-		.foregroundColor(.white)
-		.clipShape(Capsule())
-		.preferredColorScheme(.dark)
 
-
-	}
-
-
+		 }
+	  }
+	  .pickerStyle(MenuPickerStyle())
+	  .padding()
+	  .background(Color.gray.opacity(0.2))
+	  .cornerRadius(10)
+	  .padding(.horizontal)
+	  .lineLimit(1)
+	  .onChange(of: selectedEventID.wrappedValue) {
+		 DispatchQueue.main.async {
+			if let selectedEventID = selectedEventID.wrappedValue,
+			   let selectedEvent = gameViewModel.allEvents.first(where: { $0.ID.uuidString == selectedEventID }) {
+			   gameViewModel.lastPlayHist.removeAll()
+			   gameViewModel.updateTeamPlaying(with: selectedEvent.visitors)
+			   gameViewModel.teamPlaying = selectedEvent.visitors
+			}
+		 }
+	  }
+   }
 }
 
 
@@ -194,34 +225,7 @@ extension ContentView {
 	  }
    }
 
-   func pickTeam() -> some View {
-	  return Picker("Select a team:", selection: $selectedTeam) {
-		 ForEach(teams, id: \.self) { team in
-			Text(team).tag(team)
-		 }
-	  }
-	  .pickerStyle(MenuPickerStyle())
-	  .padding()
-	  .background(Color.gray.opacity(0.2))
-	  .cornerRadius(10)
-	  .padding(.horizontal)
-	  .lineLimit(1)
 
-	  .onChange(of: selectedTeam) {
-		 DispatchQueue.main.async {
-			gameViewModel.lastPlayHist.removeAll() // clear the lastPlayHist
-			gameViewModel.updateTeamPlaying(with: selectedTeam)
-			gameViewModel.teamPlaying = selectedTeam
-		 }
-	  }
-//	  .onChange(of: selectedTeam) { newValue in
-//		 DispatchQueue.main.async {
-//			gameViewModel.lastPlayHist.removeAll() // clear the lastPlayHist
-//			gameViewModel.updateTeamPlaying(with: newValue)
-//			gameViewModel.teamPlaying = newValue
-//		 }
-//	  }
-   }
 
 
 }

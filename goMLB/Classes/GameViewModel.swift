@@ -15,6 +15,7 @@ import SwiftUI
 class GameViewModel: ObservableObject {
    // Published array of filtered events based on specific criteria.
    @Published var filteredEvents: [gameEvent] = []
+   @Published var allEvents: [gameEvent] = []
    @Published var teamPlaying: String = "New York Yankees"
    @Published  var lastPlayHist: [String] = []
    @Published var subStrike = 0
@@ -23,6 +24,101 @@ class GameViewModel: ObservableObject {
    @Published var startTime: String = ""
    @Published var isToday = false
 //   private var isToday: Bool = false
+
+   func loadAllGames() {
+	  guard let url = URL(string: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard") else { return }
+	  URLSession.shared.dataTask(with: url) { data, response, error in
+		 guard let data = data, error == nil else {
+			print("Network error: \(error?.localizedDescription ?? "No error description")")
+			return
+		 }
+		 do {
+			let decodedResponse = try JSONDecoder().decode(APIResponse.self, from: data)
+			DispatchQueue.main.async { [self] in
+			   self.allEvents = decodedResponse.events.map { event in
+				  let situation = event.competitions[0].situation
+				  let homeTeam = event.competitions[0].competitors[0]
+				  let awayTeam = event.competitions[0].competitors[1]
+				  let inningTxt = event.competitions[0].status.type.detail
+				  let startTime = convertTimeTo12HourFormat(dateString: event.date, DST: true)
+
+				  let lastPlay = situation?.lastPlay?.text
+				  self.extractDateAndTime(from: event.date)
+
+				  if self.lastPlayHist.last != lastPlay {
+					 self.lastPlayHist.append(lastPlay ?? "")
+				  }
+
+				  if let situationStrikes = situation?.strikes {
+					 if situationStrikes < 2 {
+						self.subStrike = 0
+						self.foulStrike2 = false
+					 } else {
+						if let thisLastPlay = lastPlay {
+						   if thisLastPlay.lowercased().contains("strike 2 foul") && situationStrikes == 2 {
+							  if !self.foulStrike2 {
+								 self.foulStrike2 = true
+							  } else {
+								 self.subStrike += 1
+							  }
+						   } else {
+							  self.foulStrike2 = false
+							  self.subStrike = 0
+						   }
+						} else {
+						   self.foulStrike2 = false
+						}
+					 }
+				  } else {
+					 self.foulStrike2 = false
+				  }
+
+				  // Determine if the game is final and adjust the score string
+				  let isFinal = inningTxt.contains("Final")
+				  let homeScore = homeTeam.score ?? "0"
+				  let visitScore = awayTeam.score ?? "0"
+				  let scoreString = isFinal ? "\(visitScore) / \(homeScore) - F" : "\(visitScore) / \(homeScore)"
+
+				  return gameEvent(
+					 title: event.name,
+					 shortTitle: event.shortName,
+					 home: homeTeam.team.name,
+					 visitors: awayTeam.team.name,
+					 homeRecord: homeTeam.records.first?.summary ?? "0-0",
+					 visitorRecord: awayTeam.records.first?.summary ?? "0-0",
+					 inning: event.status.period,
+					 homeScore: homeScore,
+					 visitScore: visitScore,
+					 homeColor: homeTeam.team.color,
+					 homeAltColor: homeTeam.team.alternateColor,
+					 visitorColor: awayTeam.team.color,
+					 visitorAltColor: awayTeam.team.alternateColor,
+					 on1: situation?.onFirst ?? false,
+					 on2: situation?.onSecond ?? false,
+					 on3: situation?.onThird ?? false,
+					 lastPlay: situation?.lastPlay?.text ?? inningTxt,
+					 balls: situation?.balls ?? 0,
+					 strikes: situation?.strikes ?? 0,
+					 outs: situation?.outs ?? 0,
+					 homeLogo: homeTeam.team.logo,
+					 visitorLogo: awayTeam.team.logo,
+					 inningTxt: inningTxt,
+					 thisSubStrike: subStrike,
+					 thisCalledStrike2: foulStrike2,
+					 startDate: startDate,
+					 startTime: startTime,
+					 atBat: situation?.batter?.athlete.shortName ?? "",
+					 atBatPic: situation?.batter?.athlete.headshot ?? "",
+					 atBatSummary: situation?.batter?.athlete.summary ?? ""
+				  )
+			   }
+			}
+		 } catch {
+			print("Error decoding JSON: \(error)")
+		 }
+	  }.resume()
+   }
+
 
    func loadData() {
 	  guard let url = URL(string: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard") else { return }
@@ -46,9 +142,6 @@ class GameViewModel: ObservableObject {
 
 				  // MARK: situation vars
 				  let lastPlay = situation?.lastPlay?.text
-//				  var atBat = situation?.batter?.athlete.shortName ?? ""
-//				  var atBatPic = situation?.batter?.athlete.headshot ?? ""
-//				  var atBatSummary = situation?.batter?.athlete.summary ?? ""
 
 				  self.extractDateAndTime(from: event.date)
 
@@ -89,7 +182,7 @@ class GameViewModel: ObservableObject {
 					 self.foulStrike2 = false
 				  }
 
-				  startTime = convertTimeTo12HourFormat(time24: startTime, DST: true)
+				  startTime = convertTimeTo12HourFormatOrig(time24: startTime, DST: true)
 
 				  return gameEvent(
 					 title: event.name,  // Sets the full title of the event.
@@ -148,7 +241,37 @@ class GameViewModel: ObservableObject {
 // MARK:  Helpers
 
 extension GameViewModel {
-   func convertTimeTo12HourFormat(time24: String, DST: Bool) -> String {
+
+   func convertTimeTo12HourFormat(dateString: String, DST: Bool) -> String {
+	  // Create a DateFormatter to parse the input date-time string
+	  let inputFormatter = DateFormatter()
+	  inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mmZ"
+	  inputFormatter.timeZone = TimeZone(abbreviation: "UTC") // Assume the input is in UTC
+	  inputFormatter.locale = Locale(identifier: "en_US_POSIX") // Use POSIX to ensure the format is interpreted correctly
+
+	  // Parse the input date-time string to a Date object
+	  guard let date = inputFormatter.date(from: dateString) else {
+		 return "Invalid time" // Return an error message or handle appropriately
+	  }
+
+	  // If DST is true, add one hour to the date
+	  let adjustedDate = DST ? date.addingTimeInterval(3600) : date
+
+	  // Create another DateFormatter to format the Date object to 12-hour time format with AM/PM
+	  let outputFormatter = DateFormatter()
+	  outputFormatter.dateFormat = "h:mm a"
+	  outputFormatter.timeZone = TimeZone.current // Set to user's current timezone
+	  outputFormatter.locale = Locale.current // Adjust to the current locale for correct AM/PM
+
+	  // Convert the adjusted Date object to the desired time format string
+	  let time12 = outputFormatter.string(from: adjustedDate)
+
+	  return time12
+   }
+
+
+
+   func convertTimeTo12HourFormatOrig(time24: String, DST: Bool) -> String {
 	  // Create a DateFormatter to parse the input time in 24-hour format
 	  let inputFormatter = DateFormatter()
 	  inputFormatter.dateFormat = "HH:mm"
