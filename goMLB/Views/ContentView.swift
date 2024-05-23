@@ -121,12 +121,18 @@ struct ContentView: View {
 	  }
 	  .onAppear {
 		 gameViewModel.loadAllGames()
+		 gameViewModel.updateTeamPlaying(with: selectedTeam)
+		 if selectedEventID == nil, let firstEventID = gameViewModel.allEvents.first?.ID.uuidString {
+			selectedEventID = firstEventID
+		 }
 	  }
 	  .onReceive(timer) { _ in
+		 print("Updating now...")
 		 if self.refreshGame {
 			gameViewModel.loadAllGames()
 		 }
 		 self.thisTimeRemaining = timerValue
+		 print("Reloading now...")
 	  }
 	  .onReceive(fakeTimer) { _ in
 		 if self.thisTimeRemaining > 0 {
@@ -156,22 +162,37 @@ struct ContentView: View {
 		 ForEach(gameViewModel.allEvents, id: \.ID) { event in
 			let awayTeam = event.visitors
 			let homeTeam = event.home
-			let awayScore = event.visitScore
-			let homeScore = event.homeScore
+			let awayScore = Int(event.visitScore) ?? 0
+			let homeScore = Int(event.homeScore) ?? 0
 			let startTime = event.startTime
 			let inningTxt = event.inningTxt
+
 			let isFinal = inningTxt.contains("Final")
-			let scoreString = isFinal ? "\(awayScore) | \(homeScore) (Final)" : "\(awayScore) - \(homeScore)"
+			let isSuspended = inningTxt.contains("Suspended")
+			let scoreString = isFinal
+			? "\(awayScore) | \(homeScore) (Final)"
+			: (isSuspended
+			   ? "\(awayScore) | \(homeScore) (Suspended)"
+			   : "\(awayScore) - \(homeScore)")
 
-			if awayScore != "0" || homeScore != "0" {
-			   Text("\(awayTeam) vs. \(homeTeam)\n\(scoreString)").tag(event.ID.uuidString as String?)
+			let scoreText = awayScore != 0 || homeScore != 0 ? "\(scoreString)" : "\(startTime)"
+			let matchupText = "\(awayTeam) vs. \(homeTeam)\n\(scoreText)"
 
-			} else {
-			   Text("\(awayTeam) vs. \(homeTeam)\n\(startTime)").tag(event.ID.uuidString as String?)
-
-
+			VStack(alignment: .leading) {
+			   Text(matchupText)
+				  .font(.headline)
+				  .lineLimit(2)
+				  .fixedSize(horizontal: false, vertical: true)
+			   if awayScore != 0 || homeScore != 0 {
+				  Text(scoreText)
+					 .font(.subheadline)
+					 .foregroundColor(awayScore > homeScore ? .green : .white)
+			   } else {
+				  Text(startTime)
+					 .font(.subheadline)
+			   }
 			}
-
+			.tag(event.ID.uuidString as String?)
 		 }
 	  }
 	  .pickerStyle(MenuPickerStyle())
@@ -179,9 +200,7 @@ struct ContentView: View {
 	  .background(Color.gray.opacity(0.2))
 	  .cornerRadius(10)
 	  .padding(.horizontal)
-	  .lineLimit(1)
 	  .onChange(of: selectedEventID.wrappedValue) {
-		 DispatchQueue.main.async {
 			if let selectedEventID = selectedEventID.wrappedValue,
 			   let selectedEvent = gameViewModel.allEvents.first(where: { $0.ID.uuidString == selectedEventID }) {
 			   gameViewModel.lastPlayHist.removeAll()
@@ -191,13 +210,10 @@ struct ContentView: View {
 		 }
 	  }
    }
-}
-
 
 // MARK: Helpers
 
 extension ContentView {
-
    func isHexGreaterThan(_ hex1: String, comparedTo hex2: String) -> Bool {
 	  guard let int1 = hexToInt(hex1), let int2 = hexToInt(hex2) else {
 		 return false
@@ -224,11 +240,10 @@ extension ContentView {
 		 return "Unknown version"
 	  }
    }
-
-
-
-
 }
+
+
+
 
 #Preview {
    ContentView()

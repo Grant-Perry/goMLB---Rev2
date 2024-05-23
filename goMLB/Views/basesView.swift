@@ -70,15 +70,14 @@ struct BasesView: View {
 				     VStack {
 						let thisInning = getInningSymbol(inningTxt: inningTxt)
 						HStack(spacing: 0) {
-						   Image(systemName: thisInning.rawValue).imageScale(.small)
+						   Image(systemName: thisInning.rawValue)
+							  .imageScale(.small)
 						   Text("\(inning)")
 						}
 						.font(.footnote)
 						.padding(.top, 3)
 						.padding(.bottom, 2)
 
-   //					 Text("\(inningTxt)")
-   //						.font(.caption)
 					 }
 				  }
 				  Spacer()

@@ -14,6 +14,7 @@ enum Inning: String {
    case bottom = "arrowtriangle.down.fill"
    case middle = "repeat.circle.fill"
    case unknown = "questionmark.bubble.fill"
+   case suspended = "cloud.rain.circle.fill"
 }
 
 func getInningSymbol(inningTxt: String) -> Inning {
@@ -23,7 +24,10 @@ func getInningSymbol(inningTxt: String) -> Inning {
 	  return .bottom
    } else if inningTxt.contains("Middle") {
 	  return .middle
-   } else {
+   } else if inningTxt.contains("Suspended") {
+	  return .suspended
+   }
+   else {
 	  return .unknown
    }
 }
