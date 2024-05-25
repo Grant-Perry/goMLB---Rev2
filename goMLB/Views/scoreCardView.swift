@@ -34,7 +34,9 @@ struct scoreCardView: View {
    private var homeWin: Bool { (Int(visitScore) ?? 0) < (Int(homeScore) ?? 0) }
    private var visitWin: Bool { (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0) }
    private var inningTxt: String? { vm.filteredEvents.first?.inningTxt }
-   private var startTime: String? { vm.filteredEvents.first?.startTime }
+//   private var startTime: String? { vm.filteredEvents.first?.startTime }
+   private var startTime: String? { event.startTime }
+
    private var atBat: String? { vm.filteredEvents.first?.atBat }
    private var atBatPic: String? { vm.filteredEvents.first?.atBatPic }
    private var winColor: Color { .green }
