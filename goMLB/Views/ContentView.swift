@@ -16,6 +16,7 @@ struct ContentView: View {
    @State private var refreshGame = true // refetch JSON
    @State var thisTimeRemaining = 15
    @State var selectedTeam = "New York Yankees"
+   @State private var selectedEventID: String? = nil // "New York Yankees"
    @State var timerValue = 15
    @State var timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
    @State var fakeTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -26,7 +27,6 @@ struct ContentView: View {
    @State var logoWidth = 90.0
    @State var version = "99.8"
    @State var tooDark = "#bababa"
-   @State private var selectedEventID: String?
 
    let dateFormatter = DateFormatter()
 
@@ -119,13 +119,19 @@ struct ContentView: View {
 			.frame(width: UIScreen.main.bounds.width, height: 150)
 		 }
 	  }
+
 	  .onAppear {
-		 gameViewModel.loadAllGames()
-		 gameViewModel.updateTeamPlaying(with: selectedTeam)
-		 if selectedEventID == nil, let firstEventID = gameViewModel.allEvents.first?.ID.uuidString {
-			selectedEventID = firstEventID
+		 gameViewModel.loadAllGames {
+			if selectedEventID == nil {
+			   if let yankeesGame = gameViewModel.allEvents.first(where: { $0.home == "New York Yankees" || $0.visitors == "New York Yankees" }) {
+				  selectedEventID = yankeesGame.ID.uuidString
+			   } else if let firstEventID = gameViewModel.allEvents.first?.ID.uuidString {
+				  selectedEventID = firstEventID
+			   }
+			}
 		 }
 	  }
+
 	  .onReceive(timer) { _ in
 		 print("Updating now...")
 		 if self.refreshGame {
@@ -200,9 +206,11 @@ struct ContentView: View {
 	  .background(Color.gray.opacity(0.2))
 	  .cornerRadius(10)
 	  .padding(.horizontal)
+
 	  .onChange(of: selectedEventID.wrappedValue) {
-		 if let selectedEventID = selectedEventID.wrappedValue,
-			let selectedEvent = gameViewModel.allEvents.first(where: { $0.ID.uuidString == selectedEventID }) {
+		 print("selectedEventID: \(selectedEventID.wrappedValue)")
+		 if let newValue = selectedEventID.wrappedValue,
+			let selectedEvent = gameViewModel.allEvents.first(where: { $0.ID.uuidString == selectedEventID.wrappedValue}) {
 			gameViewModel.lastPlayHist.removeAll()
 			gameViewModel.updateTeamPlaying(with: selectedEvent.visitors)
 			gameViewModel.teamPlaying = selectedEvent.visitors

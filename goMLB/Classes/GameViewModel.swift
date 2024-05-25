@@ -22,7 +22,7 @@ class GameViewModel: ObservableObject {
    @Published var isToday = false
    @Published var holdLastPlay = ""
 
-   func loadAllGames() {
+   func loadAllGames(completion: @escaping () -> Void = {}) {
 	  guard let url = URL(string: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard") else { return }
 	  URLSession.shared.dataTask(with: url) { data, response, error in
 		 guard let data = data, error == nil else {
@@ -110,12 +110,14 @@ class GameViewModel: ObservableObject {
 				  )
 			   }
 			   self.filteredEvents = self.allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }
+			   completion()
 			}
 		 } catch {
 			print("Error decoding JSON: \(error)")
 		 }
 	  }.resume()
    }
+
 
    func updateTeamPlaying(with team: String) {
 	  teamPlaying = team
