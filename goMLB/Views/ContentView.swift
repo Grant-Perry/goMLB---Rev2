@@ -201,15 +201,15 @@ struct ContentView: View {
 	  .cornerRadius(10)
 	  .padding(.horizontal)
 	  .onChange(of: selectedEventID.wrappedValue) {
-			if let selectedEventID = selectedEventID.wrappedValue,
-			   let selectedEvent = gameViewModel.allEvents.first(where: { $0.ID.uuidString == selectedEventID }) {
-			   gameViewModel.lastPlayHist.removeAll()
-			   gameViewModel.updateTeamPlaying(with: selectedEvent.visitors)
-			   gameViewModel.teamPlaying = selectedEvent.visitors
-			}
+		 if let selectedEventID = selectedEventID.wrappedValue,
+			let selectedEvent = gameViewModel.allEvents.first(where: { $0.ID.uuidString == selectedEventID }) {
+			gameViewModel.lastPlayHist.removeAll()
+			gameViewModel.updateTeamPlaying(with: selectedEvent.visitors)
+			gameViewModel.teamPlaying = selectedEvent.visitors
 		 }
 	  }
    }
+}
 
 // MARK: Helpers
 
@@ -242,11 +242,8 @@ extension ContentView {
    }
 }
 
-
-
+// Preview
 
 #Preview {
    ContentView()
 }
-
-
