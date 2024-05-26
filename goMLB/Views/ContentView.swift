@@ -16,7 +16,6 @@ struct ContentView: View {
    @State private var refreshGame = true // refetch JSON
    @State var thisTimeRemaining = 15
    @State var selectedTeam = "New York Yankees"
-   @State private var selectedEventID: String? = nil // "New York Yankees"
    @State var timerValue = 15
    @State var timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
    @State var fakeTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -27,6 +26,11 @@ struct ContentView: View {
    @State var logoWidth = 90.0
    @State var version = "99.8"
    @State var tooDark = "#bababa"
+   @State private var selectedEventID: String?
+   @State var showLiveAction = false
+
+   private var teamSize = 16.0
+   private var teamScoreSize = 20.0
 
    let dateFormatter = DateFormatter()
 
@@ -91,43 +95,121 @@ struct ContentView: View {
 		 .frame(width: UIScreen.main.bounds.width, height: 565)
 		 .padding(.top, -35)
 
-		 // MARK: LastPlayHist list
-		 VStack {
-			ScrollView {
-			   NavigationView {
-				  List(Array(gameViewModel.lastPlayHist.reversed().enumerated()), id: \.1) { index, lastPlay in
-					 HStack {
-						Image(systemName: "baseball")
-						Text(lastPlay)
-						   .font(index == 0 ? .body : .footnote)
-						   .foregroundColor(index == 0 ? .green : .white)
-						   .fontWeight(index == 0 ? .bold : .regular)
-						   .minimumScaleFactor(0.5)
-						   .scaledToFit()
+		 // MARK: HorizontalMatchupView list
+
+		 //		 MatchupView(gameViewModel: gameViewModel, selectedEventID: $selectedEventID)
+		 ScrollView(.horizontal, showsIndicators: false) {
+			HStack(spacing: 10) {
+			   ForEach(gameViewModel.allEvents, id: \.ID) { event in
+
+				  let vm = gameViewModel.filteredEvents.first
+				  let atBat = vm?.atBat
+				  let atBatPic = vm?.atBatPic
+
+				  var liveAction: Bool {
+					 if event.inningTxt.contains("Final") || event.inningTxt.contains("Scheduled") {
+						return false
+					 } else {
+						return true
 					 }
 				  }
-				  .toolbar {
-					 ToolbarItem(placement: .topBarLeading) {
-						Text("\(Image(systemName: "figure.baseball")) \(gameViewModel.filteredEvents.first?.atBat ?? "")\(gameViewModel.filteredEvents.first?.atBatSummary ?? "")")
-						   .font(.headline)
-						   .foregroundColor(.blue)
+
+				  Button(action: {
+					 selectedEventID = event.ID.uuidString
+					 gameViewModel.updateTeamPlaying(with: event.visitors)
+					 gameViewModel.teamPlaying = event.visitors
+				  }) {
+					 VStack {
+						HStack(spacing: 3) {
+						   HStack {
+							  Text(event.visitors)
+								 .font(.system(size: teamSize, weight: .bold))
+								 .foregroundColor(.white)
+						   }
+						   HStack {
+							  Text("vs.")
+								 .font(.footnote)
+						   }
+						   HStack {
+							  Text(event.home)
+								 .font(.system(size: teamSize, weight: .bold))
+								 .foregroundColor(.white)
+							  //							  Spacer()
+						   }
+						}
+						HStack {
+
+						   HStack {
+							  Spacer()
+							  Text(event.visitScore)
+								 .font(.system(size: teamScoreSize))
+								 .foregroundColor(.white)
+
+							  Spacer()
+						   }
+						   if liveAction {
+							  HStack {
+								 BasesView(onFirst: event.on1,
+										   onSecond: event.on2,
+										   onThird: event.on3,
+										   strikes: event.strikes ?? 0,
+										   balls: event.balls ?? 0,
+										   outs: event.outs ?? 0,
+										   inning: event.inning,
+										   inningTxt: event.inningTxt,
+										   thisSubStrike: event.thisSubStrike,
+										   atBat: atBat ?? "N/A",
+										   atBatPic: atBatPic ?? "N/A URL",
+										   showPic: false)
+								 .scaleEffect(0.55)
+
+
+							  }
+							  .frame(width: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/, height:20)
+							  .padding(.top, 6)
+						   }
+						   HStack {
+							  Spacer()
+							  Text(event.homeScore)
+								 .font(.system(size: teamScoreSize))
+								 .foregroundColor(.white)
+							  Spacer()
+						   }
+						}
 					 }
+					 .frame(width: 165, height: 120)
+					 //					 .background(liveAction ? Color.blue.gradient : Color.green.gradient)
+					 .background(
+						event.inningTxt.contains("Final") ? Color.indigo.gradient :
+						   event.inningTxt.contains("Scheduled") ? Color.yellow.gradient :
+						   Color.blue.gradient
+					 )
+					 .foregroundColor(.white)
+					 //						.foregroundColor(
+					 //						   event.inningTxt.contains("Final") ? Color.white.gradient :
+					 //							  event.inningTxt.contains("Scheduled") ? Color.white.gradient :
+					 //							  Color.white.gradient
+					 //						)
+					 .cornerRadius(10)
+					 .opacity(0.9)
 				  }
+				  .buttonStyle(PlainButtonStyle())
+				  //				  }
 			   }
 			}
-			.font(.footnote)
-			.frame(width: UIScreen.main.bounds.width, height: 150)
+			.padding(.horizontal)
 		 }
+		 .padding()
+
+		 .frame(height: 100)
+		 .padding(.top, -15)
 	  }
 
 	  .onAppear {
-		 gameViewModel.loadAllGames {
-			if selectedEventID == nil {
-			   if let yankeesGame = gameViewModel.allEvents.first(where: { $0.home == "New York Yankees" || $0.visitors == "New York Yankees" }) {
-				  selectedEventID = yankeesGame.ID.uuidString
-			   } else if let firstEventID = gameViewModel.allEvents.first?.ID.uuidString {
-				  selectedEventID = firstEventID
-			   }
+		 gameViewModel.loadAllGames(showLiveAction: showLiveAction)
+		 if selectedEventID == nil, let firstEventID = gameViewModel.allEvents.first?.ID.uuidString {
+			DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+			   selectedEventID = firstEventID
 			}
 		 }
 	  }
@@ -135,11 +217,17 @@ struct ContentView: View {
 	  .onReceive(timer) { _ in
 		 print("Updating now...")
 		 if self.refreshGame {
-			gameViewModel.loadAllGames()
+			let previousEventID = self.selectedEventID
+			gameViewModel.loadAllGames(showLiveAction: showLiveAction) {
+			   DispatchQueue.main.async {
+				  self.selectedEventID = previousEventID
+			   }
+			}
 		 }
 		 self.thisTimeRemaining = timerValue
 		 print("Reloading now...")
 	  }
+
 	  .onReceive(fakeTimer) { _ in
 		 if self.thisTimeRemaining > 0 {
 			self.thisTimeRemaining -= 1
@@ -147,13 +235,26 @@ struct ContentView: View {
 			self.thisTimeRemaining = 15
 		 }
 	  }
-	  VStack {
-		 pickTeam(selectedEventID: $selectedEventID)
-		 Text("Version: \(getAppVersion())")
-			.font(.system(size: 10))
+	  VStack(alignment: .center, spacing: 0) {
+		 HStack(spacing: 0) {
+			Text("Live Action Only:")
+			   .font(.caption)
+			Toggle("", isOn: $showLiveAction)
+			   .labelsHidden()
+			   .scaleEffect(0.6)
+			// THIS WORKS - but it will not alter the game cards when toggled so fix
+			//			   .onChange(of: showLiveAction) { newValue in
+			//				  gameViewModel.loadAllGames(showLiveAction: newValue)
+			//			   }
+		 }
+
+		 .padding()
+//		 		 pickTeam(selectedEventID: $selectedEventID)
+		 		 Text("Version: \(getAppVersion())")
+		 			.font(.system(size: 10))
 	  }
 	  Button("Refresh") {
-		 gameViewModel.loadAllGames()
+		 gameViewModel.loadAllGames(showLiveAction: showLiveAction)
 	  }
 	  .font(.footnote)
 	  .padding(4)
@@ -207,11 +308,9 @@ struct ContentView: View {
 	  .cornerRadius(10)
 	  .padding(.horizontal)
 
-	  .onChange(of: selectedEventID.wrappedValue) {
-		 print("selectedEventID: \(selectedEventID.wrappedValue)")
-		 if let newValue = selectedEventID.wrappedValue,
-			let selectedEvent = gameViewModel.allEvents.first(where: { $0.ID.uuidString == selectedEventID.wrappedValue}) {
-			gameViewModel.lastPlayHist.removeAll()
+	  .onChange(of: selectedEventID.wrappedValue) { newValue in
+		 if let newValue = newValue,
+			let selectedEvent = gameViewModel.allEvents.first(where: { $0.ID.uuidString == newValue }) {
 			gameViewModel.updateTeamPlaying(with: selectedEvent.visitors)
 			gameViewModel.teamPlaying = selectedEvent.visitors
 		 }

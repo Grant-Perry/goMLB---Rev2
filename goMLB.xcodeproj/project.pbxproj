@@ -17,6 +17,7 @@
 		9B585FF72BD6EB4200BE2E4B /* basesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FF62BD6EB4200BE2E4B /* basesView.swift */; };
 		9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFC2BD8439700BE2E4B /* colorMod.swift */; };
 		9B585FFF2BD8536300BE2E4B /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFE2BD8536300BE2E4B /* GameViewModel.swift */; };
+		9B99A3982C02A908003F3C85 /* MatchupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B99A3962C02A2D6003F3C85 /* MatchupView.swift */; };
 		9BAFE92D2BFE45EA004DEC22 /* view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BAFE92C2BFE45EA004DEC22 /* view.swift */; };
 		9BAFE92F2BFE4C1D004DEC22 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BAFE92E2BFE4C1D004DEC22 /* GameState.swift */; };
 		9BBF49822BE54CD700E27A5F /* stupidView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BBF49812BE54CD700E27A5F /* stupidView.swift */; };
@@ -40,6 +41,7 @@
 		9B585FF62BD6EB4200BE2E4B /* basesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = basesView.swift; sourceTree = "<group>"; };
 		9B585FFC2BD8439700BE2E4B /* colorMod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = colorMod.swift; sourceTree = "<group>"; };
 		9B585FFE2BD8536300BE2E4B /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		9B99A3962C02A2D6003F3C85 /* MatchupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchupView.swift; sourceTree = "<group>"; };
 		9BAFE92C2BFE45EA004DEC22 /* view.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = view.swift; sourceTree = "<group>"; };
 		9BAFE92E2BFE4C1D004DEC22 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		9BBF49812BE54CD700E27A5F /* stupidView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = stupidView.swift; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 				9BBF49812BE54CD700E27A5F /* stupidView.swift */,
 				E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */,
 				9B12539D2BEC264000A7B422 /* timerRemaingView.swift */,
+				9B99A3962C02A2D6003F3C85 /* MatchupView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -239,6 +242,7 @@
 				9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */,
 				9B585FFF2BD8536300BE2E4B /* GameViewModel.swift in Sources */,
 				9BAFE92F2BFE4C1D004DEC22 /* GameState.swift in Sources */,
+				9B99A3982C02A908003F3C85 /* MatchupView.swift in Sources */,
 				9BF3BC252BF9184000535630 /* Inning.swift in Sources */,
 				9BF3BC272BFC10A400535630 /* Date.swift in Sources */,
 				9B1D63512BD5B09B00066D30 /* goMLBApp.swift in Sources */,
@@ -393,7 +397,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.15;
+				MARKETING_VERSION = 4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -423,7 +427,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.15;
+				MARKETING_VERSION = 4.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
