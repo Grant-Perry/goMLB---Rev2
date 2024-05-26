@@ -21,16 +21,18 @@ struct ContentView: View {
    @State var fakeTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
    @State var scoreColor = Color(.blue)
    @State var winners = Color(.green)
-   @State var scoreSize = 55.0
-   @State var titleSize = 35.0
-   @State var logoWidth = 90.0
+   private var scoreSize = 55.0
+   private var titleSize = 35.0
+   private var logoWidth = 90.0
+   private var teamSize = 16.0
+   private var teamScoreSize = 25.0
    @State var version = "99.8"
    @State var tooDark = "#bababa"
    @State private var selectedEventID: String?
    @State var showLiveAction = false
+   var cardColor = Color(#colorLiteral(red: 0.1487929029, green: 0.1488425059, blue: 0.1603987949, alpha: 1))
 
-   private var teamSize = 16.0
-   private var teamScoreSize = 20.0
+
 
    let dateFormatter = DateFormatter()
 
@@ -93,11 +95,10 @@ struct ContentView: View {
 			}
 		 }
 		 .frame(width: UIScreen.main.bounds.width, height: 565)
-		 .padding(.top, -35)
-
+		 .padding(.top, -15)
+		 Spacer()
 		 // MARK: HorizontalMatchupView list
 
-		 //		 MatchupView(gameViewModel: gameViewModel, selectedEventID: $selectedEventID)
 		 ScrollView(.horizontal, showsIndicators: false) {
 			HStack(spacing: 10) {
 			   ForEach(gameViewModel.allEvents, id: \.ID) { event in
@@ -113,13 +114,22 @@ struct ContentView: View {
 						return true
 					 }
 				  }
-
 				  Button(action: {
 					 selectedEventID = event.ID.uuidString
 					 gameViewModel.updateTeamPlaying(with: event.visitors)
 					 gameViewModel.teamPlaying = event.visitors
 				  }) {
-					 VStack {
+					 VStack(spacing: 0) {
+						if !liveAction {
+						   HStack {
+							  Text("\(event.startTime) start")
+								 .font(.system(size: 12, weight: .bold))
+
+								 .frame(maxWidth: .infinity, alignment: .top)
+								 .padding(.top, -28)
+
+						   }
+						}
 						HStack(spacing: 3) {
 						   HStack {
 							  Text(event.visitors)
@@ -128,7 +138,7 @@ struct ContentView: View {
 						   }
 						   HStack {
 							  Text("vs.")
-								 .font(.footnote)
+								 .font(.system(size: 9))
 						   }
 						   HStack {
 							  Text(event.home)
@@ -145,10 +155,14 @@ struct ContentView: View {
 								 .font(.system(size: teamScoreSize))
 								 .foregroundColor(.white)
 
-							  Spacer()
+								 .frame(maxWidth: 40, alignment: .trailing)
+
+
+							  //							  Spacer()
 						   }
-						   if liveAction {
-							  HStack {
+
+						   HStack {
+							  if liveAction {
 								 BasesView(onFirst: event.on1,
 										   onSecond: event.on2,
 										   onThird: event.on3,
@@ -163,51 +177,61 @@ struct ContentView: View {
 										   showPic: false)
 								 .scaleEffect(0.55)
 
-
+								 .frame(width: 40, height:20)
+								 .padding(.top, 20)
+							  } else {
+								 Text("") // space in the middle of the scores f
+									.frame(width: 40, height:20)
 							  }
-							  .frame(width: /*@START_MENU_TOKEN@*/100/*@END_MENU_TOKEN@*/, height:20)
-							  .padding(.top, 6)
 						   }
+
 						   HStack {
 							  Spacer()
 							  Text(event.homeScore)
 								 .font(.system(size: teamScoreSize))
+
+								 .frame(maxWidth: .infinity, alignment: .leading)
+
 								 .foregroundColor(.white)
 							  Spacer()
 						   }
 						}
+						if !liveAction {
+						   HStack {
+							  Text("Scheduled: \(event.startTime)")
+								 .font(.system(size: 12, weight: .bold))
+								 .foregroundColor(.white)
+								 .frame(maxWidth: .infinity, alignment: .top)
+								 .padding(.top, 20)
+						   }
+						}
 					 }
 					 .frame(width: 165, height: 120)
-					 //					 .background(liveAction ? Color.blue.gradient : Color.green.gradient)
 					 .background(
 						event.inningTxt.contains("Final") ? Color.indigo.gradient :
 						   event.inningTxt.contains("Scheduled") ? Color.yellow.gradient :
 						   Color.blue.gradient
 					 )
 					 .foregroundColor(.white)
-					 //						.foregroundColor(
-					 //						   event.inningTxt.contains("Final") ? Color.white.gradient :
-					 //							  event.inningTxt.contains("Scheduled") ? Color.white.gradient :
-					 //							  Color.white.gradient
-					 //						)
 					 .cornerRadius(10)
 					 .opacity(0.9)
 				  }
 				  .buttonStyle(PlainButtonStyle())
-				  //				  }
+
 			   }
 			}
-			.padding(.horizontal)
+			.padding()
 		 }
-		 .padding()
-
-		 .frame(height: 100)
-		 .padding(.top, -15)
+		 .frame(maxWidth: .infinity, alignment: .leading)
+		 .background(cardColor)
+		 .ignoresSafeArea(edges: .bottom)
+		 .opacity(0.9)
 	  }
 
 	  .onAppear {
 		 gameViewModel.loadAllGames(showLiveAction: showLiveAction)
-		 if selectedEventID == nil, let firstEventID = gameViewModel.allEvents.first?.ID.uuidString {
+		 if selectedEventID == nil,
+			   let firstEventID = gameViewModel.allEvents.first?.ID.uuidString {
 			DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
 			   selectedEventID = firstEventID
 			}
@@ -242,16 +266,14 @@ struct ContentView: View {
 			Toggle("", isOn: $showLiveAction)
 			   .labelsHidden()
 			   .scaleEffect(0.6)
-			// THIS WORKS - but it will not alter the game cards when toggled so fix
-			//			   .onChange(of: showLiveAction) { newValue in
-			//				  gameViewModel.loadAllGames(showLiveAction: newValue)
-			//			   }
+			   .onChange(of: showLiveAction) {
+				  gameViewModel.loadAllGames(showLiveAction: showLiveAction)
+			   }
 		 }
-
 		 .padding()
-//		 		 pickTeam(selectedEventID: $selectedEventID)
-		 		 Text("Version: \(getAppVersion())")
-		 			.font(.system(size: 10))
+		 //		 		 pickTeam(selectedEventID: $selectedEventID)
+		 Text("Version: \(getAppVersion())")
+			.font(.system(size: 10))
 	  }
 	  Button("Refresh") {
 		 gameViewModel.loadAllGames(showLiveAction: showLiveAction)
@@ -308,8 +330,8 @@ struct ContentView: View {
 	  .cornerRadius(10)
 	  .padding(.horizontal)
 
-	  .onChange(of: selectedEventID.wrappedValue) { newValue in
-		 if let newValue = newValue,
+	  .onChange(of: selectedEventID.wrappedValue) {
+		 if let newValue = selectedEventID.wrappedValue,
 			let selectedEvent = gameViewModel.allEvents.first(where: { $0.ID.uuidString == newValue }) {
 			gameViewModel.updateTeamPlaying(with: selectedEvent.visitors)
 			gameViewModel.teamPlaying = selectedEvent.visitors

@@ -109,7 +109,14 @@ class GameViewModel: ObservableObject {
 					 atBatSummary: situation?.batter?.athlete.summary ?? ""
 				  )
 			   }
-			   self.filteredEvents = self.allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }
+
+			   if showLiveAction {
+				  self.filteredEvents = self.allEvents.filter { !($0.inningTxt.contains("Final") || $0.inningTxt.contains("Scheduled")) }
+			   } else {
+				  self.filteredEvents = self.allEvents
+			   }
+
+//			   self.filteredEvents = self.allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }
 			   completion?()
 			}
 		 } catch {

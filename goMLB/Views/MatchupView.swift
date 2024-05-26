@@ -14,6 +14,8 @@ struct MatchupView: View {
 //   @ObservedObject var gameViewModel: GameViewModel
    var gameViewModel: GameViewModel
    @Binding var selectedEventID: String?
+   var teamSize = 20.0
+   var teamScoreSize = 18.0
 
    var body: some View {
 	  ScrollView(.horizontal, showsIndicators: false) {
@@ -29,15 +31,21 @@ struct MatchupView: View {
 						HStack {
 						   Spacer()
 						   Text(event.visitors)
-							  .font(.system(size: 16, weight: .bold))
+							  .font(.system(size: teamSize, weight: .bold))
 							  .foregroundColor(.white)
+							  .lineLimit(1)
+							  .minimumScaleFactor(0.45)
+							  .scaledToFit()
 						   Spacer()
 						}
 						HStack {
 						   Spacer()
 						   Text(event.home)
-							  .font(.system(size: 16, weight: .bold))
+							  .font(.system(size: teamSize, weight: .bold))
 							  .foregroundColor(.white)
+							  .lineLimit(1)
+							  .minimumScaleFactor(0.45)
+							  .scaledToFit()
 						   Spacer()
 						}
 					 }
@@ -45,14 +53,14 @@ struct MatchupView: View {
 						HStack {
 						   Spacer()
 						   Text(event.visitScore)
-							  .font(.system(size: 14))
+							  .font(.system(size: teamScoreSize))
 							  .foregroundColor(.white)
 						   Spacer()
 						}
 						HStack {
 						   Spacer()
 						   Text(event.homeScore)
-							  .font(.system(size: 14))
+							  .font(.system(size: teamSize))
 							  .foregroundColor(.white)
 						   Spacer()
 						}

@@ -46,7 +46,9 @@ struct scoreCardView: View {
 
 	var body: some View {
 		VStack {
-			headerView()
+			VStack {
+			   headerView()
+			}
 
 			// MARK: Scores card
 			HStack(spacing: 0) {
@@ -59,26 +61,22 @@ struct scoreCardView: View {
 								.minimumScaleFactor(0.5)
 								.lineLimit(1)
 								.frame(maxWidth: .infinity, alignment: .trailing)
-								.frame(width: 110, alignment: .leading)
 								.foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
 
-							Text("\(visitorRecord ?? "")")
+						   Text("\(visitorRecord ?? "")")
 								.font(.caption)
 								.padding(.trailing, 5)
 								.foregroundColor(.gray)
 								.frame(maxWidth: .infinity, alignment: .trailing)
+						  
+						   HStack {
+							  TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
+								 .clipShape(Circle())
+						   }
+						   .frame(maxWidth: .infinity, alignment: .center)
+						   .padding(.bottom, 2)
 
-
-							Spacer()
-						}
-						VStack {
-							HStack {
-								Spacer()
-								TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
-									.clipShape(Circle())
-							}
-							.frame(width: 90, alignment: .leading)
-							.padding(.bottom, 2)
+//							Spacer()
 						}
 					}
 					// MARK: Visitor Score
@@ -125,18 +123,19 @@ struct scoreCardView: View {
 								.foregroundColor(.gray)
 								.frame(maxWidth: .infinity, alignment: .leading)
 
-						}
+						   HStack {
+							  TeamIconView(teamColor: homeColor ?? "C4CED3", teamIcon: event.homeLogo)
+								 .clipShape(Circle())
+						   }
+						   //							.frame(width: 90, alignment: .leading)
+						   .frame(maxWidth: .infinity, alignment: .center)
+						   .padding(.bottom, 2)
 
-						VStack {
-							HStack {
-								TeamIconView(teamColor: homeColor ?? "C4CED3", teamIcon: event.homeLogo)
-									.clipShape(Circle())
-							}
-							.frame(width: 90, alignment: .leading)
-							.padding(.bottom, 2)
 						}
 					}
+
 				} // end Home side
+
 				.frame(maxWidth: .infinity, alignment: .leading)
 				.background(
 					Group {
@@ -154,6 +153,8 @@ struct scoreCardView: View {
 			} // end Visitor Home sides
 		}  // full card
 		.frame(width: UIScreen.main.bounds.width * 0.9)  //, height: .infinity)
+		.padding(.bottom, 50) // MAAAYYYbe adjust this?
+
 	}
 
 

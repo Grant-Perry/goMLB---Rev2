@@ -23,6 +23,7 @@
 		9BBF49822BE54CD700E27A5F /* stupidView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BBF49812BE54CD700E27A5F /* stupidView.swift */; };
 		9BD920FE2BDD9AB1007D558F /* outsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD920FD2BDD9AB1007D558F /* outsView.swift */; };
 		9BD921002BE18DFD007D558F /* gaveEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD920FF2BE18DFD007D558F /* gaveEvent.swift */; };
+		9BEBFB532C038BD5005AD198 /* color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEBFB512C038B35005AD198 /* color.swift */; };
 		9BF3BC252BF9184000535630 /* Inning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF3BC242BF9184000535630 /* Inning.swift */; };
 		9BF3BC272BFC10A400535630 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF3BC262BFC10A400535630 /* Date.swift */; };
 		E71035F62BDAA07E00F1F3B7 /* teamIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */; };
@@ -47,6 +48,7 @@
 		9BBF49812BE54CD700E27A5F /* stupidView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = stupidView.swift; sourceTree = "<group>"; };
 		9BD920FD2BDD9AB1007D558F /* outsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = outsView.swift; sourceTree = "<group>"; };
 		9BD920FF2BE18DFD007D558F /* gaveEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gaveEvent.swift; sourceTree = "<group>"; };
+		9BEBFB512C038B35005AD198 /* color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = color.swift; sourceTree = "<group>"; };
 		9BF3BC242BF9184000535630 /* Inning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inning.swift; sourceTree = "<group>"; };
 		9BF3BC262BFC10A400535630 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = teamIconView.swift; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 		9BAFE92B2BFE45DE004DEC22 /* EXT */ = {
 			isa = PBXGroup;
 			children = (
+				9BEBFB512C038B35005AD198 /* color.swift */,
 			);
 			path = EXT;
 			sourceTree = "<group>";
@@ -238,6 +241,7 @@
 				9B1D63532BD5B09B00066D30 /* ContentView.swift in Sources */,
 				9BBF49822BE54CD700E27A5F /* stupidView.swift in Sources */,
 				9B585FF02BD5C70900BE2E4B /* JSONModels.swift in Sources */,
+				9BEBFB532C038BD5005AD198 /* color.swift in Sources */,
 				E71035F62BDAA07E00F1F3B7 /* teamIconView.swift in Sources */,
 				9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */,
 				9B585FFF2BD8536300BE2E4B /* GameViewModel.swift in Sources */,
