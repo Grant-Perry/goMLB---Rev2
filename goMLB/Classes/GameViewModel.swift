@@ -111,7 +111,7 @@ class GameViewModel: ObservableObject {
 			   }
 
 			   if showLiveAction {
-				  self.filteredEvents = self.allEvents.filter { !($0.inningTxt.contains("Final") || $0.inningTxt.contains("Scheduled")) }
+				  self.filteredEvents = self.allEvents.filter { !$0.inningTxt.contains("Final") && !$0.inningTxt.contains("Scheduled") }
 			   } else {
 				  self.filteredEvents = self.allEvents
 			   }

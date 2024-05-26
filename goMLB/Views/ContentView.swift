@@ -28,12 +28,10 @@ struct ContentView: View {
    private var teamScoreSize = 25.0
    @State var version = "99.8"
    @State var tooDark = "#bababa"
-   @State private var selectedEventID: String?
+   @State private var selectedEventID: String? = nil
    @State var showLiveAction = false
+   @State var initialLoad = true // initial load for
    var cardColor = Color(#colorLiteral(red: 0.1487929029, green: 0.1488425059, blue: 0.1603987949, alpha: 1))
-
-
-
    let dateFormatter = DateFormatter()
 
    var body: some View {
@@ -94,159 +92,38 @@ struct ContentView: View {
 				  .frame(maxWidth: .infinity, alignment: .trailing)
 			}
 		 }
-		 .frame(width: UIScreen.main.bounds.width, height: 565)
+		 .frame(width: UIScreen.main.bounds.width, height: 590)
 		 .padding(.top, -15)
 		 Spacer()
-		 // MARK: HorizontalMatchupView list
 
-		 ScrollView(.horizontal, showsIndicators: false) {
-			HStack(spacing: 10) {
-			   ForEach(gameViewModel.allEvents, id: \.ID) { event in
-
-				  let vm = gameViewModel.filteredEvents.first
-				  let atBat = vm?.atBat
-				  let atBatPic = vm?.atBatPic
-
-				  var liveAction: Bool {
-					 if event.inningTxt.contains("Final") || event.inningTxt.contains("Scheduled") {
-						return false
-					 } else {
-						return true
-					 }
+		 // MARK: MatchupView - horizontal game matchup's card view
+//Spacer()
+		 MatchupView(gameViewModel: gameViewModel,
+					 selectedEventID: $selectedEventID,
+					 teamSize: teamSize,
+					 teamScoreSize: teamScoreSize,
+					 cardColor: cardColor)
+		 .frame(maxWidth: /*@START_MENU_TOKEN@*/.infinity/*@END_MENU_TOKEN@*/, alignment: .bottom)
+	  }
+	  .onAppear {
+		 gameViewModel.loadAllGames(showLiveAction: showLiveAction) {
+			DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+			   if initialLoad {
+				  if let yankeesEventID = gameViewModel.allEvents.first(where: { $0.home == "New York Yankees" || $0.visitors == "New York Yankees" })?.ID.uuidString {
+//					 print("Yankees game found with ID: \(yankeesEventID)")
+					 selectedEventID = yankeesEventID
+					 initialLoad = false
+				  } else {
+//					 print("Yankees game not found")
 				  }
-				  Button(action: {
-					 selectedEventID = event.ID.uuidString
-					 gameViewModel.updateTeamPlaying(with: event.visitors)
-					 gameViewModel.teamPlaying = event.visitors
-				  }) {
-					 VStack(spacing: 0) {
-						if !liveAction {
-						   HStack {
-							  Text("\(event.startTime) start")
-								 .font(.system(size: 12, weight: .bold))
-
-								 .frame(maxWidth: .infinity, alignment: .top)
-								 .padding(.top, -28)
-
-						   }
-						}
-						HStack(spacing: 3) {
-						   HStack {
-							  Text(event.visitors)
-								 .font(.system(size: teamSize, weight: .bold))
-								 .foregroundColor(.white)
-						   }
-						   HStack {
-							  Text("vs.")
-								 .font(.system(size: 9))
-						   }
-						   HStack {
-							  Text(event.home)
-								 .font(.system(size: teamSize, weight: .bold))
-								 .foregroundColor(.white)
-							  //							  Spacer()
-						   }
-						}
-						HStack {
-
-						   HStack {
-							  Spacer()
-							  Text(event.visitScore)
-								 .font(.system(size: teamScoreSize))
-								 .foregroundColor(.white)
-
-								 .frame(maxWidth: 40, alignment: .trailing)
-
-
-							  //							  Spacer()
-						   }
-
-						   HStack {
-							  if liveAction {
-								 BasesView(onFirst: event.on1,
-										   onSecond: event.on2,
-										   onThird: event.on3,
-										   strikes: event.strikes ?? 0,
-										   balls: event.balls ?? 0,
-										   outs: event.outs ?? 0,
-										   inning: event.inning,
-										   inningTxt: event.inningTxt,
-										   thisSubStrike: event.thisSubStrike,
-										   atBat: atBat ?? "N/A",
-										   atBatPic: atBatPic ?? "N/A URL",
-										   showPic: false)
-								 .scaleEffect(0.55)
-
-								 .frame(width: 40, height:20)
-								 .padding(.top, 20)
-							  } else {
-								 Text("") // space in the middle of the scores f
-									.frame(width: 40, height:20)
-							  }
-						   }
-
-						   HStack {
-							  Spacer()
-							  Text(event.homeScore)
-								 .font(.system(size: teamScoreSize))
-
-								 .frame(maxWidth: .infinity, alignment: .leading)
-
-								 .foregroundColor(.white)
-							  Spacer()
-						   }
-						}
-						if !liveAction {
-						   HStack {
-							  Text("Scheduled: \(event.startTime)")
-								 .font(.system(size: 12, weight: .bold))
-								 .foregroundColor(.white)
-								 .frame(maxWidth: .infinity, alignment: .top)
-								 .padding(.top, 20)
-						   }
-						}
-					 }
-					 .frame(width: 165, height: 120)
-					 .background(
-						event.inningTxt.contains("Final") ? Color.indigo.gradient :
-						   event.inningTxt.contains("Scheduled") ? Color.yellow.gradient :
-						   Color.blue.gradient
-					 )
-					 .foregroundColor(.white)
-					 .cornerRadius(10)
-					 .opacity(0.9)
-				  }
-				  .buttonStyle(PlainButtonStyle())
-
 			   }
 			}
-			.padding()
-		 }
-		 .frame(maxWidth: .infinity, alignment: .leading)
-		 .background(cardColor)
-		 .ignoresSafeArea(edges: .bottom)
-		 .opacity(0.9)
-	  }
-
-	  .onAppear {
-		 gameViewModel.loadAllGames(showLiveAction: showLiveAction)
-		 if selectedEventID == nil,
-			   let firstEventID = gameViewModel.allEvents.first?.ID.uuidString {
-			DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-			   selectedEventID = firstEventID
-			}
 		 }
 	  }
-
 	  .onReceive(timer) { _ in
 		 print("Updating now...")
 		 if self.refreshGame {
-			let previousEventID = self.selectedEventID
-			gameViewModel.loadAllGames(showLiveAction: showLiveAction) {
-			   DispatchQueue.main.async {
-				  self.selectedEventID = previousEventID
-			   }
-			}
+			gameViewModel.loadAllGames(showLiveAction: showLiveAction)
 		 }
 		 self.thisTimeRemaining = timerValue
 		 print("Reloading now...")
@@ -272,7 +149,7 @@ struct ContentView: View {
 		 }
 		 .padding()
 		 //		 		 pickTeam(selectedEventID: $selectedEventID)
-		 Text("Version: \(getAppVersion())")
+		 Text("© 2024 Delicious Studios, LLC. - Ver: \(getAppVersion())")
 			.font(.system(size: 10))
 	  }
 	  Button("Refresh") {
@@ -285,6 +162,11 @@ struct ContentView: View {
 	  .clipShape(Capsule())
 	  .preferredColorScheme(.dark)
    }
+}
+
+// MARK: Helpers
+
+extension ContentView {
 
    func pickTeam(selectedEventID: Binding<String?>) -> some View {
 	  Picker("Select a matchup:", selection: selectedEventID) {
@@ -338,11 +220,7 @@ struct ContentView: View {
 		 }
 	  }
    }
-}
 
-// MARK: Helpers
-
-extension ContentView {
    func isHexGreaterThan(_ hex1: String, comparedTo hex2: String) -> Bool {
 	  guard let int1 = hexToInt(hex1), let int2 = hexToInt(hex2) else {
 		 return false

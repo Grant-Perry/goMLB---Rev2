@@ -46,9 +46,19 @@ struct scoreCardView: View {
 
 	var body: some View {
 		VStack {
-			VStack {
-			   headerView()
-			}
+		   VStack {
+			  HeaderView(
+			   visitors: event.visitors,
+			   home: event.home,
+			   visitColor: event.visitorColor,
+			   homeColor: event.homeColor,
+			   inningTxt: event.inningTxt,
+			   startTime: event.startTime,
+			   tooDark: tooDark,
+			   isToday: false,
+			   refreshGame: $refreshGame,
+			   timeRemaining: $timeRemaining)
+		   }
 
 			// MARK: Scores card
 			HStack(spacing: 0) {
@@ -152,103 +162,10 @@ struct scoreCardView: View {
 				)
 			} // end Visitor Home sides
 		}  // full card
-		.frame(width: UIScreen.main.bounds.width * 0.9)  //, height: .infinity)
+		.frame(width: UIScreen.main.bounds.width * 0.9, height: 180)  //, height: .infinity)
 		.padding(.bottom, 50) // MAAAYYYbe adjust this?
 
 	}
-
-
-   func headerView() -> some View {
-	  return VStack(spacing: 0) {
-
-		 HStack(alignment: .center) {
-			VStack(spacing: -4) {  // Remove spacing between VStack elements
-
-			   HStack(spacing: -4) {
-				  Spacer()
-				  HStack {
-					 Text("\(visitors ?? "")")
-						.font(.system(size: titleSize))
-						.foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
-						.frame(width: 150, alignment: .trailing)
-						.lineLimit(1)
-						.minimumScaleFactor(0.5)
-				  }
-				  HStack {
-					 Text("vs")
-						.font(.footnote)
-						.padding(.vertical, 2)
-						.frame(width: 40)
-				  }
-
-				  HStack {
-					 Text("\(home ?? "")")
-						.font(.system(size: titleSize))
-						.foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
-						.frame(width: 150, alignment: .leading)
-						.lineLimit(1)
-						.minimumScaleFactor(0.5)
-
-				  }
-				  Spacer()
-			   }
-
-			   if (inningTxt?.contains("Scheduled") ?? false || inningTxt?.contains("Final") ?? false ) &&  !vm.isToday {
-				  Text("\nScheduled: \(startTime ?? "")")
-					 .font(.system(size: 14))
-					 .foregroundColor(.white)
-			   }
-			   else {
-				  Text("\(inningTxt ?? "")")
-					 .font(.system(size: 14))
-					 .foregroundColor(.white)
-					 .padding(.top, 5)
-			   }
-
-			   // MARK: Outs view
-
-			   if let lowerInningTxt = inningTxt {
-				  if lowerInningTxt.contains("Top") || lowerInningTxt.contains("Bot")  {
-					 outsView(outs: event.outs ?? 0 )
-						.frame(width: UIScreen.main.bounds.width, height: 20)
-						.padding(.top, 6)
-						.font(.system(size: 11))
-				  }
-			   }
-
-			   Button(action: {
-				  refreshGame.toggle() // Toggle the state of refreshGame on click
-			   }) {
-				  Text((refreshGame ? "Updating" : "Not Updating") + "\n")
-					 .foregroundColor(refreshGame ? .green : .red) // Change color based on refreshGame
-					 .font(.caption) // Set the font size
-					 .frame(width: 200, height: 22, alignment: .trailing) // Frame for the text, right aligned
-					 .padding(.trailing) // Padding inside the button to the right
-
-				  if refreshGame {
-					 timerRemaingView(timeRemaining: $timeRemaining)
-						.font(.system(size: 20))
-						.frame(width: 200, height: 11, alignment: .trailing) // Frame for the text, right aligned
-						.padding(.top, -17)
-				  }
-			   }
-			   .frame(maxWidth: .infinity, alignment: .trailing) // Ensure the button itself is right-aligned
-			   .padding(.trailing, 20) // Padding from the right edge of the container
-			   .cornerRadius(10) // Rounded corners for the button
-			}
-			.multilineTextAlignment(.center)
-			.padding()
-			.lineSpacing(0)
-		 }
-		 .frame(width: UIScreen.main.bounds.width, height: 200)
-		 .minimumScaleFactor(0.25)
-		 .scaledToFit()
-	  }
-
-	  .frame(width: UIScreen.main.bounds.width, height: 120, alignment: .trailing)
-	  .cornerRadius(10)
-   }
-
 }
 
 //#Preview {
