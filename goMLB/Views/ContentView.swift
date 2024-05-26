@@ -17,6 +17,8 @@ struct ContentView: View {
    @State var thisTimeRemaining = 15
    @State var selectedTeam = "New York Yankees"
    @State var timerValue = 15
+   var maxUpdates = 20 // about 6.5 minutes
+
    @State var timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
    @State var fakeTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
    @State var scoreColor = Color(.blue)
@@ -30,6 +32,9 @@ struct ContentView: View {
    @State var tooDark = "#bababa"
    @State private var selectedEventID: String?
    @State var showLiveAction = false
+   @State private var numUpdates = 0
+   @State private var showAlert = false
+   @State private var isBackgroundDimmed = false // New state variable for dimming
    var cardColor = Color(#colorLiteral(red: 0.1487929029, green: 0.1488425059, blue: 0.1603987949, alpha: 1))
 
 
@@ -245,21 +250,28 @@ struct ContentView: View {
 	  }
 
 	  .onReceive(timer) { _ in
-		 print("Updating now...")
+//		 print("Updating now...")
 		 if self.refreshGame {
 			let previousEventID = self.selectedEventID
-			gameViewModel.loadAllGames(showLiveAction: showLiveAction) {
-			   DispatchQueue.main.async {
-				  self.selectedEventID = previousEventID
+
+			// Increment update counter
+			numUpdates += 1
+			if numUpdates >= maxUpdates {
+			   refreshGame = false
+			   showAlert = true  // Show the alert when the limit is reached
+			   isBackgroundDimmed = true // Dim the background
+			   timer.upstream.connect().cancel() // Stop the timer
+			} else {
+			   gameViewModel.loadAllGames(showLiveAction: showLiveAction) {
+				  DispatchQueue.main.async {
+					 self.selectedEventID = previousEventID
+				  }
 			   }
+			   self.thisTimeRemaining = timerValue
+//			   print("Reloading now...")
 			}
 		 }
-		 self.thisTimeRemaining = timerValue
-		 print("Reloading now...")
 	  }
-
-
-
 	  .onReceive(fakeTimer) { _ in
 		 if self.thisTimeRemaining > 0 {
 			self.thisTimeRemaining -= 1
@@ -284,6 +296,10 @@ struct ContentView: View {
 			.font(.system(size: 10))
 	  }
 	  Button("Refresh") {
+		 // also reset and restart the game updates
+		 numUpdates = 0
+		 thisTimeRemaining = timerValue
+		 refreshGame = true
 		 gameViewModel.loadAllGames(showLiveAction: showLiveAction)
 	  }
 	  .font(.footnote)
@@ -292,7 +308,34 @@ struct ContentView: View {
 	  .foregroundColor(.white)
 	  .clipShape(Capsule())
 	  .preferredColorScheme(.dark)
+
+	  .alert(isPresented: $showAlert) {
+		 Alert(
+			title: Text("Update Limit Reached"),
+			message: Text("Would you like to continue receiving updates?"),
+			primaryButton: .default(Text("Continue")) {
+			   refreshGame = true
+			   numUpdates = 0 // Reset the counter
+			   isBackgroundDimmed = false // Undim the background
+			   timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect() // Restart the timer
+			},
+			secondaryButton: .cancel(Text("Stop")) {
+			   isBackgroundDimmed = false // Undim the background
+			   refreshGame = false
+			}
+		 )
+	  }
+	  .overlay(
+		 Group {
+			if isBackgroundDimmed {
+			   Color.black.opacity(0.5) // Dimming overlay
+				  .edgesIgnoringSafeArea(.all)
+			}
+		 }
+	  )
+
    }
+
 
    func pickTeam(selectedEventID: Binding<String?>) -> some View {
 	  Picker("Select a matchup:", selection: selectedEventID) {
