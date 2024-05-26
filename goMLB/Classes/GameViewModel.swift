@@ -74,7 +74,7 @@ class GameViewModel: ObservableObject {
 				  let isFinal = inningTxt.contains("Final")
 				  let homeScore = homeTeam.score ?? "0"
 				  let visitScore = awayTeam.score ?? "0"
-				  let scoreString = isFinal ? "\(visitScore) / \(homeScore) - F" : "\(visitScore) / \(homeScore)"
+//				  let scoreString = isFinal ? "\(visitScore) / \(homeScore) - F" : "\(visitScore) / \(homeScore)"
 
 				  return gameEvent(
 					 title: event.name,
@@ -113,7 +113,10 @@ class GameViewModel: ObservableObject {
 			   if showLiveAction {
 				  self.filteredEvents = self.allEvents.filter { !($0.inningTxt.contains("Final") || $0.inningTxt.contains("Scheduled")) }
 			   } else {
-				  self.filteredEvents = self.allEvents
+//				  self.filteredEvents = self.allEvents
+				  self.filteredEvents = self.allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }
+
+
 			   }
 
 //			   self.filteredEvents = self.allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }

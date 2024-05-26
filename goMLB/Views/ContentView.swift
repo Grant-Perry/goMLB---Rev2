@@ -120,16 +120,16 @@ struct ContentView: View {
 					 gameViewModel.teamPlaying = event.visitors
 				  }) {
 					 VStack(spacing: 0) {
-						if !liveAction {
-						   HStack {
-							  Text("\(event.startTime) start")
-								 .font(.system(size: 12, weight: .bold))
-
-								 .frame(maxWidth: .infinity, alignment: .top)
-								 .padding(.top, -28)
-
-						   }
-						}
+//						if !liveAction {
+//						   HStack {
+//							  Text("\(event.startTime) start")
+//								 .font(.system(size: 12, weight: .bold))
+//
+//								 .frame(maxWidth: .infinity, alignment: .top)
+//								 .padding(.top, -28)
+//
+//						   }
+//						}
 						HStack(spacing: 3) {
 						   HStack {
 							  Text(event.visitors)
@@ -180,8 +180,14 @@ struct ContentView: View {
 								 .frame(width: 40, height:20)
 								 .padding(.top, 20)
 							  } else {
-								 Text("") // space in the middle of the scores f
+								 Text(event.inningTxt.contains("Final")  ? "Final" : "") // space in the middle of the scores f
 									.frame(width: 40, height:20)
+									.font(.footnote)
+									.foregroundColor(.white)
+									.frame(maxWidth: .infinity)
+									.lineLimit(1)
+									.minimumScaleFactor(0.5)
+									.scaledToFit()
 							  }
 						   }
 
@@ -198,7 +204,7 @@ struct ContentView: View {
 						}
 						if !liveAction {
 						   HStack {
-							  Text("Scheduled: \(event.startTime)")
+							  Text("Next Game: \(event.startTime)")
 								 .font(.system(size: 12, weight: .bold))
 								 .foregroundColor(.white)
 								 .frame(maxWidth: .infinity, alignment: .top)
@@ -252,6 +258,8 @@ struct ContentView: View {
 		 print("Reloading now...")
 	  }
 
+
+
 	  .onReceive(fakeTimer) { _ in
 		 if self.thisTimeRemaining > 0 {
 			self.thisTimeRemaining -= 1
@@ -260,17 +268,17 @@ struct ContentView: View {
 		 }
 	  }
 	  VStack(alignment: .center, spacing: 0) {
-		 HStack(spacing: 0) {
-			Text("Live Action Only:")
-			   .font(.caption)
-			Toggle("", isOn: $showLiveAction)
-			   .labelsHidden()
-			   .scaleEffect(0.6)
-			   .onChange(of: showLiveAction) {
-				  gameViewModel.loadAllGames(showLiveAction: showLiveAction)
-			   }
-		 }
-		 .padding()
+//		 HStack(spacing: 0) {
+//			Text("Live Action Only:")
+//			   .font(.caption)
+//			Toggle("", isOn: $showLiveAction)
+//			   .labelsHidden()
+//			   .scaleEffect(0.6)
+//			   .onChange(of: showLiveAction) {
+//				  gameViewModel.loadAllGames(showLiveAction: showLiveAction)
+//			   }
+//		 }
+//		 .padding()
 		 //		 		 pickTeam(selectedEventID: $selectedEventID)
 		 Text("Version: \(getAppVersion())")
 			.font(.system(size: 10))
