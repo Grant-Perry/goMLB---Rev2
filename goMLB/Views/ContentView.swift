@@ -12,29 +12,29 @@ import SwiftUI
 struct ContentView: View {
    @ObservedObject var gameViewModel = GameViewModel()
    @Environment(\.colorScheme) var colorScheme
+   @State var selectedTeam = "New York Yankees"
    @State private var showPicker = false
    @State private var refreshGame = true // refetch JSON
    @State var thisTimeRemaining = 15
-   @State var selectedTeam = "New York Yankees"
    @State var timerValue = 15
-   var maxUpdates = 20 // about 6.5 minutes
-
-   @State var timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
-   @State var fakeTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+   @State var maxUpdates = 20 // about 6.5 minutes
    @State var scoreColor = Color(.blue)
    @State var winners = Color(.green)
+
+   @State var version = "99.8"
+   @State var tooDark = "#bababa"
+   @State private var selectedEventID: String?
+   @State var showLiveAction = false
+   @State var numUpdates = 0
+   @State private var showAlert = false
+   @State private var isBackgroundDimmed = false // New state variable for dimming
+   @State var timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
+   @State var fakeTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
    private var scoreSize = 55.0
    private var titleSize = 35.0
    private var logoWidth = 90.0
    private var teamSize = 16.0
    private var teamScoreSize = 25.0
-   @State var version = "99.8"
-   @State var tooDark = "#bababa"
-   @State private var selectedEventID: String?
-   @State var showLiveAction = false
-   @State private var numUpdates = 0
-   @State private var showAlert = false
-   @State private var isBackgroundDimmed = false // New state variable for dimming
    var cardColor = Color(#colorLiteral(red: 0.1487929029, green: 0.1488425059, blue: 0.1603987949, alpha: 1))
 
 
@@ -61,6 +61,7 @@ struct ContentView: View {
 						  tooDark: tooDark,
 						  event: event,
 						  scoreSize: Int(scoreSize),
+						  numUpdates: $numUpdates,
 						  refreshGame: $refreshGame,
 						  timeRemaining: $thisTimeRemaining)
 
@@ -250,10 +251,8 @@ struct ContentView: View {
 	  }
 
 	  .onReceive(timer) { _ in
-//		 print("Updating now...")
 		 if self.refreshGame {
 			let previousEventID = self.selectedEventID
-
 			// Increment update counter
 			numUpdates += 1
 			if numUpdates >= maxUpdates {
@@ -268,7 +267,6 @@ struct ContentView: View {
 				  }
 			   }
 			   self.thisTimeRemaining = timerValue
-//			   print("Reloading now...")
 			}
 		 }
 	  }
@@ -412,6 +410,7 @@ extension ContentView {
 	  Scanner(string: hexSanitized).scanHexInt64(&intValue)
 	  return Int(intValue)
    }
+
 
    func getAppVersion() -> String {
 	  if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
