@@ -1,4 +1,4 @@
-//   JSONModels.swift
+//   APIResponse.swift
 //   goMLB
 //
 //   Created by: Grant Perry on 4/23/24 at 4:37 PM
@@ -12,50 +12,56 @@ import SwiftUI
 
 /// `APIResponse` holds an array of `Event` objects.
 /// It is used as the top-level model for decoding JSON data from the API.
+// Top-level API response
 struct APIResponse: Codable {
-   /// An array of events, each representing a distinct game or match fetched from the API.
    var events: [Event]
 }
 
+// Event structure
 struct Event: Codable {
    var name: String
    var shortName: String
    var competitions: [Competition]
    var status: EventStatus
-   var date: String  
+   var date: String
 }
 
+// Competition structure
 struct Competition: Codable {
    var competitors: [Competitor]
    var situation: Situation?
-	var status: Status // Add this line assuming 'status' is part of the JSON
+   var status: Status
 
-	struct Status: Codable {
-		var type: TypeDetail
+   struct Status: Codable {
+	  var type: TypeDetail
 
-		struct TypeDetail: Codable {
-			var detail: String
-		}
-	}
+	  struct TypeDetail: Codable {
+		 var detail: String
+	  }
+   }
 }
 
+// Competitor structure
 struct Competitor: Codable {
    var team: Team
-   var score: String?  // Current score for the competitor; optional because a game might not have started.
+   var score: String?
    var records: [Record]
 }
 
-struct Record: Codable {
-   var summary: String // holds the team's season record prior to current game i.e. 18-6
-}
-
+// Team structure
 struct Team: Codable {
    var name: String
    var logo: String
-   var color: String // team's color
-   var alternateColor: String // team's color
+   var color: String
+   var alternateColor: String
 }
 
+// Record structure
+struct Record: Codable {
+   var summary: String
+}
+
+// Situation structure
 struct Situation: Codable {
    var balls: Int?
    var strikes: Int?
@@ -64,22 +70,27 @@ struct Situation: Codable {
    var onSecond: Bool?
    var onThird: Bool?
    var lastPlay: LastPlay?
-	var batter: Batter?
+   var batter: Batter?
 }
 
+// Batter structure
 struct Batter: Codable {
-	var athlete: Athlete
+   var athlete: Athlete
 }
 
+// Athlete structure
 struct Athlete: Codable {
-	var shortName: String
-	var headshot: String
-	var summary: String? //events[6].competitions[0].situation.batter.summary
+   var shortName: String
+   var headshot: String
+   var summary: String?
 }
+
+// LastPlay structure
 struct LastPlay: Codable {
    var text: String?
 }
 
+// EventStatus structure
 struct EventStatus: Codable {
    var period: Int
 }

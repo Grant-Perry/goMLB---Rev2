@@ -33,13 +33,14 @@ class GameViewModel: ObservableObject {
 			let decodedResponse = try JSONDecoder().decode(APIResponse.self, from: data)
 			DispatchQueue.main.async { [self] in
 			   self.allEvents = decodedResponse.events.map { event in
-				  let situation = event.competitions[0].situation
-				  let homeTeam = event.competitions[0].competitors[0]
-				  let awayTeam = event.competitions[0].competitors[1]
-				  let inningTxt = event.competitions[0].status.type.detail
+				  let competition = event.competitions[0]
+				  let homeTeam = competition.competitors[0]
+				  let awayTeam = competition.competitors[1]
+				  let situation = competition.situation
+				  let inningTxt = competition.status.type.detail
 				  let startTime = convertTo12HourFormat(from: event.date, DST: false)
-
 				  let lastPlay = situation?.lastPlay?.text
+
 				  self.extractDateAndTime(from: event.date)
 
 				  if let thisLastPlay = self.lastPlayHist.last, !thisLastPlay.isEmpty {
@@ -47,45 +48,21 @@ class GameViewModel: ObservableObject {
 					 holdLastPlay = thisLastPlay
 				  }
 
-				  if let situationStrikes = situation?.strikes {
-					 if situationStrikes < 2 {
-						self.subStrike = 0
-						self.foulStrike2 = false
-					 } else {
-						if let thisLastPlay = lastPlay {
-						   if thisLastPlay.lowercased().contains("strike 2 foul") && situationStrikes == 2 {
-							  if !self.foulStrike2 {
-								 self.foulStrike2 = true
-							  } else {
-								 self.subStrike += 1
-							  }
-						   } else {
-							  self.foulStrike2 = false
-							  self.subStrike = 0
-						   }
-						} else {
-						   self.foulStrike2 = false
-						}
-					 }
-				  } else {
-					 self.foulStrike2 = false
+				  if let situationStrikes = situation?.strikes, situationStrikes == 2 {
+					 foulStrike2 = true
 				  }
 
-				  let isFinal = inningTxt.contains("Final")
-				  let homeScore = homeTeam.score ?? "0"
-				  let visitScore = awayTeam.score ?? "0"
-//				  let scoreString = isFinal ? "\(visitScore) / \(homeScore) - F" : "\(visitScore) / \(homeScore)"
-
 				  return gameEvent(
+					 ID: UUID(),
 					 title: event.name,
 					 shortTitle: event.shortName,
 					 home: homeTeam.team.name,
 					 visitors: awayTeam.team.name,
-					 homeRecord: homeTeam.records.first?.summary ?? "0-0",
-					 visitorRecord: awayTeam.records.first?.summary ?? "0-0",
+					 homeRecord: homeTeam.records.first?.summary ?? "",
+					 visitorRecord: awayTeam.records.first?.summary ?? "",
 					 inning: event.status.period,
-					 homeScore: homeScore,
-					 visitScore: visitScore,
+					 homeScore: homeTeam.score ?? "0",
+					 visitScore: awayTeam.score ?? "0",
 					 homeColor: homeTeam.team.color,
 					 homeAltColor: homeTeam.team.alternateColor,
 					 visitorColor: awayTeam.team.color,
@@ -93,37 +70,28 @@ class GameViewModel: ObservableObject {
 					 on1: situation?.onFirst ?? false,
 					 on2: situation?.onSecond ?? false,
 					 on3: situation?.onThird ?? false,
-					 lastPlay: situation?.lastPlay?.text ?? inningTxt,
-					 balls: situation?.balls ?? 0,
-					 strikes: situation?.strikes ?? 0,
-					 outs: situation?.outs ?? 0,
+					 lastPlay: lastPlay,
+					 balls: situation?.balls,
+					 strikes: situation?.strikes,
+					 outs: situation?.outs,
 					 homeLogo: homeTeam.team.logo,
 					 visitorLogo: awayTeam.team.logo,
 					 inningTxt: inningTxt,
 					 thisSubStrike: subStrike,
 					 thisCalledStrike2: foulStrike2,
-					 startDate: startDate,
+					 startDate: self.startDate,
 					 startTime: startTime,
 					 atBat: situation?.batter?.athlete.shortName ?? "",
 					 atBatPic: situation?.batter?.athlete.headshot ?? "",
 					 atBatSummary: situation?.batter?.athlete.summary ?? ""
 				  )
 			   }
-
-			   if showLiveAction {
-				  self.filteredEvents = self.allEvents.filter { !($0.inningTxt.contains("Final") || $0.inningTxt.contains("Scheduled")) }
-			   } else {
-//				  self.filteredEvents = self.allEvents
-				  self.filteredEvents = self.allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }
-
-
+			   if let completion = completion {
+				  completion()
 			   }
-
-//			   self.filteredEvents = self.allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }
-			   completion?()
 			}
 		 } catch {
-			print("Error decoding JSON: \(error)")
+			print("Decoding error: \(error.localizedDescription)")
 		 }
 	  }.resume()
    }
