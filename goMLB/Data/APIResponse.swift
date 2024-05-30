@@ -1,4 +1,4 @@
-//   JSONModels.swift
+//   APIResponse.swift
 //   goMLB
 //
 //   Created by: Grant Perry on 4/23/24 at 4:37 PM

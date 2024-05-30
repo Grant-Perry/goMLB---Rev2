@@ -22,6 +22,20 @@ class GameViewModel: ObservableObject {
    @Published var isToday = false
    @Published var holdLastPlay = ""
 
+
+   var visitorRuns = "5"
+   var visitorHits = "10"
+   var visitorErrors = "1"
+   var theHomeRuns = "6"
+   var homeHits = "9"
+   var homeErrors = "2"
+   var batterAvg = ".300"
+   var batterLine = "2-4, HR, 2RBI"
+   var visitorLineScores = ["0", "1", "0", "1", "1", "0", "1", "1", "0"]
+   var homeLineScores = ["3", "0", "0", "1", "2", "0", "0", "0", "X"]
+   var startingPitcher = "Your Momma"
+   var currentPitcher = "Your Daddy"
+
    func loadAllGames(showLiveAction: Bool, completion: (() -> Void)? = nil) {
 	  guard let url = URL(string: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard") else { return }
 	  URLSession.shared.dataTask(with: url) { data, response, error in
@@ -71,10 +85,9 @@ class GameViewModel: ObservableObject {
 					 self.foulStrike2 = false
 				  }
 
-				  let isFinal = inningTxt.contains("Final")
+//				  let isFinal = inningTxt.contains("Final")
 				  let homeScore = homeTeam.score ?? "0"
 				  let visitScore = awayTeam.score ?? "0"
-//				  let scoreString = isFinal ? "\(visitScore) / \(homeScore) - F" : "\(visitScore) / \(homeScore)"
 
 				  return gameEvent(
 					 title: event.name,
@@ -161,6 +174,26 @@ class GameViewModel: ObservableObject {
 
 	  return outputFormatter.string(from: adjustedDate)
    }
+   static func dummyData() -> GameViewModel {
+	  let gameViewModel = GameViewModel()
+//	  gameViewModel.visitorRuns = "5"
+//	  gameViewModel.visitorHits = "10"
+//	  gameViewModel.visitorErrors = "1"
+//	  gameViewModel.theHomeRuns = "6"
+//	  gameViewModel.homeHits = "9"
+//	  gameViewModel.homeErrors = "2"
+//	  gameViewModel.batterAvg = ".300"
+//	  gameViewModel.batterLine = "2-4, HR, 2RBI"
+//	  gameViewModel.visitorLineScores = ["0", "1", "0", "1", "1", "0", "1", "1", "0"]
+//	  gameViewModel.homeLineScores = ["3", "0", "0", "1", "2", "0", "0", "0", "X"]
+
+	  let dummyAthlete = Athlete(id: "1", fullName: "John Doe", displayName: "J. Doe", shortName: "Doe", headshot: "https://via.placeholder.com/150", statistics: [Statistic(name: "ERA", displayValue: "3.50")])
+	  gameViewModel.startingPitcher = dummyAthlete
+	  gameViewModel.currentPitcher = dummyAthlete
+
+	  return gameViewModel
+   }
+
 }
 
 
