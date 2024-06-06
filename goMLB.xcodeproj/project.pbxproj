@@ -141,13 +141,13 @@
 			children = (
 				9B585FF62BD6EB4200BE2E4B /* basesView.swift */,
 				9B1D63522BD5B09B00066D30 /* ContentView.swift */,
+				9B7488E22C040BCF00A22541 /* HeaderView.swift */,
+				9B99A3962C02A2D6003F3C85 /* MatchupView.swift */,
 				9BD920FD2BDD9AB1007D558F /* outsView.swift */,
 				9B12539F2BEE8FCD00A7B422 /* scoreCardView.swift */,
 				9BBF49812BE54CD700E27A5F /* stupidView.swift */,
 				E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */,
 				9B12539D2BEC264000A7B422 /* timerRemaingView.swift */,
-				9B99A3962C02A2D6003F3C85 /* MatchupView.swift */,
-				9B7488E22C040BCF00A22541 /* HeaderView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
