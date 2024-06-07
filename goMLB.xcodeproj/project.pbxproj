@@ -13,7 +13,7 @@
 		9B1D63532BD5B09B00066D30 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1D63522BD5B09B00066D30 /* ContentView.swift */; };
 		9B1D63552BD5B09C00066D30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B1D63542BD5B09C00066D30 /* Assets.xcassets */; };
 		9B1D63582BD5B09C00066D30 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B1D63572BD5B09C00066D30 /* Preview Assets.xcassets */; };
-		9B585FF02BD5C70900BE2E4B /* JSONModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FEF2BD5C70900BE2E4B /* JSONModels.swift */; };
+		9B585FF02BD5C70900BE2E4B /* APIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FEF2BD5C70900BE2E4B /* APIResponse.swift */; };
 		9B585FF72BD6EB4200BE2E4B /* basesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FF62BD6EB4200BE2E4B /* basesView.swift */; };
 		9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFC2BD8439700BE2E4B /* colorMod.swift */; };
 		9B585FFF2BD8536300BE2E4B /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B585FFE2BD8536300BE2E4B /* GameViewModel.swift */; };
@@ -39,7 +39,7 @@
 		9B1D63522BD5B09B00066D30 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		9B1D63542BD5B09C00066D30 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9B1D63572BD5B09C00066D30 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		9B585FEF2BD5C70900BE2E4B /* JSONModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONModels.swift; sourceTree = "<group>"; };
+		9B585FEF2BD5C70900BE2E4B /* APIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIResponse.swift; sourceTree = "<group>"; };
 		9B585FF62BD6EB4200BE2E4B /* basesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = basesView.swift; sourceTree = "<group>"; };
 		9B585FFC2BD8439700BE2E4B /* colorMod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = colorMod.swift; sourceTree = "<group>"; };
 		9B585FFE2BD8536300BE2E4B /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
@@ -112,7 +112,7 @@
 		9B1D635E2BD5B0A900066D30 /* Data */ = {
 			isa = PBXGroup;
 			children = (
-				9B585FEF2BD5C70900BE2E4B /* JSONModels.swift */,
+				9B585FEF2BD5C70900BE2E4B /* APIResponse.swift */,
 				E71035F72BDBD27E00F1F3B7 /* teamNames.swift */,
 				9BD920FF2BE18DFD007D558F /* gaveEvent.swift */,
 			);
@@ -243,7 +243,7 @@
 				9B585FF72BD6EB4200BE2E4B /* basesView.swift in Sources */,
 				9B1D63532BD5B09B00066D30 /* ContentView.swift in Sources */,
 				9BBF49822BE54CD700E27A5F /* stupidView.swift in Sources */,
-				9B585FF02BD5C70900BE2E4B /* JSONModels.swift in Sources */,
+				9B585FF02BD5C70900BE2E4B /* APIResponse.swift in Sources */,
 				9BEBFB532C038BD5005AD198 /* color.swift in Sources */,
 				E71035F62BDAA07E00F1F3B7 /* teamIconView.swift in Sources */,
 				9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */,
@@ -317,7 +317,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -374,7 +374,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -405,7 +405,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.57;
+				MARKETING_VERSION = 4.58;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -435,7 +435,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.57;
+				MARKETING_VERSION = 4.58;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -454,7 +454,7 @@
 				9B1D635A2BD5B09C00066D30 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		9B1D635B2BD5B09C00066D30 /* Build configuration list for PBXNativeTarget "goMLB" */ = {
 			isa = XCConfigurationList;
@@ -463,7 +463,7 @@
 				9B1D635D2BD5B09C00066D30 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

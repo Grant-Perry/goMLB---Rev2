@@ -91,7 +91,9 @@ struct ContentView: View {
 							   thisSubStrike: event.thisSubStrike,
 							   atBat: atBat ?? "N/A",
 							   atBatPic: atBatPic ?? "N/A URL",
-							   showPic: true)
+							   showPic: true, 
+							   batterStats: event.batterStats,
+							   batterLine: event.batterLine)
 				  }
 			   }
 			} else { // not liveAction so show next game
@@ -126,16 +128,16 @@ struct ContentView: View {
 					 gameViewModel.teamPlaying = event.visitors
 				  }) {
 					 VStack(spacing: 0) {
-//						if !liveAction {
-//						   HStack {
-//							  Text("\(event.startTime) start")
-//								 .font(.system(size: 12, weight: .bold))
-//
-//								 .frame(maxWidth: .infinity, alignment: .top)
-//								 .padding(.top, -28)
-//
-//						   }
-//						}
+						//						if !liveAction {
+						//						   HStack {
+						//							  Text("\(event.startTime) start")
+						//								 .font(.system(size: 12, weight: .bold))
+						//
+						//								 .frame(maxWidth: .infinity, alignment: .top)
+						//								 .padding(.top, -28)
+						//
+						//						   }
+						//						}
 						HStack(spacing: 3) {
 						   HStack {
 							  Text(event.visitors)
@@ -179,8 +181,11 @@ struct ContentView: View {
 										   inningTxt: event.inningTxt,
 										   thisSubStrike: event.thisSubStrike,
 										   atBat: atBat ?? "N/A",
-										   atBatPic: atBatPic ?? "N/A URL",
-										   showPic: false)
+										   atBatPic: atBatPic ?? "N/A URL", 
+										   showPic: true,
+										   batterStats: event.batterStats,
+										   batterLine: event.batterLine)
+
 								 .scaleEffect(0.55)
 
 								 .frame(width: 40, height:20)
@@ -243,7 +248,7 @@ struct ContentView: View {
 	  .onAppear {
 		 gameViewModel.loadAllGames(showLiveAction: showLiveAction)
 		 if selectedEventID == nil,
-			   let firstEventID = gameViewModel.allEvents.first?.ID.uuidString {
+			let firstEventID = gameViewModel.allEvents.first?.ID.uuidString {
 			DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
 			   selectedEventID = firstEventID
 			}
@@ -278,17 +283,17 @@ struct ContentView: View {
 		 }
 	  }
 	  VStack(alignment: .center, spacing: 0) {
-//		 HStack(spacing: 0) {
-//			Text("Live Action Only:")
-//			   .font(.caption)
-//			Toggle("", isOn: $showLiveAction)
-//			   .labelsHidden()
-//			   .scaleEffect(0.6)
-//			   .onChange(of: showLiveAction) {
-//				  gameViewModel.loadAllGames(showLiveAction: showLiveAction)
-//			   }
-//		 }
-//		 .padding()
+		 //		 HStack(spacing: 0) {
+		 //			Text("Live Action Only:")
+		 //			   .font(.caption)
+		 //			Toggle("", isOn: $showLiveAction)
+		 //			   .labelsHidden()
+		 //			   .scaleEffect(0.6)
+		 //			   .onChange(of: showLiveAction) {
+		 //				  gameViewModel.loadAllGames(showLiveAction: showLiveAction)
+		 //			   }
+		 //		 }
+		 //		 .padding()
 		 //		 		 pickTeam(selectedEventID: $selectedEventID)
 		 Text("Version: \(getAppVersion())")
 			.font(.system(size: 10))

@@ -1,36 +1,28 @@
-//   gaveEvent.swift
-//   goMLB
-//
-//   Created by: Grant Perry on 4/30/24 at 4:37 PM
-//     Modified:
-//
-//  Copyright © 2024 Delicious Studios, LLC. - Grant Perry
-//
-
+import SwiftUI
 import Foundation
 
-struct gameEvent {
+struct gameEvent: Codable {
    var ID: UUID = UUID()
-   var title: String        // Full title of the event.
-   var shortTitle: String   // Shortened title of the event.
-   var home: String         // Home team name.
-   var visitors: String     // Visiting team name.
-   var homeRecord: String  //  Home team's season record
-   var visitorRecord: String  // Visitor's season record
-   var inning: Int          // Current inning number.
-   var homeScore: String    // Home team's current score.
-   var visitScore: String   // Visitor team's current score.
-   var homeColor: String 	// home colors
+   var title: String
+   var shortTitle: String
+   var home: String
+   var visitors: String
+   var homeRecord: String
+   var visitorRecord: String
+   var inning: Int
+   var homeScore: String
+   var visitScore: String
+   var homeColor: String
    var homeAltColor: String
-   var visitorColor: String 	// visitors colors
+   var visitorColor: String
    var visitorAltColor: String
-   var on1: Bool            // Runner on first base.
-   var on2: Bool            // Runner on second base.
-   var on3: Bool            // Runner on third base.
-   var lastPlay: String?    // Description of the last play.
-   var balls: Int?          // Current ball count.
-   var strikes: Int?        // Current strike count.
-   var outs: Int?           // Current out count.
+   var on1: Bool
+   var on2: Bool
+   var on3: Bool
+   var lastPlay: String?
+   var balls: Int?
+   var strikes: Int?
+   var outs: Int?
    var homeLogo: String
    var visitorLogo: String
    var inningTxt: String
@@ -41,4 +33,12 @@ struct gameEvent {
    var atBat: String
    var atBatPic: String
    var atBatSummary: String
+   var batterStats: String
+   var batterLine: String
+   var visitorRuns: String
+   var visitorHits: String
+   var visitorErrors: String
+   var homeRuns: String
+   var homeHits: String
+   var homeErrors: String
 }

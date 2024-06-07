@@ -9,18 +9,20 @@
 
 import SwiftUI
 import Foundation
+import Observation
 
+@Observable
 class GameViewModel: ObservableObject {
-   @Published var filteredEvents: [gameEvent] = []
-   @Published var allEvents: [gameEvent] = []
-   @Published var teamPlaying: String = "New York Yankees"
-   @Published var lastPlayHist: [String] = []
-   @Published var subStrike = 0
-   @Published var foulStrike2: Bool = false
-   @Published var startDate: String = ""
-   @Published var startTime: String = ""
-   @Published var isToday = false
-   @Published var holdLastPlay = ""
+   var filteredEvents: [gameEvent] = []
+   var allEvents: [gameEvent] = []
+   var teamPlaying: String = "New York Yankees"
+   var lastPlayHist: [String] = []
+   var subStrike = 0
+   var foulStrike2: Bool = false
+   var startDate: String = ""
+   var startTime: String = ""
+   var isToday = false
+   var holdLastPlay = ""
 
    func loadAllGames(showLiveAction: Bool, completion: (() -> Void)? = nil) {
 	  guard let url = URL(string: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard") else { return }
@@ -74,7 +76,18 @@ class GameViewModel: ObservableObject {
 				  let isFinal = inningTxt.contains("Final")
 				  let homeScore = homeTeam.score ?? "0"
 				  let visitScore = awayTeam.score ?? "0"
-//				  let scoreString = isFinal ? "\(visitScore) / \(homeScore) - F" : "\(visitScore) / \(homeScore)"
+
+				  // New properties
+				  let batterStats = homeTeam.statistics[2].displayValue
+				  let batterLine = homeTeam.leaders[0].leaders[0].displayValue
+
+				  let visitorRuns = awayTeam.statistics[1].name
+				  let visitorHits = awayTeam.statistics[0].name
+				  let visitorErrors = awayTeam.statistics[7].name
+
+				  let homeRuns = homeTeam.statistics[1].name
+				  let homeHits = homeTeam.statistics[0].name
+				  let homeErrors = homeTeam.statistics[7].name
 
 				  return gameEvent(
 					 title: event.name,
@@ -106,20 +119,24 @@ class GameViewModel: ObservableObject {
 					 startTime: startTime,
 					 atBat: situation?.batter?.athlete.shortName ?? "",
 					 atBatPic: situation?.batter?.athlete.headshot ?? "",
-					 atBatSummary: situation?.batter?.athlete.summary ?? ""
+					 atBatSummary: situation?.batter?.athlete.summary ?? "",
+					 batterStats: batterStats,
+					 batterLine: batterLine,
+					 visitorRuns: visitorRuns,
+					 visitorHits: visitorHits,
+					 visitorErrors: visitorErrors,
+					 homeRuns: homeRuns,
+					 homeHits: homeHits,
+					 homeErrors: homeErrors
 				  )
 			   }
 
 			   if showLiveAction {
 				  self.filteredEvents = self.allEvents.filter { !($0.inningTxt.contains("Final") || $0.inningTxt.contains("Scheduled")) }
 			   } else {
-//				  self.filteredEvents = self.allEvents
 				  self.filteredEvents = self.allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }
-
-
 			   }
 
-//			   self.filteredEvents = self.allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }
 			   completion?()
 			}
 		 } catch {
@@ -162,14 +179,3 @@ class GameViewModel: ObservableObject {
 	  return outputFormatter.string(from: adjustedDate)
    }
 }
-
-
-
-
-
-
-
-
-
-
-

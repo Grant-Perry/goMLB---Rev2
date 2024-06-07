@@ -5,6 +5,7 @@
 //     Modified:
 //
 //  Copyright © 2024 Delicious Studios, LLC. - Grant Perry
+//
 
 import SwiftUI
 
@@ -22,6 +23,8 @@ struct BasesView: View {
    var atBat: String
    var atBatPic: String
    var showPic: Bool
+   var batterStats: String
+   var batterLine: String
 
    var body: some View {
 	  VStack {
@@ -55,7 +58,7 @@ struct BasesView: View {
 			VStack(spacing: 0) {
 			   Text("\(balls)-\(strikes)\(thisSubStrike  > 0 ? ".\(thisSubStrike)" : "")")
 				  .font(.system(size: 14))
-			   //			   Spacer()
+			   //               Spacer()
 
 			   VStack {
 				  outsView(outs: outs)
@@ -65,9 +68,9 @@ struct BasesView: View {
 			   if showPic { // don't show bottom half if false to use this view in other smaller places
 				  Spacer()
 
-// MARK: Inning arrow up/down inning text
+				  // MARK: Inning arrow up/down inning text
 				  if !inningTxt.contains("Final") {
-				     VStack {
+					 VStack {
 						let thisInning = getInningSymbol(inningTxt: inningTxt)
 						HStack(spacing: 0) {
 						   Image(systemName: thisInning.rawValue)
@@ -125,37 +128,39 @@ struct BasesView: View {
 
 					 HStack {
 						Text("\(atBat)")
-						   .font(.system(size: 14)) +
-						Text("\nat bat")
-						   .font(.system(size: 10))
+						   .font(.system(size: 14))
+						if !atBat.isEmpty {
+						   Text("\(batterStats)")
+						   Text("\(batterLine)")
+						}
 					 }
 				  }
 			   }
 			}
 		 }
+		 .frame(width: UIScreen.main.bounds.width, height: 175)
+		 .preferredColorScheme(.dark)
 	  }
-	  .frame(width: UIScreen.main.bounds.width, height: 175)
-	  .preferredColorScheme(.dark)
+   }
+
+   struct BasesView_Previews: PreviewProvider {
+	  static var previews: some View {
+		 BasesView(onFirst: true,
+				   onSecond: false,
+				   onThird: true,
+				   strikes: 2,
+				   balls: 3,
+				   outs: 1,
+				   inning: 5,
+				   inningTxt: "Top 5th",
+				   thisSubStrike: 2,
+				   atBat: "J. Soto",
+				   atBatPic: "https://a.espncdn.com/i/headshots/mlb/players/full/31006.png",
+				   showPic: true,
+				   batterStats: ".250",
+				   batterLine: "1-2, 3B, R")
+
+		 .frame(width: 300, height: 300)
+	  }
    }
 }
-
-struct BasesView_Previews: PreviewProvider {
-   static var previews: some View {
-	  BasesView(onFirst: true,
-				onSecond: false,
-				onThird: true,
-				strikes: 2,
-				balls: 3,
-				outs: 1,
-				inning: 5,
-				inningTxt: "Top 5th",
-				thisSubStrike: 2,
-				atBat: "J. Soto",
-				atBatPic: "https://a.espncdn.com/i/headshots/mlb/players/full/31006.png",
-				showPic: true)
-
-	  .frame(width: 300, height: 300)
-   }
-}
-
-
