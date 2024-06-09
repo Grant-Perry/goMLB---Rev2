@@ -51,14 +51,17 @@ struct ContentView: View {
 			   let batterStats = event.batterStats
 			   let batterLine = event.batterLine
 
-			   scoreCardView(vm: gameViewModel,
-							 titleSize: titleSize,
-							 tooDark: tooDark,
-							 event: event,
-							 scoreSize: Int(scoreSize),
-							 numUpdates: $numUpdates,
-							 refreshGame: $refreshGame,
-							 timeRemaining: $thisTimeRemaining)
+			   scoreCardView(
+				  vm: gameViewModel,
+				  titleSize: titleSize,
+				  tooDark: tooDark,
+				  event: event,
+				  scoreSize: Int(scoreSize),
+				  numUpdates: $numUpdates,
+				  refreshGame: $refreshGame,
+				  timeRemaining: $thisTimeRemaining,
+				  selectedEventID: $selectedEventID // Added this parameter
+			   )
 
 			   if event.isInProgress {
 				  VStack {

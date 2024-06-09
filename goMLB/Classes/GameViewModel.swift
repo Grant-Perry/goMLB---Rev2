@@ -22,14 +22,15 @@ class GameViewModel: ObservableObject {
    @Published var startTime: String = ""
    @Published var isToday = false
    @Published var previousLastPlay = ""
-   @Published var maxUpdates = 20
    var isDebuggingEnabled = false // true to use local file
 
    // Published properties for UI elements
    @Published var logoWidth = 90.0
    @Published var teamSize = 16.0
    @Published var teamScoreSize = 25.0
+   @Published var maxUpdates = 20
 
+   @AppStorage("favTeam") var favTeam: String = "New York Yankees" // Default value
 
    func loadAllGames(showLiveAction: Bool, completion: (() -> Void)? = nil) {
 	  if isDebuggingEnabled {
@@ -53,9 +54,9 @@ class GameViewModel: ObservableObject {
 
    private func processGameData(data: Data, showLiveAction: Bool, completion: (() -> Void)? = nil) {
 	  do {
-		 if let jsonString = String(data: data, encoding: .utf8) {
-//			print("Raw JSON Response: \(jsonString)")
-		 }
+//		 if let jsonString = String(data: data, encoding: .utf8) {
+////			print("Raw JSON Response: \(jsonString)")
+//		 }
 		 let decodedResponse = try JSONDecoder().decode(APIResponse.self, from: data)
 		 DispatchQueue.main.async { [self] in
 			self.allEvents = decodedResponse.events.map { event in
@@ -210,7 +211,16 @@ class GameViewModel: ObservableObject {
 
    // Helper functions to extract specific stats (add these in your GameViewModel)
 
-   // GameViewModel.swift (continued)
+   func loadFavoriteTeamGames(completion: (() -> Void)? = nil) {
+	  teamPlaying = favTeam // Set teamPlaying to the favorite team
+	  loadAllGames(showLiveAction: false, 
+				   completion: completion) // Load games for the favorite team
+   }
+
+   func setFavoriteTeam(teamName: String) {
+	  favTeam = teamName
+   }
+
    private func getBatterStats(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
 	  return stats[safe: 2]?.displayValue ?? "N/A"
    }

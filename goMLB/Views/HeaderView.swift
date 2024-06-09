@@ -10,6 +10,10 @@
 import SwiftUI
 
 struct HeaderView: View {
+   @ObservedObject var gameViewModel = GameViewModel()
+
+   @Binding var selectedEventID: String? // Make it a binding
+
    var event: gameEvent
    var visitors: String?
    var home: String?
@@ -54,6 +58,18 @@ struct HeaderView: View {
 					 .font(.system(size: 12))
 					 .foregroundColor(.white)
 			   }
+
+			   Button("Fav Team") {
+				  // Call the function to load games for the favorite team
+				  gameViewModel.loadFavoriteTeamGames()
+				  // Update the selectedEventID to the first game of the favorite team
+				  selectedEventID = gameViewModel.filteredEvents.first?.id.uuidString
+			   }
+			   .font(.footnote)
+			   .padding(4)
+			   .background(Color.blue)
+			   .foregroundColor(.white)
+			   .clipShape(Capsule())
 
 			   // Button to toggle refreshGame and update text
 			   Button(action: {

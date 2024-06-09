@@ -10,7 +10,10 @@
 import SwiftUI
 
 struct scoreCardView: View {
-   var vm: GameViewModel
+   @ObservedObject var vm: GameViewModel // Add gameViewModel
+   @Binding var selectedEventID: String? // Add selectedEventID binding
+
+//   var vm: GameViewModel
    var titleSize: CGFloat
    var tooDark: String
    var event: gameEvent
@@ -38,7 +41,8 @@ struct scoreCardView: View {
    var winColor: Color { .green }
    var thisIsInProgress: Bool { event.isInProgress }
 
-   init(vm: GameViewModel, titleSize: CGFloat, tooDark: String, event: gameEvent, scoreSize: Int, numUpdates: Binding<Int>, refreshGame: Binding<Bool>, timeRemaining: Binding<Int>) {
+   // scoreCardView.swift
+   init(vm: GameViewModel, titleSize: CGFloat, tooDark: String, event: gameEvent, scoreSize: Int, numUpdates: Binding<Int>, refreshGame: Binding<Bool>, timeRemaining: Binding<Int>, selectedEventID: Binding<String?>) {
 	  self.vm = vm
 	  self.titleSize = titleSize
 	  self.tooDark = tooDark
@@ -47,6 +51,7 @@ struct scoreCardView: View {
 	  self._numUpdates = numUpdates
 	  self._refreshGame = refreshGame
 	  self._timeRemaining = timeRemaining
+	  self._selectedEventID = selectedEventID
 
 	  // Initialize let properties here
 	  if let firstEvent = vm.filteredEvents.first {
@@ -84,10 +89,13 @@ struct scoreCardView: View {
 	  self.visitWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0)
    }
 
+
    var body: some View {
 	  VStack {
 		 VStack {
 			HeaderView(
+			   gameViewModel: vm,
+			   selectedEventID: $selectedEventID,
 			   event: event,
 			   visitors: event.visitors,
 			   home: event.home,
