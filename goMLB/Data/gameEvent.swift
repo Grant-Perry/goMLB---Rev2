@@ -1,8 +1,8 @@
 import SwiftUI
-import Foundation
 
-struct gameEvent: Codable {
-   var ID: UUID = UUID()
+
+struct gameEvent: Codable, Identifiable {
+   var id: UUID = UUID()
    var title: String
    var shortTitle: String
    var home: String
@@ -13,9 +13,9 @@ struct gameEvent: Codable {
    var homeScore: String
    var visitScore: String
    var homeColor: String
-   var homeAltColor: String
+   var homeAltColor: String?
    var visitorColor: String
-   var visitorAltColor: String
+   var visitorAltColor: String?
    var on1: Bool
    var on2: Bool
    var on3: Bool
@@ -41,4 +41,10 @@ struct gameEvent: Codable {
    var homeRuns: String
    var homeHits: String
    var homeErrors: String
+   var isInProgress: Bool { // remember this computed property way - i like 6/8/24
+	  !inningTxt.contains("Final") && !inningTxt.contains("Scheduled")
+   }
+
 }
+
+

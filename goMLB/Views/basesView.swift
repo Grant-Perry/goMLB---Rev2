@@ -10,7 +10,6 @@
 import SwiftUI
 
 struct BasesView: View {
-
    var onFirst: Bool
    var onSecond: Bool
    var onThird: Bool
@@ -28,11 +27,8 @@ struct BasesView: View {
 
    var body: some View {
 	  VStack {
-
 		 HStack(alignment: .center) {
-
 			GeometryReader { geometry in
-
 			   ZStack {
 				  // Top middle (Second base)
 				  Image(systemName: onSecond ? "diamond.fill" : "diamond")
@@ -49,16 +45,12 @@ struct BasesView: View {
 			}
 			.frame(width: 50, height: 30)
 			.padding(10)
-
-
 		 }
 
 		 VStack(alignment: .center, spacing: 2) {
-
 			VStack(spacing: 0) {
 			   Text("\(balls)-\(strikes)\(thisSubStrike  > 0 ? ".\(thisSubStrike)" : "")")
 				  .font(.system(size: 14))
-			   //               Spacer()
 
 			   VStack {
 				  outsView(outs: outs)
@@ -66,6 +58,10 @@ struct BasesView: View {
 					 .padding(.top, 1)
 			   }
 			   if showPic { // don't show bottom half if false to use this view in other smaller places
+				  VStack {
+					 Spacer() // Push the content to the bottom
+							  // ... content to show when showPic is true ...
+				  }
 				  Spacer()
 
 				  // MARK: Inning arrow up/down inning text
@@ -80,7 +76,6 @@ struct BasesView: View {
 						.font(.footnote)
 						.padding(.top, 3)
 						.padding(.bottom, 2)
-
 					 }
 				  }
 				  Spacer()
@@ -104,7 +99,6 @@ struct BasesView: View {
 									   .frame(width: 70)
 									   .clipShape(Circle())
 
-
 								 case .failure:
 									// If the image fails to load (e.g., show an error image or a default image)
 									Image(systemName: "photo")
@@ -113,7 +107,6 @@ struct BasesView: View {
 									   .frame(width: 100, height: 100)
 									   .foregroundColor(.gray)
 									   .clipShape(Circle())
-
 
 								 @unknown default:
 									// Future proofing for additional cases that are not covered
@@ -127,18 +120,22 @@ struct BasesView: View {
 					 }
 
 					 HStack {
-						Text("\(atBat)")
-						   .font(.system(size: 14))
-						if !atBat.isEmpty {
-						   Text("\(batterStats)")
-						   Text("\(batterLine)")
+						VStack(alignment: .leading) {
+						   Text("\(atBat)")
+							  .font(.system(size: 14))
+						   if !atBat.isEmpty {
+							  Text("\(batterStats)")
+								 .font(.system(size: 12))
+							  Text("\(batterLine)")
+								 .font(.system(size: 12))
+						   }
 						}
 					 }
 				  }
 			   }
 			}
 		 }
-		 .frame(width: UIScreen.main.bounds.width, height: 175)
+//		 .frame(width: UIScreen.main.bounds.width, height: 175)
 		 .preferredColorScheme(.dark)
 	  }
    }
@@ -157,9 +154,8 @@ struct BasesView: View {
 				   atBat: "J. Soto",
 				   atBatPic: "https://a.espncdn.com/i/headshots/mlb/players/full/31006.png",
 				   showPic: true,
-				   batterStats: ".250",
+				   batterStats: "0.250",
 				   batterLine: "1-2, 3B, R")
-
 		 .frame(width: 300, height: 300)
 	  }
    }

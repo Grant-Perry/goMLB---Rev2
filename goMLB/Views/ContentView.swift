@@ -14,227 +14,112 @@ struct ContentView: View {
    @Environment(\.colorScheme) var colorScheme
    @State var selectedTeam = "New York Yankees"
    @State private var showPicker = false
-   @State private var refreshGame = true // refetch JSON
+   @State private var refreshGame = true
    @State var thisTimeRemaining = 15
    @State var timerValue = 15
-   @State var maxUpdates = 20 // about 6.5 minutes
-   @State var scoreColor = Color(.blue)
-   @State var winners = Color(.green)
-
-   @State var version = "99.8"
+   @State var maxUpdates = 20
    @State var tooDark = "#bababa"
    @State private var selectedEventID: String?
    @State var showLiveAction = false
    @State var numUpdates = 0
    @State private var showAlert = false
-   @State private var isBackgroundDimmed = false // New state variable for dimming
+   @State private var isBackgroundDimmed = false
    @State var timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
    @State var fakeTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-   private var scoreSize = 55.0
-   private var titleSize = 35.0
-   private var logoWidth = 90.0
-   private var teamSize = 16.0
-   private var teamScoreSize = 25.0
-   var cardColor = Color(#colorLiteral(red: 0.1487929029, green: 0.1488425059, blue: 0.1603987949, alpha: 1))
 
-
+   // Constants for View Dimensions and Styles
+   private let scoreSize = 55.0
+//   private let teamSize = 16.0
+   let teamSize: CGFloat
+   let teamScoreSize: CGFloat
+   private let titleSize = 35.0
+   private let logoWidth = 90.0
+//   private let teamScoreSize = 25.0
+   private let cardColor = Color(#colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1))
 
    let dateFormatter = DateFormatter()
 
    var body: some View {
 	  VStack(spacing: -15) {
-		 List(gameViewModel.filteredEvents.prefix(1), id: \.ID) { event in
-			let vm = gameViewModel.filteredEvents.first
-			let atBat = vm?.atBat
-			let atBatPic = vm?.atBatPic
-			var liveAction: Bool {
-			   if event.inningTxt.contains("Final") || event.inningTxt.contains("Scheduled") {
-				  return false
-			   } else {
-				  return true
+		 List {
+			if let event = gameViewModel.filteredEvents.first {
+			   let atBat = event.atBat
+			   let atBatPic = event.atBatPic
+			   let batterStats = event.batterStats
+			   let batterLine = event.batterLine
+			   var liveAction: Bool {
+				  if event.inningTxt.contains("Final") || event.inningTxt.contains("Scheduled") {
+					 return false
+				  } else {
+					 return true
+				  }
 			   }
-			}
 
-			// MARK: Title / Header Tile
-			scoreCardView(vm: gameViewModel,
-						  titleSize: titleSize,
-						  tooDark: tooDark,
-						  event: event,
-						  scoreSize: Int(scoreSize),
-						  numUpdates: $numUpdates,
-						  refreshGame: $refreshGame,
-						  timeRemaining: $thisTimeRemaining)
+			   // MARK: Title / Header Tile
+			   scoreCardView(vm: gameViewModel,
+							 titleSize: titleSize,
+							 tooDark: tooDark,
+							 event: event,
+							 scoreSize: Int(scoreSize),
+							 numUpdates: $numUpdates,
+							 refreshGame: $refreshGame,
+							 timeRemaining: $thisTimeRemaining)
 
-			if liveAction {
-			   VStack {
-				  // MARK: Last Play & Bases card
-				  HStack {
-					 if let lastPlay = event.lastPlay {
-						Text(lastPlay)
-						   .font(.footnote)
-						   .lineLimit(1)
-						   .minimumScaleFactor(0.5)
-						   .scaledToFit()
+			   if liveAction {
+				  VStack {
+					 // MARK: Last Play & Bases card
+					 HStack {
+						if let lastPlay = event.lastPlay {
+						   Text(lastPlay)
+							  .font(.footnote)
+							  .lineLimit(1)
+							  .minimumScaleFactor(0.5)
+							  .scaledToFit()
+						}
+					 }
+
+					 // MARK: Bases View
+					 HStack {
+						BasesView(onFirst: event.on1,
+								  onSecond: event.on2,
+								  onThird: event.on3,
+								  strikes: event.strikes ?? 0,
+								  balls: event.balls ?? 0,
+								  outs: event.outs ?? 0,
+								  inning: event.inning,
+								  inningTxt: event.inningTxt,
+								  thisSubStrike: event.thisSubStrike,
+								  atBat: atBat,
+								  atBatPic: atBatPic,
+								  showPic: true,
+								  batterStats: batterStats,
+								  batterLine: batterLine)
 					 }
 				  }
-
-				  // MARK: Bases View
-				  HStack {
-					 BasesView(onFirst: event.on1,
-							   onSecond: event.on2,
-							   onThird: event.on3,
-							   strikes: event.strikes ?? 0,
-							   balls: event.balls ?? 0,
-							   outs: event.outs ?? 0,
-							   inning: event.inning,
-							   inningTxt: event.inningTxt,
-							   thisSubStrike: event.thisSubStrike,
-							   atBat: atBat ?? "N/A",
-							   atBatPic: atBatPic ?? "N/A URL",
-							   showPic: true, 
-							   batterStats: event.batterStats,
-							   batterLine: event.batterLine)
-				  }
+			   } else { // not liveAction so show next game
+				  Text("Next Game: \(event.startTime)")
+					 .font(.subheadline)
+					 .frame(maxWidth: .infinity, alignment: .trailing)
 			   }
-			} else { // not liveAction so show next game
-			   Text("Next Game: \(event.startTime)")
-				  .font(.subheadline)
-				  .frame(maxWidth: .infinity, alignment: .trailing)
 			}
 		 }
 		 .frame(width: UIScreen.main.bounds.width, height: 565)
 		 .padding(.top, -15)
 		 Spacer()
-		 // MARK: HorizontalMatchupView list
 
 		 ScrollView(.horizontal, showsIndicators: false) {
 			HStack(spacing: 10) {
-			   ForEach(gameViewModel.allEvents, id: \.ID) { event in
-
-				  let vm = gameViewModel.filteredEvents.first
-				  let atBat = vm?.atBat
-				  let atBatPic = vm?.atBatPic
-
-				  var liveAction: Bool {
-					 if event.inningTxt.contains("Final") || event.inningTxt.contains("Scheduled") {
-						return false
-					 } else {
-						return true
-					 }
-				  }
+			   ForEach(gameViewModel.allEvents) { event in
 				  Button(action: {
-					 selectedEventID = event.ID.uuidString
+					 selectedEventID = event.id.uuidString
 					 gameViewModel.updateTeamPlaying(with: event.visitors)
-					 gameViewModel.teamPlaying = event.visitors
 				  }) {
-					 VStack(spacing: 0) {
-						//						if !liveAction {
-						//						   HStack {
-						//							  Text("\(event.startTime) start")
-						//								 .font(.system(size: 12, weight: .bold))
-						//
-						//								 .frame(maxWidth: .infinity, alignment: .top)
-						//								 .padding(.top, -28)
-						//
-						//						   }
-						//						}
-						HStack(spacing: 3) {
-						   HStack {
-							  Text(event.visitors)
-								 .font(.system(size: teamSize, weight: .bold))
-								 .foregroundColor(.white)
-						   }
-						   HStack {
-							  Text("vs.")
-								 .font(.system(size: 9))
-						   }
-						   HStack {
-							  Text(event.home)
-								 .font(.system(size: teamSize, weight: .bold))
-								 .foregroundColor(.white)
-							  //							  Spacer()
-						   }
-						}
-						HStack {
-
-						   HStack {
-							  Spacer()
-							  Text(event.visitScore)
-								 .font(.system(size: teamScoreSize))
-								 .foregroundColor(.white)
-
-								 .frame(maxWidth: 40, alignment: .trailing)
-
-
-							  //							  Spacer()
-						   }
-
-						   HStack {
-							  if liveAction {
-								 BasesView(onFirst: event.on1,
-										   onSecond: event.on2,
-										   onThird: event.on3,
-										   strikes: event.strikes ?? 0,
-										   balls: event.balls ?? 0,
-										   outs: event.outs ?? 0,
-										   inning: event.inning,
-										   inningTxt: event.inningTxt,
-										   thisSubStrike: event.thisSubStrike,
-										   atBat: atBat ?? "N/A",
-										   atBatPic: atBatPic ?? "N/A URL", 
-										   showPic: true,
-										   batterStats: event.batterStats,
-										   batterLine: event.batterLine)
-
-								 .scaleEffect(0.55)
-
-								 .frame(width: 40, height:20)
-								 .padding(.top, 20)
-							  } else {
-								 Text(event.inningTxt.contains("Final")  ? "Final" : "") // space in the middle of the scores f
-									.frame(width: 40, height:20)
-									.font(.footnote)
-									.foregroundColor(.white)
-									.frame(maxWidth: .infinity)
-									.lineLimit(1)
-									.minimumScaleFactor(0.5)
-									.scaledToFit()
-							  }
-						   }
-
-						   HStack {
-							  Spacer()
-							  Text(event.homeScore)
-								 .font(.system(size: teamScoreSize))
-
-								 .frame(maxWidth: .infinity, alignment: .leading)
-
-								 .foregroundColor(.white)
-							  Spacer()
-						   }
-						}
-						if !liveAction {
-						   HStack {
-							  Text("Next Game: \(event.startTime)")
-								 .font(.system(size: 12, weight: .bold))
-								 .foregroundColor(.white)
-								 .frame(maxWidth: .infinity, alignment: .top)
-								 .padding(.top, 20)
-						   }
-						}
-					 }
-					 .frame(width: 165, height: 120)
-					 .background(
-						event.inningTxt.contains("Final") ? Color.indigo.gradient :
-						   event.inningTxt.contains("Scheduled") ? Color.yellow.gradient :
-						   Color.blue.gradient
-					 )
-					 .foregroundColor(.white)
-					 .cornerRadius(10)
-					 .opacity(0.9)
+					 HorizontalCardView(gameViewModel: gameViewModel,
+										event: event,
+										teamSize: gameViewModel.teamSize,
+										teamScoreSize: gameViewModel.teamScoreSize)
 				  }
-				  .buttonStyle(PlainButtonStyle())
-
+				  .buttonStyle(.plain)
 			   }
 			}
 			.padding()
@@ -243,14 +128,12 @@ struct ContentView: View {
 		 .background(cardColor)
 		 .ignoresSafeArea(edges: .bottom)
 		 .opacity(0.9)
-	  }
 
+	  }
 	  .onAppear {
-		 gameViewModel.loadAllGames(showLiveAction: showLiveAction)
-		 if selectedEventID == nil,
-			let firstEventID = gameViewModel.allEvents.first?.ID.uuidString {
-			DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-			   selectedEventID = firstEventID
+		 gameViewModel.loadAllGames(showLiveAction: showLiveAction) {
+			if selectedEventID == nil {
+			   selectedEventID = gameViewModel.allEvents.first?.id.uuidString
 			}
 		 }
 	  }
@@ -258,13 +141,12 @@ struct ContentView: View {
 	  .onReceive(timer) { _ in
 		 if self.refreshGame {
 			let previousEventID = self.selectedEventID
-			// Increment update counter
 			numUpdates += 1
 			if numUpdates >= maxUpdates {
 			   refreshGame = false
-			   showAlert = true  // Show the alert when the limit is reached
-			   isBackgroundDimmed = true // Dim the background
-			   timer.upstream.connect().cancel() // Stop the timer
+			   showAlert = true
+			   isBackgroundDimmed = true
+			   timer.upstream.connect().cancel()
 			} else {
 			   gameViewModel.loadAllGames(showLiveAction: showLiveAction) {
 				  DispatchQueue.main.async {
@@ -283,18 +165,6 @@ struct ContentView: View {
 		 }
 	  }
 	  VStack(alignment: .center, spacing: 0) {
-		 //		 HStack(spacing: 0) {
-		 //			Text("Live Action Only:")
-		 //			   .font(.caption)
-		 //			Toggle("", isOn: $showLiveAction)
-		 //			   .labelsHidden()
-		 //			   .scaleEffect(0.6)
-		 //			   .onChange(of: showLiveAction) {
-		 //				  gameViewModel.loadAllGames(showLiveAction: showLiveAction)
-		 //			   }
-		 //		 }
-		 //		 .padding()
-		 //		 		 pickTeam(selectedEventID: $selectedEventID)
 		 Text("Version: \(getAppVersion())")
 			.font(.system(size: 10))
 	  }
@@ -318,12 +188,12 @@ struct ContentView: View {
 			message: Text("Would you like to continue receiving updates?"),
 			primaryButton: .default(Text("Continue")) {
 			   refreshGame = true
-			   numUpdates = 0 // Reset the counter
-			   isBackgroundDimmed = false // Undim the background
-			   timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect() // Restart the timer
+			   numUpdates = 0
+			   isBackgroundDimmed = false
+			   timer = Timer.publish(every: 15, on: .main, in: .common).autoconnect()
 			},
 			secondaryButton: .cancel(Text("Stop")) {
-			   isBackgroundDimmed = false // Undim the background
+			   isBackgroundDimmed = false
 			   refreshGame = false
 			}
 		 )
@@ -331,67 +201,67 @@ struct ContentView: View {
 	  .overlay(
 		 Group {
 			if isBackgroundDimmed {
-			   Color.black.opacity(0.5) // Dimming overlay
+			   Color.black.opacity(0.5)
 				  .edgesIgnoringSafeArea(.all)
 			}
 		 }
 	  )
-
    }
 
-
-   func pickTeam(selectedEventID: Binding<String?>) -> some View {
-	  Picker("Select a matchup:", selection: selectedEventID) {
-		 ForEach(gameViewModel.allEvents, id: \.ID) { event in
-			let awayTeam = event.visitors
-			let homeTeam = event.home
-			let awayScore = Int(event.visitScore) ?? 0
-			let homeScore = Int(event.homeScore) ?? 0
-			let startTime = event.startTime
-			let inningTxt = event.inningTxt
-
-			let isFinal = inningTxt.contains("Final")
-			let isSuspended = inningTxt.contains("Suspended")
-			let scoreString = isFinal
-			? "\(awayScore) | \(homeScore) (Final)"
-			: (isSuspended
-			   ? "\(awayScore) | \(homeScore) (Suspended)"
-			   : "\(awayScore) - \(homeScore)")
-
-			let scoreText = awayScore != 0 || homeScore != 0 ? "\(scoreString)" : "\(startTime)"
-			let matchupText = "\(awayTeam) vs. \(homeTeam)\n\(scoreText)"
-
-			VStack(alignment: .leading) {
-			   Text(matchupText)
-				  .font(.headline)
-				  .lineLimit(2)
-				  .fixedSize(horizontal: false, vertical: true)
-			   if awayScore != 0 || homeScore != 0 {
-				  Text(scoreText)
-					 .font(.subheadline)
-					 .foregroundColor(awayScore > homeScore ? .green : .white)
-			   } else {
-				  Text(startTime)
-					 .font(.subheadline)
-			   }
-			}
-			.tag(event.ID.uuidString as String?)
-		 }
-	  }
-	  .pickerStyle(MenuPickerStyle())
-	  .padding()
-	  .background(Color.gray.opacity(0.2))
-	  .cornerRadius(10)
-	  .padding(.horizontal)
-
-	  .onChange(of: selectedEventID.wrappedValue) {
-		 if let newValue = selectedEventID.wrappedValue,
-			let selectedEvent = gameViewModel.allEvents.first(where: { $0.ID.uuidString == newValue }) {
-			gameViewModel.updateTeamPlaying(with: selectedEvent.visitors)
-			gameViewModel.teamPlaying = selectedEvent.visitors
-		 }
-	  }
-   }
+//   func pickTeam(selectedEventID: Binding<String?>) -> some View {
+//	  Picker("Select a matchup:", selection: selectedEventID) {
+//		 ForEach(Array(gameViewModel.allEvents.indices.enumerated()), id: \.offset) { index, _ in
+//			let event = $gameViewModel.allEvents[index] // Get a binding to the individual event
+//			let awayTeam = event.visitors // Removed .wrappedValue
+//			let homeTeam = event.home // Removed .wrappedValue
+//			llet awayScore = Int(event.wrappedValue.visitScore) ?? 0
+//			let homeScore = Int(event.wrappedValue.homeScore) ?? 0
+//
+//			let startTime = event.startTime
+//			let inningTxt = event.inningTxt
+//
+//
+//			let isFinal = inningTxt.contains("Final")
+//			let isSuspended = inningTxt.contains("Suspended")
+//			let scoreString = (isFinal != 0)
+//			? "\(awayScore) | \(homeScore) (Final)"
+//			: ((isSuspended != 0)
+//			   ? "\(awayScore) | \(homeScore) (Suspended)"
+//			   : "\(awayScore) - \(homeScore)")
+//
+//			let scoreText = awayScore != 0 || homeScore != 0 ? "\(scoreString)" : "\(startTime)"
+//			let matchupText = "\(awayTeam) vs. \(homeTeam)\n\(scoreText)"
+//
+//			VStack(alignment: .leading) {
+//			   Text(matchupText)
+//				  .font(.headline)
+//				  .lineLimit(2)
+//				  .fixedSize(horizontal: false, vertical: true)
+//			   if awayScore != 0 || homeScore != 0 {
+//				  Text(scoreText)
+//					 .font(.subheadline)
+//					 .foregroundColor(awayScore > homeScore ? .green : .white)
+//			   } else {
+//				  Text(startTime)
+//					 .font(.subheadline)
+//			   }
+//			}
+//			.tag(event.id.uuidString as String?)
+//		 }
+//	  }
+//	  .pickerStyle(MenuPickerStyle())
+//	  .padding()
+//	  .background(Color.gray.opacity(0.2))
+//	  .cornerRadius(10)
+//	  .padding(.horizontal)
+//	  .onChange(of: selectedEventID.wrappedValue) {
+//		 if let newValue = selectedEventID.wrappedValue,
+//			let selectedEvent = gameViewModel.allEvents.first(where: { $0.id.uuidString == newValue }) {
+//			gameViewModel.updateTeamPlaying(with: selectedEvent.visitors)
+//			gameViewModel.teamPlaying = selectedEvent.visitors
+//		 }
+//	  }
+//   }
 }
 
 // MARK: Helpers
@@ -416,7 +286,6 @@ extension ContentView {
 	  return Int(intValue)
    }
 
-
    func getAppVersion() -> String {
 	  if let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
 		 return version
@@ -429,5 +298,5 @@ extension ContentView {
 // Preview
 
 #Preview {
-   ContentView()
+   ContentView(teamSize: AppConstants.teamSize, teamScoreSize: AppConstants.teamScoreSize)
 }

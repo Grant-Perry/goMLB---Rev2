@@ -24,94 +24,65 @@ struct HeaderView: View {
    @Binding var numUpdates: Int
 
    var body: some View {
-	  VStack(spacing: 0) {
-		 HStack(alignment: .center) {
-			VStack(spacing: -4) {  // Remove spacing between VStack elements
-
-			   HStack(spacing: -4) {
-				  Spacer()
-				  HStack {
-					 Text("\(visitors ?? "")")
-						.font(.system(size: 35))
-						.foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
-						.frame(width: 150, alignment: .trailing)
-						.lineLimit(1)
-						.minimumScaleFactor(0.5)
-				  }
-				  HStack {
-					 Text("vs")
-						.font(.footnote)
-						.padding(.vertical, 2)
-						.frame(width: 40)
-				  }
-
-				  HStack {
-					 Text("\(home ?? "")")
-						.font(.system(size: 35))
-						.foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
-						.frame(width: 150, alignment: .leading)
-						.lineLimit(1)
-						.minimumScaleFactor(0.5)
-				  }
-				  Spacer()
-			   }
-
-			   if (inningTxt?.contains("Scheduled") ?? false || inningTxt?.contains("Final") ?? false ) &&  !isToday {
-				  Text("\nScheduled: \(startTime ?? "")")
-					 .font(.system(size: 14))
-					 .foregroundColor(.white)
-			   }
-			   else {
-				  Text("\(inningTxt ?? "")")
-					 .font(.system(size: 14))
-					 .foregroundColor(.white)
-					 .padding(.top, 5)
-			   }
-
-			   // MARK: Outs view
-
-			   if let lowerInningTxt = inningTxt {
-				  if lowerInningTxt.contains("Top") || lowerInningTxt.contains("Bot")  {
-					 outsView(outs: eventOuts ?? 0 )
-						.frame(width: UIScreen.main.bounds.width, height: 20)
-						.padding(.top, 6)
-						.font(.system(size: 11))
-				  }
-			   }
-
-			   Button(action: {
-				  refreshGame.toggle() // Toggle the state of refreshGame on click
-			   }) {
-				  Text("\(refreshGame ? "Updating" : "Not Updating") - \(numUpdates)\n")
-					 .foregroundColor(refreshGame ? .green : .red) // Change color based on refreshGame
-					 .font(.caption) // Set the font size
-					 .frame(width: 220, height: 22, alignment: .trailing) // Frame for the text, right aligned
-					 .padding(.trailing) // Padding inside the button to the right
-
-				  if refreshGame {
-					 timerRemaingView(timeRemaining: $timeRemaining)
-						.font(.system(size: 20))
-						.frame(width: 200, height: 11, alignment: .trailing) // Frame for the text, right aligned
-						.padding(.top, -17)
-				  }
-			   }
-			   .frame(maxWidth: .infinity, alignment: .trailing) // Ensure the button itself is right-aligned
-			   .padding(.trailing, 20) // Padding from the right edge of the container
-			   .cornerRadius(10) // Rounded corners for the button
+	  VStack(alignment: .leading, spacing: 0) { // Align items to the leading edge and remove default spacing
+		 HStack(alignment: .top) { // Align items to the top in the HStack
+			VStack(alignment: .leading) { // Left-aligned team names
+			   Text(visitors ?? "Visitor")
+				  .font(.system(size: 18, weight: .bold))
+				  .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
+			   Text(home ?? "Home")
+				  .font(.system(size: 18, weight: .bold))
+				  .foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
 			}
-			.multilineTextAlignment(.center)
-			.padding()
-			.lineSpacing(0)
+
+			Spacer() // Push elements to the sides
+
+			VStack(alignment: .trailing) { // Right-aligned time/inning
+			   HStack(spacing: 0) { // Remove space between text and number
+				  Text("Middle ") // Hardcode "Middle" based on screenshot
+					 .font(.system(size: 12))
+					 .foregroundColor(.gray)
+				  Text(inningTxt?.last?.wholeNumberValue.map(String.init) ?? "")
+					 .font(.system(size: 12))
+					 .foregroundColor(.gray)
+			   }
+			   Text("Updating in \(timeRemaining)") // Display "Updating in" text
+				  .font(.system(size: 12))
+				  .foregroundColor(.orange)
+			}
 		 }
-		 .frame(width: UIScreen.main.bounds.width, height: 200)
-		 .minimumScaleFactor(0.25)
-		 .scaledToFit()
+		 .padding(.horizontal) // Add horizontal padding only
+
+		 HStack { // Second row for "Outs" and "Today's Game"
+			Text("\(eventOuts ?? 0)")
+			   .font(.caption)
+			   .foregroundColor(Color(UIColor.lightGray)) // Light gray color
+
+			if isToday {
+			   Text("Today's Game")
+				  .font(.caption)
+				  .foregroundColor(.green)
+			}
+
+			Spacer()
+
+			Text("Updates: \(numUpdates)")
+			   .font(.caption)
+			   .foregroundColor(Color(UIColor.lightGray)) // Light gray color
+		 }
+		 .padding(.horizontal) // Add horizontal padding only
+		 .padding(.top, 4) // Add slight top padding
 	  }
-	  .frame(width: UIScreen.main.bounds.width, height: 120, alignment: .trailing)
-	  .cornerRadius(10)
+	  .padding(.vertical, 8) // Add vertical padding for top and bottom
+	  .background(
+		 RoundedRectangle(cornerRadius: 12)
+			.fill(Color(uiColor: .secondarySystemBackground))
+	  )
    }
 
-   
+   func getColorForUI(hex: String, thresholdHex: String) -> Color {
+	  return Color(hex: hex)
+   }
 }
 
 #Preview {
