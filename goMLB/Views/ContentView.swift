@@ -8,6 +8,7 @@
 //
 
 import SwiftUI
+//import HorizontalCardView
 
 struct ContentView: View {
    @ObservedObject var gameViewModel = GameViewModel()
@@ -17,8 +18,8 @@ struct ContentView: View {
    @State private var refreshGame = true
    @State var thisTimeRemaining = 15
    @State var timerValue = 15
-   @State var maxUpdates = 20
-   @State var tooDark = "#bababa"
+  
+   @State var tooDark = "#333333"
    @State private var selectedEventID: String?
    @State var showLiveAction = false
    @State var numUpdates = 0
@@ -29,15 +30,17 @@ struct ContentView: View {
 
    // Constants for View Dimensions and Styles
    private let scoreSize = 55.0
-//   private let teamSize = 16.0
    let teamSize: CGFloat
    let teamScoreSize: CGFloat
    private let titleSize = 35.0
    private let logoWidth = 90.0
-//   private let teamScoreSize = 25.0
-   private let cardColor = Color(#colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1))
+   private let cardColor = Color(#colorLiteral(red: 0.2605174184, green: 0.2605243921, blue: 0.260520637, alpha: 1))
 
-   let dateFormatter = DateFormatter()
+   let dateFormatter: DateFormatter = {
+	  let formatter = DateFormatter()
+	  formatter.dateFormat = "yyyy-MM-dd" // Match the format of event.startDate
+	  return formatter
+   }()
 
    var body: some View {
 	  VStack(spacing: -15) {
@@ -47,15 +50,7 @@ struct ContentView: View {
 			   let atBatPic = event.atBatPic
 			   let batterStats = event.batterStats
 			   let batterLine = event.batterLine
-			   var liveAction: Bool {
-				  if event.inningTxt.contains("Final") || event.inningTxt.contains("Scheduled") {
-					 return false
-				  } else {
-					 return true
-				  }
-			   }
 
-			   // MARK: Title / Header Tile
 			   scoreCardView(vm: gameViewModel,
 							 titleSize: titleSize,
 							 tooDark: tooDark,
@@ -65,9 +60,8 @@ struct ContentView: View {
 							 refreshGame: $refreshGame,
 							 timeRemaining: $thisTimeRemaining)
 
-			   if liveAction {
+			   if event.isInProgress {
 				  VStack {
-					 // MARK: Last Play & Bases card
 					 HStack {
 						if let lastPlay = event.lastPlay {
 						   Text(lastPlay)
@@ -78,7 +72,6 @@ struct ContentView: View {
 						}
 					 }
 
-					 // MARK: Bases View
 					 HStack {
 						BasesView(onFirst: event.on1,
 								  onSecond: event.on2,
@@ -97,7 +90,7 @@ struct ContentView: View {
 					 }
 				  }
 			   } else { // not liveAction so show next game
-				  Text("Next Game: \(event.startTime)")
+				  Text(event.nextGameDisplayText) // Use the computed property
 					 .font(.subheadline)
 					 .frame(maxWidth: .infinity, alignment: .trailing)
 			   }
@@ -105,6 +98,7 @@ struct ContentView: View {
 		 }
 		 .frame(width: UIScreen.main.bounds.width, height: 565)
 		 .padding(.top, -15)
+		 .listStyle(.plain)
 		 Spacer()
 
 		 ScrollView(.horizontal, showsIndicators: false) {
@@ -116,8 +110,9 @@ struct ContentView: View {
 				  }) {
 					 HorizontalCardView(gameViewModel: gameViewModel,
 										event: event,
-										teamSize: gameViewModel.teamSize,
-										teamScoreSize: gameViewModel.teamScoreSize)
+										teamSize: teamSize,
+										teamScoreSize: teamScoreSize)
+
 				  }
 				  .buttonStyle(.plain)
 			   }
@@ -142,7 +137,7 @@ struct ContentView: View {
 		 if self.refreshGame {
 			let previousEventID = self.selectedEventID
 			numUpdates += 1
-			if numUpdates >= maxUpdates {
+			if numUpdates >= gameViewModel.maxUpdates {
 			   refreshGame = false
 			   showAlert = true
 			   isBackgroundDimmed = true
@@ -207,61 +202,6 @@ struct ContentView: View {
 		 }
 	  )
    }
-
-//   func pickTeam(selectedEventID: Binding<String?>) -> some View {
-//	  Picker("Select a matchup:", selection: selectedEventID) {
-//		 ForEach(Array(gameViewModel.allEvents.indices.enumerated()), id: \.offset) { index, _ in
-//			let event = $gameViewModel.allEvents[index] // Get a binding to the individual event
-//			let awayTeam = event.visitors // Removed .wrappedValue
-//			let homeTeam = event.home // Removed .wrappedValue
-//			llet awayScore = Int(event.wrappedValue.visitScore) ?? 0
-//			let homeScore = Int(event.wrappedValue.homeScore) ?? 0
-//
-//			let startTime = event.startTime
-//			let inningTxt = event.inningTxt
-//
-//
-//			let isFinal = inningTxt.contains("Final")
-//			let isSuspended = inningTxt.contains("Suspended")
-//			let scoreString = (isFinal != 0)
-//			? "\(awayScore) | \(homeScore) (Final)"
-//			: ((isSuspended != 0)
-//			   ? "\(awayScore) | \(homeScore) (Suspended)"
-//			   : "\(awayScore) - \(homeScore)")
-//
-//			let scoreText = awayScore != 0 || homeScore != 0 ? "\(scoreString)" : "\(startTime)"
-//			let matchupText = "\(awayTeam) vs. \(homeTeam)\n\(scoreText)"
-//
-//			VStack(alignment: .leading) {
-//			   Text(matchupText)
-//				  .font(.headline)
-//				  .lineLimit(2)
-//				  .fixedSize(horizontal: false, vertical: true)
-//			   if awayScore != 0 || homeScore != 0 {
-//				  Text(scoreText)
-//					 .font(.subheadline)
-//					 .foregroundColor(awayScore > homeScore ? .green : .white)
-//			   } else {
-//				  Text(startTime)
-//					 .font(.subheadline)
-//			   }
-//			}
-//			.tag(event.id.uuidString as String?)
-//		 }
-//	  }
-//	  .pickerStyle(MenuPickerStyle())
-//	  .padding()
-//	  .background(Color.gray.opacity(0.2))
-//	  .cornerRadius(10)
-//	  .padding(.horizontal)
-//	  .onChange(of: selectedEventID.wrappedValue) {
-//		 if let newValue = selectedEventID.wrappedValue,
-//			let selectedEvent = gameViewModel.allEvents.first(where: { $0.id.uuidString == newValue }) {
-//			gameViewModel.updateTeamPlaying(with: selectedEvent.visitors)
-//			gameViewModel.teamPlaying = selectedEvent.visitors
-//		 }
-//	  }
-//   }
 }
 
 // MARK: Helpers

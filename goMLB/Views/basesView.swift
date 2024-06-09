@@ -57,9 +57,11 @@ struct BasesView: View {
 					 .font(.system(size: 10))
 					 .padding(.top, 1)
 			   }
+//			   .padding(.top, 30)
+			   Spacer()
 			   if showPic { // don't show bottom half if false to use this view in other smaller places
 				  VStack {
-					 Spacer() // Push the content to the bottom
+//					 Spacer() // Push the content to the bottom
 							  // ... content to show when showPic is true ...
 				  }
 				  Spacer()
@@ -132,10 +134,11 @@ struct BasesView: View {
 						}
 					 }
 				  }
+				  .frame(maxWidth: .infinity, maxHeight: 80, alignment: .center)
 			   }
 			}
 		 }
-//		 .frame(width: UIScreen.main.bounds.width, height: 175)
+		 .frame(width: UIScreen.main.bounds.width, height: 165)
 		 .preferredColorScheme(.dark)
 	  }
    }

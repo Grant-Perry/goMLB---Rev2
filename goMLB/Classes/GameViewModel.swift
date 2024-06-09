@@ -22,6 +22,7 @@ class GameViewModel: ObservableObject {
    @Published var startTime: String = ""
    @Published var isToday = false
    @Published var previousLastPlay = ""
+   @Published var maxUpdates = 20
    var isDebuggingEnabled = false // true to use local file
 
    // Published properties for UI elements

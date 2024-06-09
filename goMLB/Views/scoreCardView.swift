@@ -36,6 +36,7 @@ struct scoreCardView: View {
    let batterStats: String?
    let batterLine: String?
    var winColor: Color { .green }
+   var thisIsInProgress: Bool { event.isInProgress }
 
    init(vm: GameViewModel, titleSize: CGFloat, tooDark: String, event: gameEvent, scoreSize: Int, numUpdates: Binding<Int>, refreshGame: Binding<Bool>, timeRemaining: Binding<Int>) {
 	  self.vm = vm
@@ -87,18 +88,21 @@ struct scoreCardView: View {
 	  VStack {
 		 VStack {
 			HeaderView(
-			   visitors: visitors,
-			   home: home,
-			   visitColor: visitColor,
-			   homeColor: homeColor,
-			   inningTxt: inningTxt,
-			   startTime: startTime,
+			   event: event,
+			   visitors: event.visitors,
+			   home: event.home,
+			   visitColor: event.visitorColor,
+			   homeColor: event.homeColor,
+			   inningTxt: event.inningTxt,
+			   startTime: event.startTime,
 			   tooDark: tooDark,
 			   isToday: vm.isToday,
 			   eventOuts: event.outs,
 			   refreshGame: $refreshGame,
+			   numUpdates: $numUpdates,
 			   timeRemaining: $timeRemaining,
-			   numUpdates: $numUpdates)
+			   thisIsInProgress: thisIsInProgress
+			)
 		 }
 
 		 // MARK: Scores card
@@ -107,12 +111,18 @@ struct scoreCardView: View {
 			HStack {
 			   VStack(alignment: .leading, spacing: 0) {
 				  VStack {
-					 Text("\(visitors ?? "")")
-						.font(.title3)
-						.minimumScaleFactor(0.5)
-						.lineLimit(1)
-						.frame(maxWidth: .infinity, alignment: .trailing)
-						.foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
+					 HStack {
+						Text("\(visitors ?? "")")
+//						if inningTxt?.contains("Top") ?? false {
+//						   Image(systemName: "arrowtriangle.left.fill")
+//							  .imageScale(.small)
+//						}
+					 }
+					 .font(.title3)
+					 .minimumScaleFactor(0.5)
+					 .lineLimit(1)
+					 .frame(maxWidth: .infinity, alignment: .trailing)
+					 .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
 
 					 Text("\(visitorRecord ?? "")")
 						.font(.caption)
@@ -149,8 +159,16 @@ struct scoreCardView: View {
 			   }
 			)
 
-			// MARK: Home Side
+// MARK: Home Side
 			HStack {
+			   // Middle inning arrows
+			   if inningTxt?.contains("Bottom") ?? false {
+				  Image(systemName: "arrowtriangle.right.fill")
+					 .imageScale(.small)
+			   } else if inningTxt?.contains("Top") ?? false {
+				  Image(systemName: "arrowtriangle.left.fill")
+					 .imageScale(.small)
+			   }
 			   Text("\(homeScore)")
 				  .font(.system(size: CGFloat(scoreSize)))
 				  .padding(.leading)
@@ -200,24 +218,53 @@ struct scoreCardView: View {
 			   Text("At Bat: \(atBat)")
 				  .font(.headline)
 			   if let batterStats = batterStats {
-				  Text("Stats: \(batterStats)")
+				  Text("Avg: \(batterStats)  |  \(batterLine ?? "")")
 					 .font(.subheadline)
 			   }
-			   if let batterLine = batterLine {
-				  Text("Line: \(batterLine)")
-					 .font(.subheadline)
+//			   if let batterLine = batterLine {
+//				  Text("today: \(batterLine)")
+//					 .font(.subheadline)
+//			   }
+			   Spacer()
+			   HStack(spacing: 0) {
+
+				  AsyncImage(url: URL(string: atBatPic ?? "")) { phase in
+					 switch phase {
+						case .empty:
+						   ProgressView()
+							  .progressViewStyle(CircularProgressViewStyle())
+							  .frame(width: 100, height: 100)
+						case .success(let image):
+						   image.resizable()
+							  .scaledToFit()
+							  .frame(width: 110)
+							  .clipShape(Circle())
+						case .failure:
+						   Image(systemName: "photo")
+							  .resizable()
+							  .scaledToFit()
+							  .frame(width: 100, height: 100)
+							  .foregroundColor(.gray)
+							  .clipShape(Circle())
+						@unknown default:
+						   EmptyView()
+					 }
+				  }
 			   }
-			}
-			.padding()
+
+			} //VStack
+//			.padding()
 			.foregroundColor(.white)
+
 		 }
+
 	  }
 	  .frame(width: UIScreen.main.bounds.width * 0.9)
 	  .padding(.bottom, 50)
    }
+
+   func getColorForUI(hex: String, thresholdHex: String) -> Color {
+	  return Color(hex: hex)
+   }
+
 }
-
-
-//#Preview {
-//    scoreCardView()
-//}

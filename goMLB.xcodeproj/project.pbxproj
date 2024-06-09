@@ -13,7 +13,6 @@
 		9B1D63532BD5B09B00066D30 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1D63522BD5B09B00066D30 /* ContentView.swift */; };
 		9B1D63552BD5B09C00066D30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B1D63542BD5B09C00066D30 /* Assets.xcassets */; };
 		9B1D63582BD5B09C00066D30 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B1D63572BD5B09C00066D30 /* Preview Assets.xcassets */; };
-		9B4341A12C14B7660052904E /* GameCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B4341A02C14B7660052904E /* GameCardView.swift */; };
 		9B4341A22C14BC350052904E /* HorizontalCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B43419C2C14AA4D0052904E /* HorizontalCardView.swift */; };
 		9B4341A42C14C6400052904E /* appConstraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B4341A32C14C6400052904E /* appConstraints.swift */; };
 		9B4341A62C151B0F0052904E /* dork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B4341A52C151B0F0052904E /* dork.swift */; };
@@ -44,7 +43,6 @@
 		9B1D63542BD5B09C00066D30 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9B1D63572BD5B09C00066D30 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		9B43419C2C14AA4D0052904E /* HorizontalCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalCardView.swift; sourceTree = "<group>"; };
-		9B4341A02C14B7660052904E /* GameCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCardView.swift; sourceTree = "<group>"; };
 		9B4341A32C14C6400052904E /* appConstraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = appConstraints.swift; sourceTree = "<group>"; };
 		9B4341A52C151B0F0052904E /* dork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dork.swift; sourceTree = "<group>"; };
 		9B585FEF2BD5C70900BE2E4B /* APIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIResponse.swift; sourceTree = "<group>"; };
@@ -151,15 +149,14 @@
 			children = (
 				9B585FF62BD6EB4200BE2E4B /* basesView.swift */,
 				9B1D63522BD5B09B00066D30 /* ContentView.swift */,
+				9B4341A52C151B0F0052904E /* dork.swift */,
 				9B7488E22C040BCF00A22541 /* HeaderView.swift */,
+				9B43419C2C14AA4D0052904E /* HorizontalCardView.swift */,
 				9BD920FD2BDD9AB1007D558F /* outsView.swift */,
 				9B12539F2BEE8FCD00A7B422 /* scoreCardView.swift */,
 				9BBF49812BE54CD700E27A5F /* stupidView.swift */,
 				E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */,
 				9B12539D2BEC264000A7B422 /* timerRemaingView.swift */,
-				9B43419C2C14AA4D0052904E /* HorizontalCardView.swift */,
-				9B4341A02C14B7660052904E /* GameCardView.swift */,
-				9B4341A52C151B0F0052904E /* dork.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -251,7 +248,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9B4341A12C14B7660052904E /* GameCardView.swift in Sources */,
 				9BAFE92D2BFE45EA004DEC22 /* view.swift in Sources */,
 				9B585FF72BD6EB4200BE2E4B /* basesView.swift in Sources */,
 				9B1D63532BD5B09B00066D30 /* ContentView.swift in Sources */,
@@ -421,7 +417,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.59;
+				MARKETING_VERSION = 4.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -451,7 +447,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.59;
+				MARKETING_VERSION = 4.6;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

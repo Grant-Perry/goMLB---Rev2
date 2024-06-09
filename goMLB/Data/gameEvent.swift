@@ -47,4 +47,21 @@ struct gameEvent: Codable, Identifiable {
 
 }
 
+extension gameEvent {
+   var nextGameDisplayText: String {
+	  if isInProgress {
+		 return ""
+	  } else if inningTxt.contains("Scheduled") {
+		 let dateFormatter = DateFormatter()
+		 dateFormatter.dateFormat = "yyyy-MM-dd"
 
+		 if startDate == dateFormatter.string(from: Date()) { // Check if game is today
+			return "Next Game: Today - \(startTime) at \(home)" // Display "Today" without date
+		 } else {
+			return "Next Game: \(startDate), \(startTime) at \(home)" // Display full date
+		 }
+	  } else {
+		 return "Final"
+	  }
+   }
+}

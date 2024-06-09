@@ -10,6 +10,7 @@
 import SwiftUI
 
 struct HeaderView: View {
+   var event: gameEvent
    var visitors: String?
    var home: String?
    var visitColor: String?
@@ -20,43 +21,61 @@ struct HeaderView: View {
    var isToday: Bool
    var eventOuts: Int?
    @Binding var refreshGame: Bool
-   @Binding var timeRemaining: Int
    @Binding var numUpdates: Int
+   @Binding var timeRemaining: Int
+   var thisIsInProgress: Bool
+   var thisMaxUpdates: Int { GameViewModel().maxUpdates}
 
    var body: some View {
-	  VStack(alignment: .leading, spacing: 0) { // Align items to the leading edge and remove default spacing
-		 HStack(alignment: .top) { // Align items to the top in the HStack
-			VStack(alignment: .leading) { // Left-aligned team names
-			   Text(visitors ?? "Visitor")
-				  .font(.system(size: 18, weight: .bold))
-				  .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
-			   Text(home ?? "Home")
-				  .font(.system(size: 18, weight: .bold))
-				  .foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
-			}
+	  VStack(alignment: .leading, spacing: 0) { // Main VStack for all content, left-aligned
+		 HStack(alignment: .center) { // Center align the HStack for the matchup
+			Spacer() // Push content to the center
+			Text(visitors ?? "Visitor")
+			   .font(.system(size: 25, weight: .bold))
+			   .foregroundColor(.white)
+//			   .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
+			Text("vs.")
+			   .font(.system(size: 14))
+			   .foregroundColor(.gray)
+			   .padding(.horizontal, 10) // Add horizontal padding around "vs."
+			Text(home ?? "Home")
+			   .font(.system(size: 25, weight: .bold))
+			   .foregroundColor(.white)
+//			   .foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
+			Spacer() // Push content to the center
+		 }
+		 .padding(.horizontal) // Add horizontal padding to the entire HStack
 
-			Spacer() // Push elements to the sides
-
-			VStack(alignment: .trailing) { // Right-aligned time/inning
-			   HStack(spacing: 0) { // Remove space between text and number
-				  Text("Middle ") // Hardcode "Middle" based on screenshot
+		 HStack(alignment: .top) { // Align to the top for the updating text
+			Spacer() // Push the updating text to the right
+			VStack(alignment: .trailing, spacing: 0) {
+			   if event.isInProgress { // Only show inning text if the game is in progress
+				  Text(inningTxt ?? "Inning")
 					 .font(.system(size: 12))
-					 .foregroundColor(.gray)
-				  Text(inningTxt?.last?.wholeNumberValue.map(String.init) ?? "")
-					 .font(.system(size: 12))
-					 .foregroundColor(.gray)
+					 .foregroundColor(.white)
 			   }
-			   Text("Updating in \(timeRemaining)") // Display "Updating in" text
-				  .font(.system(size: 12))
-				  .foregroundColor(.orange)
+
+			   // Button to toggle refreshGame and update text
+			   Button(action: {
+				  if event.isInProgress { // Only allow toggling if game is in progress
+					 refreshGame.toggle()
+				  }
+//				  else {
+//					 refreshGame = false // turn off updating if not live game
+//				  }
+			   }) {
+				  Text(refreshGame ? "Update in: \(timeRemaining) of \(thisMaxUpdates - numUpdates)" : "Not Updating")
+					 .font(.system(size: 12))
+					 .foregroundColor(.pink)
+			   }
 			}
 		 }
-		 .padding(.horizontal) // Add horizontal padding only
+		 .padding(.horizontal) // Add horizontal padding to the updating text
 
-		 HStack { // Second row for "Outs" and "Today's Game"
-			Text("\(eventOuts ?? 0)")
-			   .font(.caption)
-			   .foregroundColor(Color(UIColor.lightGray)) // Light gray color
+		 HStack { // HStack for outs and updates
+//			Text("\(eventOuts ?? 0)")
+//			   .font(.caption)
+//			   .foregroundColor(Color(UIColor.lightGray))
 
 			if isToday {
 			   Text("Today's Game")
@@ -66,39 +85,45 @@ struct HeaderView: View {
 
 			Spacer()
 
-			Text("Updates: \(numUpdates)")
-			   .font(.caption)
-			   .foregroundColor(Color(UIColor.lightGray)) // Light gray color
 		 }
-		 .padding(.horizontal) // Add horizontal padding only
-		 .padding(.top, 4) // Add slight top padding
+		 .padding(.horizontal)
+		 .padding(.top, 4)
 	  }
-	  .padding(.vertical, 8) // Add vertical padding for top and bottom
+	  .padding(.vertical, 8)
 	  .background(
 		 RoundedRectangle(cornerRadius: 12)
 			.fill(Color(uiColor: .secondarySystemBackground))
 	  )
+//	  .onAppear {
+//		 // Set refreshGame to false when the view appears if the game is not in progress
+//		 if !event.isInProgress {
+//			refreshGame = false
+//		 }
+//	  }
    }
 
    func getColorForUI(hex: String, thresholdHex: String) -> Color {
-	  return Color(hex: hex)
+	  return Color(hex: hex) // This can be replaced with your existing implementation
    }
 }
 
-#Preview {
-   HeaderView(
-	  visitors: "Yankees",
-	  home: "Red Sox",
-	  visitColor: "#FFFFFF",
-	  homeColor: "#000000",
-	  inningTxt: "Top 3rd",
-	  startTime: "7:05 PM",
-	  tooDark: "#bababa",
-	  isToday: false,
-	  eventOuts: 2,
-	  refreshGame: .constant(false),
-	  timeRemaining: .constant(15),
-	  numUpdates: .constant(1)
-   )
-}
 
+
+//#Preview {
+//   HeaderView(
+//	  thisIsInProgress: true,
+//	  visitors: "Yankees",
+//	  home: "Red Sox",
+//	  visitColor: "#FFFFFF",
+//	  homeColor: "#000000",
+//	  inningTxt: "Top 3rd",
+//	  startTime: "7:05 PM",
+//	  tooDark: "#bababa",
+//	  isToday: false,
+//	  eventOuts: 2,
+//	  refreshGame: .constant(false),
+//	  numUpdates: .constant(1),
+//	  timeRemaining: .constant(15))
+//
+//}
+//

@@ -10,7 +10,7 @@
 import SwiftUI
 
 struct HorizontalCardView: View {
-   @ObservedObject var gameViewModel: GameViewModel
+   var gameViewModel: GameViewModel 
    var event: gameEvent
    let teamSize: CGFloat
    let teamScoreSize: CGFloat
@@ -72,6 +72,7 @@ struct HorizontalCardView: View {
 					 .scaledToFit()
 			   }
 			}
+			.padding(.top, 45)
 
 			HStack {
 			   Spacer()
