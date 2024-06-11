@@ -93,6 +93,7 @@ struct HorizontalCardView: View {
 			}
 		 }
 	  }
+
 	  .frame(width: 165, height: 120)
 	  .background(
 		 event.inningTxt.contains("Final") ? Color.indigo.gradient :

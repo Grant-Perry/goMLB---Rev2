@@ -44,24 +44,27 @@ struct gameEvent: Codable, Identifiable {
    var isInProgress: Bool { // remember this computed property way - i like 6/8/24
 	  !inningTxt.contains("Final") && !inningTxt.contains("Scheduled")
    }
-
-}
-
-extension gameEvent {
    var nextGameDisplayText: String {
 	  if isInProgress {
 		 return ""
 	  } else if inningTxt.contains("Scheduled") {
+		 //		 if startDate.isEmpty { startDate = Date() }
 		 let dateFormatter = DateFormatter()
 		 dateFormatter.dateFormat = "yyyy-MM-dd"
 
-		 if startDate == dateFormatter.string(from: Date()) { // Check if game is today
+//		 print("startDate for : \(visitors) vs. \(home) is - \(startDate)")
+		 if startDate == dateFormatter.string(from: Date()) || startDate.isEmpty { // Check if game is today
 			return "Next Game: Today - \(startTime) at \(home)" // Display "Today" without date
 		 } else {
-			return "Next Game: \(startDate), \(startTime) at \(home)" // Display full date
+			let dateFormatter = DateFormatter()
+			dateFormatter.dateFormat = "MMMM d"
+			let formattedStartDate = dateFormatter.string(from: ISO8601DateFormatter().date(from: startDate) ?? Date())
+			return "Next Game: \(formattedStartDate), \(startTime) at \(home)"
+			//			return "Next Game: \(startDate), \(startTime) at \(home)" // Display full date
 		 }
 	  } else {
 		 return "Final"
 	  }
    }
 }
+

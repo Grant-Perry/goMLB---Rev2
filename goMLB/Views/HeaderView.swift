@@ -59,17 +59,17 @@ struct HeaderView: View {
 					 .foregroundColor(.white)
 			   }
 
-			   Button("Fav Team") {
-				  // Call the function to load games for the favorite team
-				  gameViewModel.loadFavoriteTeamGames()
-				  // Update the selectedEventID to the first game of the favorite team
-				  selectedEventID = gameViewModel.filteredEvents.first?.id.uuidString
-			   }
-			   .font(.footnote)
-			   .padding(4)
-			   .background(Color.blue)
-			   .foregroundColor(.white)
-			   .clipShape(Capsule())
+//			   Button("Fav Team") {
+//				  // Call the function to load games for the favorite team
+//				  gameViewModel.loadFavoriteTeamGames()
+//				  // Update the selectedEventID to the first game of the favorite team
+//				  selectedEventID = gameViewModel.filteredEvents.first?.id.uuidString
+//			   }
+//			   .font(.footnote)
+//			   .padding(4)
+//			   .background(Color.blue)
+//			   .foregroundColor(.white)
+//			   .clipShape(Capsule())
 
 			   // Button to toggle refreshGame and update text
 			   Button(action: {
@@ -80,9 +80,25 @@ struct HeaderView: View {
 //					 refreshGame = false // turn off updating if not live game
 //				  }
 			   }) {
-				  Text(refreshGame ? "Update in: \(timeRemaining) of \(thisMaxUpdates - numUpdates)" : "Not Updating")
-					 .font(.system(size: 12))
-					 .foregroundColor(.pink)
+				  HStack {
+					 Text(refreshGame ? "Update in: \(timeRemaining) of" : "Not Updating")
+						.font(.system(size: 12))
+						.foregroundColor(.pink)
+
+					 if refreshGame {
+						Button(action: {
+						   numUpdates = 0
+						}) {
+						   Text("\(thisMaxUpdates - numUpdates)")
+							  .padding(.trailing)
+							  .font(.system(size: 12))
+							  .foregroundColor(.pink)
+						}
+					 }
+				  }
+//				  Text(refreshGame ? "Update in: \(timeRemaining) of \(thisMaxUpdates - numUpdates)" : "Not Updating")
+//					 .font(.system(size: 12))
+//					 .foregroundColor(.pink)
 			   }
 			}
 		 }

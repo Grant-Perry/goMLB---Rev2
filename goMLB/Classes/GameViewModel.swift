@@ -1,13 +1,9 @@
 //   GameViewModel.swift
-//   goMLB
-//
 //   Created by: Grant Perry on 4/23/24 at 4:36 PM
 //     Modified:
 //
 //  Copyright © 2024 Delicious Studios, LLC. - Grant Perry
-//
 
-// GameViewModel.swift
 import SwiftUI
 import Foundation
 
@@ -158,6 +154,9 @@ class GameViewModel: ObservableObject {
 	  let homeStats: [APIResponse.Event.Competition.Competitor.Statistic] = homeTeam.statistics
 	  let awayStats: [APIResponse.Event.Competition.Competitor.Statistic] = awayTeam.statistics
 
+	  let batterAvg = awayTeam.statistics.first(where: { $0.name == "avg" })?.displayValue ?? ".000"
+
+
 	  // Using helper functions for stats to improve readability
 	  let batterStats = getBatterStats(from: homeStats)
 	  let batterLine = getBatterLine(from: homeTeam)
@@ -198,7 +197,7 @@ class GameViewModel: ObservableObject {
 					   atBat: batterName,
 					   atBatPic: batterPic,
 					   atBatSummary: batterSummary ?? "N/A",
-					   batterStats: batterStats,
+					   batterStats: batterAvg, // was  batterStats,
 					   batterLine: batterLine,
 					   visitorRuns: visitorRuns,
 					   visitorHits: visitorHits,

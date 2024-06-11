@@ -68,8 +68,9 @@ struct ContentView: View {
 					 HStack {
 						if let lastPlay = event.lastPlay {
 						   Text(lastPlay)
-							  .font(.footnote)
-							  .lineLimit(1)
+							  .font(.system(size: 18))
+
+							  .lineLimit(2)
 							  .minimumScaleFactor(0.5)
 							  .scaledToFit()
 						}
@@ -91,6 +92,7 @@ struct ContentView: View {
 								  batterStats: batterStats,
 								  batterLine: batterLine)
 					 }
+					 
 				  }
 			   } else { // not liveAction so show next game
 				  Text(event.nextGameDisplayText) // Use the computed property
@@ -99,10 +101,11 @@ struct ContentView: View {
 			   }
 			}
 		 }
+
 		 .frame(width: UIScreen.main.bounds.width, height: 565)
 		 .padding(.top, -15)
 		 .listStyle(.plain)
-		 Spacer()
+//		 Spacer()
 
 		 ScrollView(.horizontal, showsIndicators: false) {
 			HStack(spacing: 10) {

@@ -113,6 +113,7 @@ struct scoreCardView: View {
 			)
 		 }
 
+
 		 // MARK: Scores card
 		 HStack(spacing: 0) {
 			// MARK: Visitor's Side
@@ -263,10 +264,10 @@ struct scoreCardView: View {
 			} //VStack
 //			.padding()
 			.foregroundColor(.white)
-
 		 }
 
 	  }
+
 	  .frame(width: UIScreen.main.bounds.width * 0.9)
 	  .padding(.bottom, 50)
    }
