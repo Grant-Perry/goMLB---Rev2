@@ -59,26 +59,11 @@ struct HeaderView: View {
 					 .foregroundColor(.white)
 			   }
 
-//			   Button("Fav Team") {
-//				  // Call the function to load games for the favorite team
-//				  gameViewModel.loadFavoriteTeamGames()
-//				  // Update the selectedEventID to the first game of the favorite team
-//				  selectedEventID = gameViewModel.filteredEvents.first?.id.uuidString
-//			   }
-//			   .font(.footnote)
-//			   .padding(4)
-//			   .background(Color.blue)
-//			   .foregroundColor(.white)
-//			   .clipShape(Capsule())
-
 			   // Button to toggle refreshGame and update text
 			   Button(action: {
 				  if event.isInProgress { // Only allow toggling if game is in progress
 					 refreshGame.toggle()
 				  }
-//				  else {
-//					 refreshGame = false // turn off updating if not live game
-//				  }
 			   }) {
 				  HStack {
 					 Text(refreshGame ? "Update in: \(timeRemaining) of" : "Not Updating")

@@ -10,7 +10,7 @@ import Foundation
 class GameViewModel: ObservableObject {
    @Published var filteredEvents: [gameEvent] = []
    @Published var allEvents: [gameEvent] = []
-   @Published var teamPlaying: String = "New York Yankees"
+   @Published var teamPlaying: String = "Yankees"
    @Published var lastPlayHist: [String] = []
    @Published var subStrike = 0
    @Published var foulStrike2: Bool = false
@@ -25,9 +25,28 @@ class GameViewModel: ObservableObject {
    @Published var teamSize = 16.0
    @Published var teamScoreSize = 25.0
    @Published var maxUpdates = 20
+   @AppStorage("favTeam") var favTeam: String = "Yankees" // Default value
 
-   @AppStorage("favTeam") var favTeam: String = "New York Yankees" // Default value
 
+//   func loadAllGames(showLiveAction: Bool, completion: (() -> Void)? = nil) {
+//	  if isDebuggingEnabled {
+//		 if let path = Bundle.main.path(forResource: "gpLive", ofType: "json") {
+//			let url = URL(fileURLWithPath: path)
+//			if let data = try? Data(contentsOf: url) {
+//			   processGameData(data: data, showLiveAction: showLiveAction, completion: completion)
+//			}
+//		 }
+//	  } else {
+//		 guard let url = URL(string: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard") else { return }
+//		 URLSession.shared.dataTask(with: url) { data, response, error in
+//			guard let data = data, error == nil else {
+//			   print("Network error: \(error?.localizedDescription ?? "No error description")")
+//			   return
+//			}
+//			self.processGameData(data: data, showLiveAction: showLiveAction, completion: completion)
+//		 }.resume()
+//	  }
+//   }
    func loadAllGames(showLiveAction: Bool, completion: (() -> Void)? = nil) {
 	  if isDebuggingEnabled {
 		 if let path = Bundle.main.path(forResource: "gpLive", ofType: "json") {
@@ -50,14 +69,12 @@ class GameViewModel: ObservableObject {
 
    private func processGameData(data: Data, showLiveAction: Bool, completion: (() -> Void)? = nil) {
 	  do {
-//		 if let jsonString = String(data: data, encoding: .utf8) {
-////			print("Raw JSON Response: \(jsonString)")
-//		 }
 		 let decodedResponse = try JSONDecoder().decode(APIResponse.self, from: data)
 		 DispatchQueue.main.async { [self] in
 			self.allEvents = decodedResponse.events.map { event in
 			   createGameEvent(from: event)
 			}
+//			print("All Events Count: \(self.allEvents.count)") // Debug statement to check all events count
 
 			if showLiveAction {
 			   self.filteredEvents = self.allEvents.filter { !($0.inningTxt.contains("Final") || $0.inningTxt.contains("Scheduled")) }
@@ -65,6 +82,7 @@ class GameViewModel: ObservableObject {
 			   self.filteredEvents = self.allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }
 			}
 
+//			print("Filtered Events Count: \(self.filteredEvents.count)") // Debug statement to check filtered events count
 			completion?()
 		 }
 	  } catch {
@@ -72,9 +90,36 @@ class GameViewModel: ObservableObject {
 	  }
    }
 
+//   private func processGameData(data: Data, showLiveAction: Bool, completion: (() -> Void)? = nil) {
+//	  do {
+////		 if let jsonString = String(data: data, encoding: .utf8) {
+//////			print("Raw JSON Response: \(jsonString)")
+////		 }
+//		 let decodedResponse = try JSONDecoder().decode(APIResponse.self, from: data)
+//		 DispatchQueue.main.async { [self] in
+//			self.allEvents = decodedResponse.events.map { event in
+//			   createGameEvent(from: event)
+//			}
+//
+//			if showLiveAction {
+//			   self.filteredEvents = self.allEvents.filter { !($0.inningTxt.contains("Final") || $0.inningTxt.contains("Scheduled")) }
+//			} else {
+//			   self.filteredEvents = self.allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }
+//			}
+//
+//			completion?()
+//		 }
+//	  } catch {
+//		 print("Error decoding JSON: \(error)")
+//	  }
+//   }
+
+
    func updateTeamPlaying(with teamName: String) {
 	  teamPlaying = teamName
-	  filteredEvents = allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }
+	  filteredEvents = allEvents.filter { event in
+		 event.visitors.lowercased().contains(teamPlaying.lowercased()) || event.home.lowercased().contains(teamPlaying.lowercased())
+	  }
    }
 
    // Helper function to create gameEvent
@@ -212,9 +257,9 @@ class GameViewModel: ObservableObject {
 
    func loadFavoriteTeamGames(completion: (() -> Void)? = nil) {
 	  teamPlaying = favTeam // Set teamPlaying to the favorite team
-	  loadAllGames(showLiveAction: false, 
-				   completion: completion) // Load games for the favorite team
+	  loadAllGames(showLiveAction: false, completion: completion) // Load games for the favorite team
    }
+
 
    func setFavoriteTeam(teamName: String) {
 	  favTeam = teamName
@@ -260,7 +305,7 @@ class GameViewModel: ObservableObject {
 	  }
    }
 
-   func convertTo12HourFormat(from dateString: String, DST: Bool) -> String {
+     func convertTo12HourFormat(from dateString: String, DST: Bool) -> String {
 	  let inputFormatter = DateFormatter()
 	  inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm'Z'"
 	  inputFormatter.timeZone = TimeZone(abbreviation: "UTC")

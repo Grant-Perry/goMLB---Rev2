@@ -272,8 +272,8 @@ struct scoreCardView: View {
 	  .padding(.bottom, 50)
    }
 
-   func getColorForUI(hex: String, thresholdHex: String) -> Color {
-	  return Color(hex: hex)
-   }
+//   func getColorForUI(hex: String, thresholdHex: String) -> Color {
+//	  return Color(hex: hex)
+//   }
 
 }

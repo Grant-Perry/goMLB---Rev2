@@ -417,7 +417,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.63;
+				MARKETING_VERSION = 4.64;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -447,7 +447,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.63;
+				MARKETING_VERSION = 4.64;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

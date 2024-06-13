@@ -8,7 +8,6 @@
 //
 
 import SwiftUI
-//import HorizontalCardView
 
 struct ContentView: View {
    @ObservedObject var gameViewModel = GameViewModel()
@@ -131,10 +130,20 @@ struct ContentView: View {
 		 .opacity(0.9)
 
 	  }
+//	  .onAppear {
+//		 gameViewModel.loadAllGames(showLiveAction: showLiveAction) {
+//			if selectedEventID == nil {
+//			   selectedEventID = gameViewModel.allEvents.first?.id.uuidString
+//			}
+//		 }
+//	  }
 	  .onAppear {
+		 selectedTeam = gameViewModel.favTeam // Set selectedTeam to favTeam
+		 gameViewModel.updateTeamPlaying(with: selectedTeam) // Update the team playing to the selected team
 		 gameViewModel.loadAllGames(showLiveAction: showLiveAction) {
+			gameViewModel.updateTeamPlaying(with: selectedTeam) // Ensure filtering is called again after loading
 			if selectedEventID == nil {
-			   selectedEventID = gameViewModel.allEvents.first?.id.uuidString
+			   selectedEventID = gameViewModel.filteredEvents.first?.id.uuidString // Corrected to filteredEvents
 			}
 		 }
 	  }
