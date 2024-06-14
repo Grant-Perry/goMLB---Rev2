@@ -11,9 +11,9 @@ import SwiftUI
 
 struct HeaderView: View {
    @ObservedObject var gameViewModel = GameViewModel()
-
-   @Binding var selectedEventID: String? // Make it a binding
-
+   @Binding var showModal: Bool
+   @State private var selectedTeam: String?
+   @Binding var selectedEventID: String?
    var event: gameEvent
    var visitors: String?
    var home: String?
@@ -28,80 +28,98 @@ struct HeaderView: View {
    @Binding var numUpdates: Int
    @Binding var timeRemaining: Int
    var thisIsInProgress: Bool
-   var thisMaxUpdates: Int { GameViewModel().maxUpdates}
+   var thisMaxUpdates: Int { GameViewModel().maxUpdates }
 
    var body: some View {
-	  VStack(alignment: .leading, spacing: 0) { // Main VStack for all content, left-aligned
-		 HStack(alignment: .center) { // Center align the HStack for the matchup
-			Spacer() // Push content to the center
-			Text(visitors ?? "Visitor")
-			   .font(.system(size: 25, weight: .bold))
-			   .foregroundColor(.white)
-//			   .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
+	  VStack(alignment: .leading, spacing: 0) {
+		 HStack(alignment: .center) {
+			Spacer()
+
+			ZStack {
+			   Circle()
+				  .fill(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
+				  .frame(width: 50, height: 50)
+
+			   Text(visitors ?? "Visitor")
+				  .font(.system(size: 25, weight: .bold))
+				  .foregroundColor(.white)
+				  .onTapGesture {
+					 selectedTeam = visitors
+					 showModal = true
+				  }
+			   if gameViewModel.favTeam == visitors {
+				  Image(systemName: "star.fill")
+					 .foregroundColor(.yellow)
+					 .offset(x: 20, y: -20)
+			   }
+			}
+
 			Text("vs.")
 			   .font(.system(size: 14))
 			   .foregroundColor(.gray)
-			   .padding(.horizontal, 10) // Add horizontal padding around "vs."
-			Text(home ?? "Home")
-			   .font(.system(size: 25, weight: .bold))
-			   .foregroundColor(.white)
-//			   .foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
-			Spacer() // Push content to the center
-		 }
-		 .padding(.horizontal) // Add horizontal padding to the entire HStack
+			   .padding(.horizontal, 10)
 
-		 HStack(alignment: .top) { // Align to the top for the updating text
-			Spacer() // Push the updating text to the right
+			ZStack {
+			   Circle()
+				  .fill(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
+				  .frame(width: 50, height: 50)
+				  .onTapGesture {
+					 selectedTeam = home
+					 showModal = true
+				  }
+			   Text(home ?? "Home")
+				  .font(.system(size: 25, weight: .bold))
+				  .foregroundColor(.white)
+			   if gameViewModel.favTeam == home {
+				  Image(systemName: "star.fill")
+					 .foregroundColor(.yellow)
+					 .offset(x: 20, y: -20)
+			   }
+			}
+			Spacer()
+		 }
+		 .padding(.horizontal)
+
+		 HStack(alignment: .top) {
+			Spacer()
 			VStack(alignment: .trailing, spacing: 0) {
-			   if event.isInProgress { // Only show inning text if the game is in progress
+			   if event.isInProgress {
 				  Text(inningTxt ?? "Inning")
 					 .font(.system(size: 12))
 					 .foregroundColor(.white)
 			   }
 
-			   // Button to toggle refreshGame and update text
-			   Button(action: {
-				  if event.isInProgress { // Only allow toggling if game is in progress
-					 refreshGame.toggle()
-				  }
-			   }) {
-				  HStack {
-					 Text(refreshGame ? "Update in: \(timeRemaining) of" : "Not Updating")
-						.font(.system(size: 12))
-						.foregroundColor(.pink)
-
-					 if refreshGame {
-						Button(action: {
-						   numUpdates = 0
-						}) {
-						   Text("\(thisMaxUpdates - numUpdates)")
-							  .padding(.trailing)
-							  .font(.system(size: 12))
-							  .foregroundColor(.pink)
+			   HStack {
+				  Text(refreshGame ? "Update in: \(timeRemaining) of" : "Not Updating")
+					 .font(.system(size: 12))
+					 .foregroundColor(.pink)
+					 .onTapGesture {
+						if event.isInProgress {
+						   refreshGame.toggle()
 						}
 					 }
+
+				  if refreshGame {
+					 Text("\(thisMaxUpdates - numUpdates)")
+						.padding(.trailing)
+						.font(.system(size: 12))
+						.foregroundColor(.pink)
+						.onTapGesture {
+						   numUpdates = 0
+						}
 				  }
-//				  Text(refreshGame ? "Update in: \(timeRemaining) of \(thisMaxUpdates - numUpdates)" : "Not Updating")
-//					 .font(.system(size: 12))
-//					 .foregroundColor(.pink)
 			   }
 			}
 		 }
-		 .padding(.horizontal) // Add horizontal padding to the updating text
+		 .padding(.horizontal)
 
-		 HStack { // HStack for outs and updates
-//			Text("\(eventOuts ?? 0)")
-//			   .font(.caption)
-//			   .foregroundColor(Color(UIColor.lightGray))
-
+		 HStack {
 			if isToday {
 			   Text("Today's Game")
 				  .font(.caption)
 				  .foregroundColor(.green)
 			}
-
 			Spacer()
-
 		 }
 		 .padding(.horizontal)
 		 .padding(.top, 4)
@@ -111,12 +129,12 @@ struct HeaderView: View {
 		 RoundedRectangle(cornerRadius: 12)
 			.fill(Color(uiColor: .secondarySystemBackground))
 	  )
-//	  .onAppear {
-//		 // Set refreshGame to false when the view appears if the game is not in progress
-//		 if !event.isInProgress {
-//			refreshGame = false
-//		 }
-//	  }
+	  .sheet(isPresented: $showModal) {
+		 ConfirmationSheet(
+			selectedTeam: $selectedTeam,
+			gameViewModel: gameViewModel
+		 )
+	  }
    }
 
    func getColorForUI(hex: String, thresholdHex: String) -> Color {

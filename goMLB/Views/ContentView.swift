@@ -17,7 +17,7 @@ struct ContentView: View {
    @State private var refreshGame = true
    @State var thisTimeRemaining = 15
    @State var timerValue = 15
-  
+   @State var showModal = false
    @State var tooDark = "#333333"
    @State private var selectedEventID: String?
    @State var showLiveAction = false
@@ -53,6 +53,7 @@ struct ContentView: View {
 			   scoreCardView(
 				  vm: gameViewModel,
 				  titleSize: titleSize,
+				  showModal: $showModal,
 				  tooDark: tooDark,
 				  event: event,
 				  scoreSize: Int(scoreSize),
