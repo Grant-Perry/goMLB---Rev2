@@ -28,6 +28,8 @@
 		9BD920FE2BDD9AB1007D558F /* outsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD920FD2BDD9AB1007D558F /* outsView.swift */; };
 		9BD921002BE18DFD007D558F /* gameEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BD920FF2BE18DFD007D558F /* gameEvent.swift */; };
 		9BEBFB532C038BD5005AD198 /* color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BEBFB512C038B35005AD198 /* color.swift */; };
+		9BF10BE02C1C94CB000B9A4A /* ConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF10BDF2C1C94CB000B9A4A /* ConfirmationSheet.swift */; };
+		9BF10BE22C1C965D000B9A4A /* BackgroundClearView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF10BE12C1C965D000B9A4A /* BackgroundClearView.swift */; };
 		9BF3BC252BF9184000535630 /* Inning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF3BC242BF9184000535630 /* Inning.swift */; };
 		9BF3BC272BFC10A400535630 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF3BC262BFC10A400535630 /* Date.swift */; };
 		E71035F62BDAA07E00F1F3B7 /* teamIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */; };
@@ -57,6 +59,8 @@
 		9BD920FD2BDD9AB1007D558F /* outsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = outsView.swift; sourceTree = "<group>"; };
 		9BD920FF2BE18DFD007D558F /* gameEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gameEvent.swift; sourceTree = "<group>"; };
 		9BEBFB512C038B35005AD198 /* color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = color.swift; sourceTree = "<group>"; };
+		9BF10BDF2C1C94CB000B9A4A /* ConfirmationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmationSheet.swift; sourceTree = "<group>"; };
+		9BF10BE12C1C965D000B9A4A /* BackgroundClearView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundClearView.swift; sourceTree = "<group>"; };
 		9BF3BC242BF9184000535630 /* Inning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Inning.swift; sourceTree = "<group>"; };
 		9BF3BC262BFC10A400535630 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = teamIconView.swift; sourceTree = "<group>"; };
@@ -157,6 +161,8 @@
 				9BBF49812BE54CD700E27A5F /* stupidView.swift */,
 				E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */,
 				9B12539D2BEC264000A7B422 /* timerRemaingView.swift */,
+				9BF10BDF2C1C94CB000B9A4A /* ConfirmationSheet.swift */,
+				9BF10BE12C1C965D000B9A4A /* BackgroundClearView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -260,6 +266,7 @@
 				9BAFE92F2BFE4C1D004DEC22 /* GameState.swift in Sources */,
 				9B99A3982C02A908003F3C85 /* MatchupView.swift in Sources */,
 				9B4341A22C14BC350052904E /* HorizontalCardView.swift in Sources */,
+				9BF10BE02C1C94CB000B9A4A /* ConfirmationSheet.swift in Sources */,
 				9BF3BC252BF9184000535630 /* Inning.swift in Sources */,
 				9BF3BC272BFC10A400535630 /* Date.swift in Sources */,
 				9B1D63512BD5B09B00066D30 /* goMLBApp.swift in Sources */,
@@ -268,6 +275,7 @@
 				9B4341A42C14C6400052904E /* appConstraints.swift in Sources */,
 				9BD920FE2BDD9AB1007D558F /* outsView.swift in Sources */,
 				E71035F82BDBD27E00F1F3B7 /* teamNames.swift in Sources */,
+				9BF10BE22C1C965D000B9A4A /* BackgroundClearView.swift in Sources */,
 				9B4341A62C151B0F0052904E /* dork.swift in Sources */,
 				9BD921002BE18DFD007D558F /* gameEvent.swift in Sources */,
 				9B1253A02BEE8FCD00A7B422 /* scoreCardView.swift in Sources */,
@@ -417,7 +425,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.64;
+				MARKETING_VERSION = 4.65;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -447,7 +455,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.64;
+				MARKETING_VERSION = 4.65;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

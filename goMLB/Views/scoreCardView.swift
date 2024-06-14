@@ -12,6 +12,7 @@ import SwiftUI
 struct scoreCardView: View {
    @ObservedObject var vm: GameViewModel // Add gameViewModel
    @Binding var selectedEventID: String? // Add selectedEventID binding
+   @Binding var showModal: Bool
 
 //   var vm: GameViewModel
    var titleSize: CGFloat
@@ -42,7 +43,7 @@ struct scoreCardView: View {
    var thisIsInProgress: Bool { event.isInProgress }
 
    // scoreCardView.swift
-   init(vm: GameViewModel, titleSize: CGFloat, tooDark: String, event: gameEvent, scoreSize: Int, numUpdates: Binding<Int>, refreshGame: Binding<Bool>, timeRemaining: Binding<Int>, selectedEventID: Binding<String?>) {
+   init(vm: GameViewModel, titleSize: CGFloat, showModal: Binding<Bool>, tooDark: String, event: gameEvent, scoreSize: Int, numUpdates: Binding<Int>, refreshGame: Binding<Bool>, timeRemaining: Binding<Int>, selectedEventID: Binding<String?>) {
 	  self.vm = vm
 	  self.titleSize = titleSize
 	  self.tooDark = tooDark
@@ -52,42 +53,30 @@ struct scoreCardView: View {
 	  self._refreshGame = refreshGame
 	  self._timeRemaining = timeRemaining
 	  self._selectedEventID = selectedEventID
+	  self._showModal = showModal  // Initialize the _showModal binding
 
-	  // Initialize let properties here
-	  if let firstEvent = vm.filteredEvents.first {
-		 self.home = firstEvent.home
-		 self.homeScore = firstEvent.homeScore
-		 self.homeRecord = firstEvent.homeRecord
-		 self.visitorRecord = firstEvent.visitorRecord
-		 self.homeColor = firstEvent.homeColor
-		 self.visitors = firstEvent.visitors
-		 self.visitScore = firstEvent.visitScore
-		 self.visitColor = firstEvent.visitorAltColor
-		 self.inningTxt = firstEvent.inningTxt
-		 self.atBat = firstEvent.atBat
-		 self.atBatPic = firstEvent.atBatPic
-		 self.batterStats = firstEvent.batterStats
-		 self.batterLine = firstEvent.batterLine
-	  } else {
-		 // Set default values if filteredEvents is empty
-		 self.home = nil
-		 self.homeScore = "0"
-		 self.homeRecord = nil
-		 self.visitorRecord = nil
-		 self.homeColor = nil
-		 self.visitors = nil
-		 self.visitScore = "0"
-		 self.visitColor = nil
-		 self.inningTxt = nil
-		 self.atBat = nil
-		 self.atBatPic = nil
-		 self.batterStats = nil
-		 self.batterLine = nil
-	  }
-	  self.startTime = event.startTime
+	  // Initialize let properties here (using optional chaining for safety)
+	  self.home = vm.filteredEvents.first?.home
+	  self.homeScore = vm.filteredEvents.first?.homeScore ?? "0"
+	  self.homeRecord = vm.filteredEvents.first?.homeRecord
+	  self.visitorRecord = vm.filteredEvents.first?.visitorRecord
+	  self.homeColor = vm.filteredEvents.first?.homeColor
+	  self.visitors = vm.filteredEvents.first?.visitors
+	  self.visitScore = vm.filteredEvents.first?.visitScore ?? "0"
+	  self.visitColor = vm.filteredEvents.first?.visitorAltColor
+	  self.inningTxt = vm.filteredEvents.first?.inningTxt
+	  self.atBat = vm.filteredEvents.first?.atBat
+	  self.atBatPic = vm.filteredEvents.first?.atBatPic
+	  self.batterStats = vm.filteredEvents.first?.batterStats
+	  self.batterLine = vm.filteredEvents.first?.batterLine
+
+	  self.startTime = event.startTime // Use the original event for startTime
+
+	  // Calculate win/loss status
 	  self.homeWin = (Int(visitScore) ?? 0) < (Int(homeScore) ?? 0)
 	  self.visitWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0)
    }
+
 
 
    var body: some View {
@@ -95,6 +84,7 @@ struct scoreCardView: View {
 		 VStack {
 			HeaderView(
 			   gameViewModel: vm,
+			   showModal: $showModal,
 			   selectedEventID: $selectedEventID,
 			   event: event,
 			   visitors: event.visitors,
@@ -150,6 +140,7 @@ struct scoreCardView: View {
 			   // MARK: Visitor Score
 			   Text("\(visitScore)")
 				  .font(.system(size: CGFloat(scoreSize)))
+				  .bold()
 				  .padding(.trailing)
 				  .foregroundColor(visitWin && Int(visitScore) ?? 0 > 0 ? winColor : Color(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark)))
 			}
@@ -180,6 +171,7 @@ struct scoreCardView: View {
 			   }
 			   Text("\(homeScore)")
 				  .font(.system(size: CGFloat(scoreSize)))
+				  .bold()
 				  .padding(.leading)
 				  .foregroundColor(homeWin && Int(homeScore) ?? 0 > 0 ? winColor : Color(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark)))
 
