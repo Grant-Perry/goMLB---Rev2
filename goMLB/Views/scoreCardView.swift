@@ -130,8 +130,22 @@ struct scoreCardView: View {
 						.frame(maxWidth: .infinity, alignment: .trailing)
 
 					 HStack {
-						TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
-						   .clipShape(Circle())
+//						TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
+//						   .clipShape(Circle())
+						TeamIconView(team: APIResponse.Event.Competition.Competitor.Team(
+						   name: "Visitor",
+						   color: visitColor,
+						   alternateColor: nil,
+						   logo: nil,
+						   logos: [
+							  APIResponse.Event.Competition.Competitor.Team.Logo(
+								 href: event.visitorLogo,
+								 width: nil,
+								 height: nil
+							  )
+						   ]
+						))
+						.clipShape(Circle())
 					 }
 					 .frame(maxWidth: .infinity, alignment: .center)
 					 .padding(.bottom, 2)
@@ -190,8 +204,20 @@ struct scoreCardView: View {
 						.frame(maxWidth: .infinity, alignment: .leading)
 
 					 HStack {
-						TeamIconView(teamColor: homeColor ?? "C4CED3", teamIcon: event.homeLogo)
-						   .clipShape(Circle())
+						TeamIconView(team: APIResponse.Event.Competition.Competitor.Team(
+						   name: "Home",
+						   color: homeColor,
+						   alternateColor: nil,
+						   logo: nil,
+						   logos: [
+							  APIResponse.Event.Competition.Competitor.Team.Logo(
+								 href: event.homeLogo,
+								 width: nil,
+								 height: nil
+							  )
+						   ]
+						))
+						.clipShape(Circle())
 					 }
 					 .frame(maxWidth: .infinity, alignment: .center)
 					 .padding(.bottom, 2)

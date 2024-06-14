@@ -260,7 +260,6 @@ class GameViewModel: ObservableObject {
 	  loadAllGames(showLiveAction: false, completion: completion) // Load games for the favorite team
    }
 
-
    func setFavoriteTeam(teamName: String) {
 	  favTeam = teamName
    }

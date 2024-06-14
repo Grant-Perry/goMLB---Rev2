@@ -28,7 +28,14 @@ struct APIResponse: Codable {
 			   let name: String
 			   let color: String?
 			   let alternateColor: String?
-			   let logo: String?
+			   let logo: String? // Retain the existing logo for backward compatibility
+			   let logos: [Logo]? // Add the logos array
+
+			   struct Logo: Codable {
+				  let href: String
+				  let width: Int?
+				  let height: Int?
+			   }
 			}
 
 			struct Record: Codable {

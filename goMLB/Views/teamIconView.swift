@@ -8,12 +8,15 @@
 //
 
 import SwiftUI
+private var gameViewModel: GameViewModel = GameViewModel()
 
 struct TeamIconView: View {
-   var teamColor: String
-   var teamIcon: String
+   var team: APIResponse.Event.Competition.Competitor.Team
 
    var body: some View {
+	  let teamColor = team.color ?? "#000000" // Default to black if color is not provided
+	  let teamIcon = getPreferredLogo(for: team)
+
 	  ZStack {
 		 Circle()
 			.fill(Color(hex: teamColor))
@@ -57,6 +60,19 @@ struct TeamIconView: View {
 		 }
 	  }
    }
+
+   // Function to get the preferred logo
+   func getPreferredLogo(for team: APIResponse.Event.Competition.Competitor.Team) -> String {
+	  // Prefer the second logo URL if it exists
+	  if let logos = team.logos, logos.count > 1 {
+		 return logos[1].href
+	  }
+	  // Fallback to the first logo if the second doesn't exist
+	  return team.logos?.first?.href ?? team.logo ?? ""
+   }
 }
+
+
+
 
 
