@@ -2,7 +2,7 @@
 //   goMLB
 //
 //   Created by: Grant Perry on 5/10/24 at 1:24 PM
-//     Modified: 
+//     Modified:
 //
 //  Copyright © 2024 Delicious Studios, LLC. - Grant Perry
 //
@@ -10,11 +10,10 @@
 import SwiftUI
 
 struct scoreCardView: View {
-   @ObservedObject var vm: GameViewModel // Add gameViewModel
-   @Binding var selectedEventID: String? // Add selectedEventID binding
+   @ObservedObject var vm: GameViewModel
+   @Binding var selectedEventID: String?
    @Binding var showModal: Bool
 
-//   var vm: GameViewModel
    var titleSize: CGFloat
    var tooDark: String
    var event: gameEvent
@@ -42,7 +41,6 @@ struct scoreCardView: View {
    var winColor: Color { .green }
    var thisIsInProgress: Bool { event.isInProgress }
 
-   // scoreCardView.swift
    init(vm: GameViewModel, titleSize: CGFloat, showModal: Binding<Bool>, tooDark: String, event: gameEvent, scoreSize: Int, numUpdates: Binding<Int>, refreshGame: Binding<Bool>, timeRemaining: Binding<Int>, selectedEventID: Binding<String?>) {
 	  self.vm = vm
 	  self.titleSize = titleSize
@@ -53,9 +51,8 @@ struct scoreCardView: View {
 	  self._refreshGame = refreshGame
 	  self._timeRemaining = timeRemaining
 	  self._selectedEventID = selectedEventID
-	  self._showModal = showModal  // Initialize the _showModal binding
+	  self._showModal = showModal
 
-	  // Initialize let properties here (using optional chaining for safety)
 	  self.home = vm.filteredEvents.first?.home
 	  self.homeScore = vm.filteredEvents.first?.homeScore ?? "0"
 	  self.homeRecord = vm.filteredEvents.first?.homeRecord
@@ -70,14 +67,11 @@ struct scoreCardView: View {
 	  self.batterStats = vm.filteredEvents.first?.batterStats
 	  self.batterLine = vm.filteredEvents.first?.batterLine
 
-	  self.startTime = event.startTime // Use the original event for startTime
+	  self.startTime = event.startTime
 
-	  // Calculate win/loss status
 	  self.homeWin = (Int(visitScore) ?? 0) < (Int(homeScore) ?? 0)
 	  self.visitWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0)
    }
-
-
 
    var body: some View {
 	  VStack {
@@ -103,19 +97,12 @@ struct scoreCardView: View {
 			)
 		 }
 
-
-		 // MARK: Scores card
 		 HStack(spacing: 0) {
-			// MARK: Visitor's Side
 			HStack {
 			   VStack(alignment: .leading, spacing: 0) {
 				  VStack {
 					 HStack {
 						Text("\(visitors ?? "")")
-//						if inningTxt?.contains("Top") ?? false {
-//						   Image(systemName: "arrowtriangle.left.fill")
-//							  .imageScale(.small)
-//						}
 					 }
 					 .font(.title3)
 					 .minimumScaleFactor(0.5)
@@ -130,8 +117,6 @@ struct scoreCardView: View {
 						.frame(maxWidth: .infinity, alignment: .trailing)
 
 					 HStack {
-//						TeamIconView(teamColor: visitColor ?? "C4CED3", teamIcon: event.visitorLogo)
-//						   .clipShape(Circle())
 						TeamIconView(team: APIResponse.Event.Competition.Competitor.Team(
 						   name: "Visitor",
 						   color: visitColor,
@@ -151,7 +136,6 @@ struct scoreCardView: View {
 					 .padding(.bottom, 2)
 				  }
 			   }
-			   // MARK: Visitor Score
 			   Text("\(visitScore)")
 				  .font(.system(size: CGFloat(scoreSize)))
 				  .bold()
@@ -173,15 +157,12 @@ struct scoreCardView: View {
 			   }
 			)
 
-// MARK: Home Side
 			HStack {
-			   // Middle inning arrows
 			   if inningTxt?.contains("Bottom") ?? false {
 				  Image(systemName: "arrowtriangle.right.fill")
 					 .imageScale(.small)
 			   } else if inningTxt?.contains("Top") ?? false {
 				  Image(systemName: "arrowtriangle.left.fill")
-					 .imageScale(.small)
 			   }
 			   Text("\(homeScore)")
 				  .font(.system(size: CGFloat(scoreSize)))
@@ -238,60 +219,107 @@ struct scoreCardView: View {
 				  }
 			   }
 			)
-		 } // end Visitor Home sides
+		 }
 
 		 if let atBat = atBat, !atBat.isEmpty {
 			VStack {
 			   Text("At Bat: \(atBat)")
 				  .font(.headline)
+				  .onTapGesture {
+					 if let url = URL(string: event.batterBioURL) {
+						UIApplication.shared.open(url)
+					 }
+				  }
 			   if let batterStats = batterStats {
 				  Text("Avg: \(batterStats)  |  \(batterLine ?? "")")
 					 .font(.subheadline)
 			   }
-//			   if let batterLine = batterLine {
-//				  Text("today: \(batterLine)")
-//					 .font(.subheadline)
-//			   }
 			   Spacer()
-			   HStack(spacing: 0) {
-
+			   VStack {
 				  AsyncImage(url: URL(string: atBatPic ?? "")) { phase in
 					 switch phase {
 						case .empty:
 						   ProgressView()
 							  .progressViewStyle(CircularProgressViewStyle())
-							  .frame(width: 100, height: 100)
+							  .frame(width: 140, height: 140)
 						case .success(let image):
 						   image.resizable()
 							  .scaledToFit()
-							  .frame(width: 110)
+							  .frame(width: 140, height: 140)
 							  .clipShape(Circle())
+							  .onTapGesture {
+								 if let url = URL(string: event.batterBioURL) {
+									UIApplication.shared.open(url)
+								 }
+							  }
 						case .failure:
 						   Image(systemName: "photo")
 							  .resizable()
 							  .scaledToFit()
-							  .frame(width: 100, height: 100)
+							  .frame(width: 140, height: 140)
 							  .foregroundColor(.gray)
 							  .clipShape(Circle())
 						@unknown default:
 						   EmptyView()
 					 }
 				  }
+
+				  VStack {
+					 Text(event.currentPitcherName)
+						.font(.subheadline)
+						.onTapGesture {
+						   if let url = URL(string: event.homePitcherBioURL) {
+							  UIApplication.shared.open(url)
+						   }
+						}
+					 VStack(alignment: .leading) {
+						Text("ERA: \(event.currentPitcherERA)")
+						Text("Pitches: \(event.currentPitcherPitchesThrown)")
+						if let speed = event.currentPitcherLastPitchSpeed {
+						   Text("Speed: \(speed)")
+						}
+						if let type = event.currentPitcherLastPitchType {
+						   Text("Type: \(type)")
+						}
+					 }
+					 .font(.footnote)
+					 .foregroundColor(.white)
+
+					 AsyncImage(url: URL(string: event.currentPitcherPic)) { phase in
+						switch phase {
+						   case .empty:
+							  ProgressView()
+								 .progressViewStyle(CircularProgressViewStyle())
+								 .frame(width: 50, height: 50)
+						   case .success(let image):
+							  image.resizable()
+								 .scaledToFit()
+								 .frame(width: 50, height: 50)
+								 .clipShape(Circle())
+								 .onTapGesture {
+									if let url = URL(string: event.homePitcherBioURL) {
+									   UIApplication.shared.open(url)
+									}
+								 }
+						   case .failure:
+							  Image(systemName: "photo")
+								 .resizable()
+								 .scaledToFit()
+								 .frame(width: 50, height: 50)
+								 .foregroundColor(.gray)
+								 .clipShape(Circle())
+						   @unknown default:
+							  EmptyView()
+						}
+					 }
+				  }
 			   }
-
-			} //VStack
-//			.padding()
-			.foregroundColor(.white)
+			   .padding()
+			   .foregroundColor(.white)
+			}
 		 }
-
 	  }
-
 	  .frame(width: UIScreen.main.bounds.width * 0.9)
 	  .padding(.bottom, 50)
    }
-
-//   func getColorForUI(hex: String, thresholdHex: String) -> Color {
-//	  return Color(hex: hex)
-//   }
-
 }

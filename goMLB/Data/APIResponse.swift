@@ -1,5 +1,4 @@
 import SwiftUI
-import Foundation
 
 struct APIResponse: Codable {
    let events: [Event]
@@ -21,15 +20,15 @@ struct APIResponse: Codable {
 			let team: Team
 			let score: String?
 			let records: [Record]?
-			let statistics: [Statistic]
-			let leaders: [LeaderBoard]
+			let statistics: [Statistic]?
+			let probables: [Probable]?
 
 			struct Team: Codable {
 			   let name: String
 			   let color: String?
 			   let alternateColor: String?
-			   let logo: String? // Retain the existing logo for backward compatibility
-			   let logos: [Logo]? // Add the logos array
+			   let logo: String?
+			   let logos: [Logo]?
 
 			   struct Logo: Codable {
 				  let href: String
@@ -47,11 +46,16 @@ struct APIResponse: Codable {
 			   let displayValue: String
 			}
 
-			struct LeaderBoard: Codable {
-			   let leaders: [Leader]
+			struct Probable: Codable {
+			   let athlete: Athlete
 
-			   struct Leader: Codable {
-				  let displayValue: String
+			   struct Athlete: Codable {
+				  let shortName: String
+				  let headshot: String
+				  let summary: String?
+				  let id: String
+				  let throwsHand: String? // Optional for batters
+				  let statistics: [Statistic]?
 			   }
 			}
 		 }
@@ -65,20 +69,18 @@ struct APIResponse: Codable {
 			let onThird: Bool?
 			let lastPlay: LastPlay?
 			let batter: Batter?
+			let pitcher: Pitcher?
 
 			struct LastPlay: Codable {
 			   let text: String?
 			}
 
 			struct Batter: Codable {
-			   let athlete: Athlete
+			   let athlete: Competitor.Probable.Athlete
+			}
 
-			   struct Athlete: Codable {
-				  let shortName: String
-				  let headshot: String
-				  let summary: String? // Make summary optional
-			   }
-
+			struct Pitcher: Codable {
+			   let athlete: Competitor.Probable.Athlete
 			}
 		 }
 
@@ -96,3 +98,4 @@ struct APIResponse: Codable {
 	  }
    }
 }
+

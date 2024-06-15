@@ -95,6 +95,9 @@ struct ContentView: View {
 					 
 				  }
 			   } else { // not liveAction so show next game
+				  
+				  PitcherDetailsView(event: event)
+
 				  Text(event.nextGameDisplayText) // Use the computed property
 					 .font(.subheadline)
 					 .frame(maxWidth: .infinity, alignment: .trailing)

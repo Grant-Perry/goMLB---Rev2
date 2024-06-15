@@ -1,6 +1,5 @@
 import SwiftUI
 
-
 struct gameEvent: Codable, Identifiable {
    var id: UUID = UUID()
    var title: String
@@ -41,30 +40,56 @@ struct gameEvent: Codable, Identifiable {
    var homeRuns: String
    var homeHits: String
    var homeErrors: String
-   var isInProgress: Bool { // remember this computed property way - i like 6/8/24
+   var currentPitcherName: String
+   var currentPitcherPic: String
+   var currentPitcherERA: String
+   var currentPitcherPitchesThrown: Int
+   var currentPitcherLastPitchSpeed: String?
+   var currentPitcherLastPitchType: String?
+   var currentPitcherBioURL: String {
+	  "https://www.espn.com/mlb/player/_/id/\(currentPitcherID)"
+   }
+   var currentPitcherID: String
+   var currentPitcherThrows: String
+   var currentPitcherWins: Int
+   var currentPitcherLosses: Int
+   var currentPitcherStrikeOuts: Int
+   var homePitcherName: String
+   var homePitcherPic: String
+   var homePitcherERA: String
+   var homePitcherBioURL: String {
+	  "https://www.espn.com/mlb/player/_/id/\(homePitcherID)"
+   }
+   var homePitcherID: String
+   var homePitcherThrows: String
+   var homePitcherWins: Int
+   var homePitcherLosses: Int
+   var homePitcherStrikeOuts: Int
+   var atBatID: String
+   var batterBioURL: String {
+	  "https://www.espn.com/mlb/player/_/id/\(atBatID)"
+   }
+
+   var isInProgress: Bool {
 	  !inningTxt.contains("Final") && !inningTxt.contains("Scheduled")
    }
+
    var nextGameDisplayText: String {
 	  if isInProgress {
 		 return ""
 	  } else if inningTxt.contains("Scheduled") {
-		 //		 if startDate.isEmpty { startDate = Date() }
 		 let dateFormatter = DateFormatter()
 		 dateFormatter.dateFormat = "yyyy-MM-dd"
-
-//		 print("startDate for : \(visitors) vs. \(home) is - \(startDate)")
-		 if startDate == dateFormatter.string(from: Date()) || startDate.isEmpty { // Check if game is today
-			return "Next Game: Today - \(startTime) at \(home)" // Display "Today" without date
+		 if startDate == dateFormatter.string(from: Date()) || startDate.isEmpty {
+			return "Next Game: Today - \(startTime) at \(home)"
 		 } else {
 			let dateFormatter = DateFormatter()
 			dateFormatter.dateFormat = "MMMM d"
 			let formattedStartDate = dateFormatter.string(from: ISO8601DateFormatter().date(from: startDate) ?? Date())
 			return "Next Game: \(formattedStartDate), \(startTime) at \(home)"
-			//			return "Next Game: \(startDate), \(startTime) at \(home)" // Display full date
 		 }
 	  } else {
 		 return "Final"
 	  }
    }
 }
-

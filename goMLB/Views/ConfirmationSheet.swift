@@ -18,24 +18,29 @@ struct ConfirmationSheet: View {
 	  VStack(alignment: .center) {
 		 if let selectedTeam = selectedTeam {
 			VStack(alignment: .center, spacing: 0) {
-
 			   Text("You're changing \nyour favorite team from \n")
 				  .font(.system(size: 14))
-				  .padding(.top, -4)
+				  .padding(.top, -3)
+				  .multilineTextAlignment(.center) // Center the text
 			   Text("\(gameViewModel.favTeam)")
 				  .font(.system(size: 25, weight: .bold))
+				  .multilineTextAlignment(.center) // Center the text
 			   Text("to:")
 				  .font(.system(size: 14))
 				  .padding(.top, -4)
-				  .padding(.bottom, 4) // Add some spacing before 'New Team Name'
+				  .padding(.bottom, 3) // Add some spacing before 'New Team Name'
+				  .multilineTextAlignment(.center) // Center the text
 			   Text(selectedTeam)
 				  .font(.system(size: 25, weight: .bold))
 				  .padding(.top, -5)
+				  .multilineTextAlignment(.center) // Center the text
 			   Text("Are you sure?")
 				  .font(.system(size: 14))
 				  .padding(.top, 10) // Add spacing above "Are you sure?"
+				  .multilineTextAlignment(.center) // Center the text
 			}
 			.padding() // Add padding around the entire VStack
+
 
 			HStack {
 			   Button(action: {
