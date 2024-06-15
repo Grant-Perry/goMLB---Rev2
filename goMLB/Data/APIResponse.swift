@@ -50,8 +50,8 @@ struct APIResponse: Codable {
 			   let athlete: Athlete
 
 			   struct Athlete: Codable {
-				  let shortName: String
-				  let headshot: String
+				  let shortName: String?
+				  let headshot: String?
 				  let summary: String?
 				  let id: String
 				  let throwsHand: String? // Optional for batters

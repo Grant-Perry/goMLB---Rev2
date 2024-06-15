@@ -39,7 +39,7 @@ struct PitcherDetailsView: View {
 				  .font(.footnote)
 				  .foregroundColor(.white)
 			   }
-			   AsyncImage(url: URL(string: event.currentPitcherPic)) { phase in
+			   AsyncImage(url: URL(string: event.currentPitcherPic ?? "")) { phase in
 				  switch phase {
 					 case .empty:
 						ProgressView()
@@ -69,7 +69,7 @@ struct PitcherDetailsView: View {
 		 // Home Pitcher's Info
 		 VStack {
 			HStack {
-			   AsyncImage(url: URL(string: event.homePitcherPic)) { phase in
+			   AsyncImage(url: URL(string: event.homePitcherPic ?? "")) { phase in
 				  switch phase {
 					 case .empty:
 						ProgressView()

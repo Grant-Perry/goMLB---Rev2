@@ -285,7 +285,7 @@ struct scoreCardView: View {
 					 .font(.footnote)
 					 .foregroundColor(.white)
 
-					 AsyncImage(url: URL(string: event.currentPitcherPic)) { phase in
+					 AsyncImage(url: URL(string: event.currentPitcherPic ?? "")) { phase in
 						switch phase {
 						   case .empty:
 							  ProgressView()
