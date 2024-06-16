@@ -27,36 +27,62 @@ class GameViewModel: ObservableObject {
    @Published var maxUpdates = 20
    @AppStorage("favTeam") var favTeam: String = "Yankees" // Default value
 
+   // Pitcher Properties
+   @Published var homePitcherName: String = ""
+   @Published var homePitcherPic: String?
+   @Published var homePitcherERA: String = ""
+   @Published var homePitcherID: String = ""
+   @Published var homePitcherThrows: String = ""
+   @Published var homePitcherWins: Int = 0
+   @Published var homePitcherLosses: Int = 0 // Added losses
+   @Published var homePitcherStrikeOuts: Int = 0
 
-//   func loadAllGames(showLiveAction: Bool, completion: (() -> Void)? = nil) {
-//	  if isDebuggingEnabled {
-//		 if let path = Bundle.main.path(forResource: "gpLive", ofType: "json") {
-//			let url = URL(fileURLWithPath: path)
-//			if let data = try? Data(contentsOf: url) {
-//			   processGameData(data: data, showLiveAction: showLiveAction, completion: completion)
-//			}
-//		 }
-//	  } else {
-//		 guard let url = URL(string: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard") else { return }
-//		 URLSession.shared.dataTask(with: url) { data, response, error in
-//			guard let data = data, error == nil else {
-//			   print("Network error: \(error?.localizedDescription ?? "No error description")")
-//			   return
-//			}
-//			self.processGameData(data: data, showLiveAction: showLiveAction, completion: completion)
-//		 }.resume()
-//	  }
-//   }
+   @Published var visitorPitcherName: String = ""
+   @Published var visitorPitcherPic: String?
+   @Published var visitorPitcherERA: String = ""
+   @Published var visitorPitcherID: String = ""
+   @Published var visitorPitcherThrows: String = ""
+   @Published var visitorPitcherWins: Int = 0
+   @Published var visitorPitcherLosses: Int = 0 // Added losses
+   @Published var visitorPitcherStrikeOuts: Int = 0
+
+   // Current Pitcher Properties
+   @Published var currentPitcherName: String = ""
+   @Published var currentPitcherPic: String = ""
+   @Published var currentPitcherERA: String = ""
+   @Published var currentPitcherID: String = ""
+   @Published var currentPitcherThrows: String = ""
+   @Published var currentPitcherWins: Int = 0
+   @Published var currentPitcherLosses: Int = 0 // Added losses
+   @Published var currentPitcherStrikeOuts: Int = 0
+   @Published var currentPitcherPitchesThrown: Int = 0
+   @Published var currentPitcherLastPitchSpeed: String? = nil
+   @Published var currentPitcherLastPitchType: String? = nil
+
+   // Computed Properties for Bio URLs
+   var homePitcherBioURL: String {
+	  "https://www.espn.com/mlb/player/_/id/\(homePitcherID)"
+   }
+
+   var visitorPitcherBioURL: String {
+	  "https://www.espn.com/mlb/player/_/id/\(visitorPitcherID)"
+   }
+
+   var currentPitcherBioURL: String {
+	  "https://www.espn.com/mlb/player/_/id/\(currentPitcherID)"
+   }
+
    func loadAllGames(showLiveAction: Bool, completion: (() -> Void)? = nil) {
 	  if isDebuggingEnabled {
-		 if let path = Bundle.main.path(forResource: "gpLive", ofType: "json") {
-			let url = URL(fileURLWithPath: path)
-			if let data = try? Data(contentsOf: url) {
-			   processGameData(data: data, showLiveAction: showLiveAction, completion: completion)
-			}
+		 // Load data from the local "gp.json" file
+		 if let path = Bundle.main.path(forResource: "gp", ofType: "json"),
+			let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
+			processGameData(data: data, showLiveAction: showLiveAction, completion: completion)
 		 }
 	  } else {
+		 // Load data from the ESPN API
 		 guard let url = URL(string: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard") else { return }
+
 		 URLSession.shared.dataTask(with: url) { data, response, error in
 			guard let data = data, error == nil else {
 			   print("Network error: \(error?.localizedDescription ?? "No error description")")
@@ -67,31 +93,6 @@ class GameViewModel: ObservableObject {
 	  }
    }
 
-//   private func getVisitorRuns(from statistics: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-//	  return statistics.first(where: { $0.name == "runs" })?.displayValue ?? "N/A"
-//   }
-//
-//   private func getVisitorHits(from statistics: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-//	  return statistics.first(where: { $0.name == "hits" })?.displayValue ?? "N/A"
-//   }
-//
-//   private func getVisitorErrors(from statistics: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-//	  return statistics.first(where: { $0.name == "errors" })?.displayValue ?? "N/A"
-//   }
-//
-//   private func getHomeRuns(from statistics: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-//	  return statistics.first(where: { $0.name == "homeRuns" })?.displayValue ?? "N/A"
-//   }
-//
-//   private func getHomeHits(from statistics: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-//	  return statistics.first(where: { $0.name == "hits" })?.displayValue ?? "N/A"
-//   }
-//
-//   private func getHomeErrors(from statistics: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-//	  return statistics.first(where: { $0.name == "errors" })?.displayValue ?? "N/A"
-//   }
-
-
    private func processGameData(data: Data, showLiveAction: Bool, completion: (() -> Void)? = nil) {
 	  do {
 		 let decodedResponse = try JSONDecoder().decode(APIResponse.self, from: data)
@@ -99,7 +100,7 @@ class GameViewModel: ObservableObject {
 			self.allEvents = decodedResponse.events.map { event in
 			   createGameEvent(from: event)
 			}
-//			print("All Events Count: \(self.allEvents.count)") // Debug statement to check all events count
+			//			print("All Events Count: \(self.allEvents.count)") // Debug statement to check all events count
 
 			if showLiveAction {
 			   self.filteredEvents = self.allEvents.filter { !($0.inningTxt.contains("Final") || $0.inningTxt.contains("Scheduled")) }
@@ -107,7 +108,7 @@ class GameViewModel: ObservableObject {
 			   self.filteredEvents = self.allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }
 			}
 
-//			print("Filtered Events Count: \(self.filteredEvents.count)") // Debug statement to check filtered events count
+			//			print("Filtered Events Count: \(self.filteredEvents.count)") // Debug statement to check filtered events count
 			completion?()
 		 }
 	  } catch {
@@ -195,9 +196,11 @@ class GameViewModel: ObservableObject {
 
 	  let homePitcher = homeTeam.probables?.first?.athlete
 	  let currentPitcher = competition.situation?.pitcher?.athlete
+	  let visitorPitcher = awayTeam.probables?.first?.athlete // Get visitor pitcher from probables
 
 	  let homePitcherID = homePitcher?.id ?? ""
 	  let currentPitcherID = currentPitcher?.id ?? ""
+	  let visitorPitcherID = visitorPitcher?.id ?? ""
 
 	  let visitorRuns = getVisitorRuns(from: awayTeam.statistics ?? [])
 	  let visitorHits = getVisitorHits(from: awayTeam.statistics ?? [])
@@ -208,6 +211,21 @@ class GameViewModel: ObservableObject {
 
 	  let batterAvg = competition.situation?.batter?.athlete.statistics?.first(where: { $0.name == "avg" })?.displayValue ?? "N/A"
 	  let batterLine = getBatterLine(from: homeTeam) // This might need adjusting
+
+	  // Pitcher Information Extraction
+	  extractPitcherInformation(from: homeTeam, forTeam: true)
+	  extractPitcherInformation(from: awayTeam, forTeam: false)
+
+	  // Determine current pitcher based on current inning and top/bottom
+	  let currentInningHalf = inningTxt.contains("Top") ? "away" : "home"
+	  currentPitcherName = (currentInningHalf == "home" ? homePitcherName : visitorPitcherName)
+	  currentPitcherPic = (currentInningHalf == "home" ? homePitcherPic : visitorPitcherPic)
+	  currentPitcherERA = (currentInningHalf == "home" ? homePitcherERA : visitorPitcherERA)
+	  currentPitcherThrows = (currentInningHalf == "home" ? homePitcherThrows : visitorPitcherThrows)
+	  currentPitcherWins = (currentInningHalf == "home" ? homePitcherWins : visitorPitcherWins)
+	  currentPitcherLosses = (currentInningHalf == "home" ? homePitcherLosses : visitorPitcherLosses)
+	  currentPitcherStrikeOuts = (currentInningHalf == "home" ? homePitcherStrikeOuts : visitorPitcherStrikeOuts)
+	  currentPitcherID = (currentInningHalf == "home" ? homePitcherID : visitorPitcherID)
 
 	  return gameEvent(
 		 title: title,
@@ -248,9 +266,9 @@ class GameViewModel: ObservableObject {
 		 homeRuns: homeRuns,
 		 homeHits: homeHits,
 		 homeErrors: homeErrors,
-		 currentPitcherName: currentPitcher?.shortName ?? "",
-		 currentPitcherPic: currentPitcher?.headshot ?? "",
-		 currentPitcherERA: currentPitcher?.statistics?.first(where: { $0.name == "era" })?.displayValue ?? "N/A",
+		 currentPitcherName: currentPitcherName,
+		 currentPitcherPic: currentPitcherPic,
+		 currentPitcherERA: currentPitcherERA,
 		 currentPitcherPitchesThrown: currentPitcher?.statistics?.first(where: { $0.name == "pitchesThrown" })?.displayValue as? Int ?? 0,
 		 currentPitcherLastPitchSpeed: currentPitcher?.statistics?.first(where: { $0.name == "lastPitchSpeed" })?.displayValue,
 		 currentPitcherLastPitchType: currentPitcher?.statistics?.first(where: { $0.name == "lastPitchType" })?.displayValue,
@@ -259,21 +277,25 @@ class GameViewModel: ObservableObject {
 		 currentPitcherWins: currentPitcher?.statistics?.first(where: { $0.name == "wins" })?.displayValue as? Int ?? 0,
 		 currentPitcherLosses: currentPitcher?.statistics?.first(where: { $0.name == "losses" })?.displayValue as? Int ?? 0,
 		 currentPitcherStrikeOuts: currentPitcher?.statistics?.first(where: { $0.name == "strikeOuts" })?.displayValue as? Int ?? 0,
-		 homePitcherName: homePitcher?.shortName ?? "",
-		 homePitcherPic: homePitcher?.headshot ?? "",
-		 homePitcherERA: homePitcher?.statistics?.first(where: { $0.name == "era" })?.displayValue ?? "N/A",
+		 homePitcherName: homePitcherName,
+		 homePitcherPic: homePitcherPic,
+		 homePitcherERA: homePitcherERA,
 		 homePitcherID: homePitcherID,
 		 homePitcherThrows: homePitcher?.throwsHand ?? "",
-		 homePitcherWins: homePitcher?.statistics?.first(where: { $0.name == "wins" })?.displayValue as? Int ?? 0,
-		 homePitcherLosses: homePitcher?.statistics?.first(where: { $0.name == "losses" })?.displayValue as? Int ?? 0,
-		 homePitcherStrikeOuts: homePitcher?.statistics?.first(where: { $0.name == "strikeOuts" })?.displayValue as? Int ?? 0,
+		 homePitcherWins: homePitcher?.stats?.wins ?? "0",
+		 homePitcherLosses: homePitcher?.stats?.losses ?? "0",
+		 homePitcherStrikeOuts: Int(homePitcher?.stats?.strikeOuts ?? "0") ?? 0,
+		 visitorPitcherName: visitorPitcher?.athlete.displayName ?? "TBD",
+		 visitorPitcherPic: visitorPitcher?.athlete.headshot,
+		 visitorPitcherERA: visitorPitcher?.stats?.era ?? "0.00",
+		 visitorPitcherID: visitorPitcherID,
+		 visitorPitcherThrows: visitorPitcher?.athlete.hand ?? "",
+		 visitorPitcherWins: visitorPitcher?.stats?.wins ?? "0",
+		 visitorPitcherLosses: visitorPitcher?.stats?.losses ?? "0",
+		 visitorPitcherStrikeOuts: Int(visitorPitcher?.stats?.strikeOuts ?? "0") ?? 0,
 		 atBatID: atBatID
 	  )
    }
-
-
-
-
 
    // Helper functions to extract specific stats (add these in your GameViewModel)
 
@@ -291,31 +313,31 @@ class GameViewModel: ObservableObject {
    }
 
    private func getBatterLine(from team: APIResponse.Event.Competition.Competitor) -> String {
-	  return team.statistics?.first(where: { $0.name == "batterLine" })?.displayValue ?? "N/A"
+	  return team.leaders?.first(where: { $0.abbreviation == "RAT" })?.leaders.first?.displayValue ?? "N/A"
    }
 
    private func getVisitorRuns(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-	  return stats[safe: 1]?.displayValue ?? "N/A"
+	  return stats.first(where: { $0.name == "runs" })?.displayValue ?? "N/A"
    }
 
    private func getVisitorHits(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-	  return stats[safe: 0]?.displayValue ?? "N/A"
+	  return stats.first(where: { $0.name == "hits" })?.displayValue ?? "N/A"
    }
 
    private func getVisitorErrors(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-	  return stats[safe: 7]?.displayValue ?? "N/A"
+	  return stats.first(where: { $0.name == "errors" })?.displayValue ?? "N/A"
    }
 
    private func getHomeRuns(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-	  return stats[safe: 1]?.displayValue ?? "N/A"
+	  return stats.first(where: { $0.name == "runs" })?.displayValue ?? "N/A"
    }
 
    private func getHomeHits(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-	  return stats[safe: 0]?.displayValue ?? "N/A"
+	  return stats.first(where: { $0.name == "hits" })?.displayValue ?? "N/A"
    }
 
    private func getHomeErrors(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-	  return stats[safe: 7]?.displayValue ?? "N/A"
+	  return stats.first(where: { $0.name == "errors" })?.displayValue ?? "N/A"
    }
 
    private func extractDateAndTime(from dateString: String) {
@@ -326,34 +348,54 @@ class GameViewModel: ObservableObject {
 	  }
    }
 
-     func convertTo12HourFormat(from dateString: String, DST: Bool) -> String {
-	  let inputFormatter = DateFormatter()
-	  inputFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm'Z'"
-	  inputFormatter.timeZone = TimeZone(abbreviation: "UTC")
-	  inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+   func extractPitcherInformation(from competitor: APIResponse.Event.Competition.Competitor, forTeam isHomeTeam: Bool) {
+	  if let probables = competitor.probables,
+		 let probable = probables.first,
+		 let athlete = probable.athlete,
+		 let stats = athlete.statistics {
 
-	  guard let date = inputFormatter.date(from: dateString) else {
-		 return "Invalid time"
+		 let name = athlete.shortName
+		 let pic = athlete.headshot
+		 let id = athlete.id
+		 let throwsHand = athlete.throwsHand ?? ""
+
+		 var wins = 0
+		 var losses = 0
+		 var era = ""
+		 var strikeouts = 0
+
+		 for stat in stats {
+			if let abbreviation = stat.abbreviation,
+			   let displayValue = stat.displayValue {
+			   switch abbreviation {
+				  case "W": wins = Int(displayValue) ?? 0
+				  case "L": losses = Int(displayValue) ?? 0
+				  case "ERA": era = displayValue
+				  case "K": strikeouts = Int(displayValue) ?? 0
+				  default: break
+			   }
+			}
+		 }
+
+		 if isHomeTeam {
+			homePitcherName = name
+			homePitcherPic = pic
+			homePitcherERA = era
+			homePitcherID = id
+			homePitcherThrows = throwsHand
+			homePitcherWins = wins
+			homePitcherLosses = losses
+			homePitcherStrikeOuts = strikeouts
+		 } else {
+			visitorPitcherName = name
+			visitorPitcherPic = pic
+			visitorPitcherERA = era
+			visitorPitcherID = id
+			visitorPitcherThrows = throwsHand
+			visitorPitcherWins = wins
+			visitorPitcherLosses = losses
+			visitorPitcherStrikeOuts = strikeouts
+		 }
 	  }
-
-	  // Adjust for DST if necessary
-	  let adjustedDate = DST ? date.addingTimeInterval(3600) : date
-
-	  let outputFormatter = DateFormatter()
-	  outputFormatter.dateFormat = "h:mm a"
-	  outputFormatter.timeZone = TimeZone.current
-	  outputFormatter.locale = Locale.current
-
-	  return outputFormatter.string(from: adjustedDate)
    }
 }
-
-// Safe indexing extension
-extension Collection {
-   subscript(safe index: Index) -> Element? {
-	  return indices.contains(index) ? self[index] : nil
-   }
-}
-
-
-

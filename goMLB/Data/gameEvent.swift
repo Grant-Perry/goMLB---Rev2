@@ -41,7 +41,7 @@ struct gameEvent: Codable, Identifiable {
    var homeHits: String
    var homeErrors: String
    var currentPitcherName: String
-   var currentPitcherPic: String?
+   var currentPitcherPic: String
    var currentPitcherERA: String
    var currentPitcherPitchesThrown: Int
    var currentPitcherLastPitchSpeed: String?
@@ -65,6 +65,17 @@ struct gameEvent: Codable, Identifiable {
    var homePitcherWins: Int
    var homePitcherLosses: Int
    var homePitcherStrikeOuts: Int
+   var visitorPitcherName: String
+   var visitorPitcherPic: String?
+   var visitorPitcherERA: String
+   var visitorPitcherBioURL: String {
+	  "https://www.espn.com/mlb/player/_/id/\(visitorPitcherID)"
+   }
+   var visitorPitcherID: String
+   var visitorPitcherThrows: String
+   var visitorPitcherWins: Int
+   var visitorPitcherLosses: Int
+   var visitorPitcherStrikeOuts: Int
    var atBatID: String
    var batterBioURL: String {
 	  "https://www.espn.com/mlb/player/_/id/\(atBatID)"

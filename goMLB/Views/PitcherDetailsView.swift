@@ -35,78 +35,102 @@ struct PitcherDetailsView: View {
 				  VStack(alignment: .trailing) {
 					 Text("ERA: \(event.currentPitcherERA)")
 					 Text("\(event.currentPitcherWins)-\(event.currentPitcherLosses) - K: \(event.currentPitcherStrikeOuts)")
+					 if let pitches = event.currentPitcherPitchesThrown {
+						Text("Pitches: \(pitches)")
+					 }
 				  }
 				  .font(.footnote)
 				  .foregroundColor(.white)
 			   }
-			   AsyncImage(url: URL(string: event.currentPitcherPic ?? "")) { phase in
-				  switch phase {
-					 case .empty:
-						ProgressView()
-						   .progressViewStyle(CircularProgressViewStyle())
-						   .frame(width: picSize)
-					 case .success(let image):
-						image.resizable()
-						   .scaledToFit()
-						   .frame(width:picSize)
-						   .clipShape(Circle())
-					 case .failure:
-						Image(systemName: "photo")
-						   .resizable()
-						   .scaledToFit()
-						   .frame(width: picSize)
-						   .foregroundColor(.gray)
-						   .clipShape(Circle())
-					 @unknown default:
-						EmptyView()
+			   if let currentPitcherPic = event.currentPitcherPic, let url = URL(string: currentPitcherPic) {
+				  AsyncImage(url: url) { phase in
+					 switch phase {
+						case .empty:
+						   ProgressView()
+							  .progressViewStyle(CircularProgressViewStyle())
+							  .frame(width: picSize)
+						case .success(let image):
+						   image
+							  .resizable()
+							  .scaledToFit()
+							  .frame(width: picSize)
+							  .clipShape(Circle())
+						case .failure:
+						   Image(systemName: "photo")
+							  .resizable()
+							  .scaledToFit()
+							  .frame(width: picSize)
+							  .foregroundColor(.gray)
+							  .clipShape(Circle())
+						@unknown default:
+						   EmptyView()
+					 }
 				  }
+			   } else {
+				  Image(systemName: "photo")
+					 .resizable()
+					 .scaledToFit()
+					 .frame(width: picSize)
+					 .foregroundColor(.gray)
+					 .clipShape(Circle())
 			   }
 			}
 		 }
 		 .frame(maxWidth: .infinity)
-//		 .border(.red)
+		 //        .border(.red)
 
-		 // Home Pitcher's Info
+		 // Visitor Pitcher's Info
 		 VStack {
 			HStack {
-			   AsyncImage(url: URL(string: event.homePitcherPic ?? "")) { phase in
-				  switch phase {
-					 case .empty:
-						ProgressView()
-						   .progressViewStyle(CircularProgressViewStyle())
-						   .frame(width: picSize)
-					 case .success(let image):
-						image.resizable()
-						   .scaledToFit()
-						   .frame(width: picSize)
-						   .clipShape(Circle())
-					 case .failure:
-						Image(systemName: "photo")
-						   .resizable()
-						   .scaledToFit()
-						   .frame(width: picSize)
-						   .foregroundColor(.gray)
-						   .clipShape(Circle())
-					 @unknown default:
-						EmptyView()
+			   if let visitorPitcherPic = event.visitorPitcherPic, let url = URL(string: visitorPitcherPic) {
+				  AsyncImage(url: url) { phase in
+					 switch phase {
+						case .empty:
+						   ProgressView()
+							  .progressViewStyle(CircularProgressViewStyle())
+							  .frame(width: picSize)
+						case .success(let image):
+						   image
+							  .resizable()
+							  .scaledToFit()
+							  .frame(width: picSize)
+							  .clipShape(Circle())
+						case .failure:
+						   Image(systemName: "photo")
+							  .resizable()
+							  .scaledToFit()
+							  .frame(width: picSize)
+							  .foregroundColor(.gray)
+							  .clipShape(Circle())
+						@unknown default:
+						   EmptyView()
+					 }
 				  }
+			   } else {
+				  Image(systemName: "photo")
+					 .resizable()
+					 .scaledToFit()
+					 .frame(width: picSize)
+					 .foregroundColor(.gray)
+					 .clipShape(Circle())
 			   }
+
 			   VStack(alignment: .leading) {
 				  HStack {
-					 Text(event.homePitcherName)
+					 Text(event.visitorPitcherName)
 						.font(.footnote)
 						.bold()
 						.onTapGesture {
-						   if let url = URL(string: event.homePitcherBioURL) {
+						   if let url = URL(string: event.visitorPitcherBioURL) {
 							  UIApplication.shared.open(url)
 						   }
 						}
-					 Text(event.homePitcherThrows)
+					 Text(event.visitorPitcherThrows)
 						.font(.footnote)
 				  }
 				  VStack(alignment: .leading) {
-					 Text("ERA: \(event.homePitcherERA)")
-					 Text("\(event.homePitcherWins)-\(event.homePitcherLosses) - K: \(event.homePitcherStrikeOuts)")
+					 Text("ERA: \(event.visitorPitcherERA)")
+					 Text("\(event.visitorPitcherWins)-\(event.visitorPitcherLosses) - K: \(event.visitorPitcherStrikeOuts)")
 				  }
 				  .font(.footnote)
 				  .foregroundColor(.white)
@@ -114,10 +138,11 @@ struct PitcherDetailsView: View {
 			}
 		 }
 		 .frame(maxWidth: .infinity)
-//		 .border(.yellow)
+		 //        .border(.yellow)
 	  }
 	  .frame(maxWidth: .infinity)
 	  .padding()
-//	  .border(.green)
+	  //    .border(.green)
    }
 }
+
