@@ -11,9 +11,10 @@ import SwiftUI
 
 @main
 struct goMLBApp: App {
-    var body: some Scene {
-        WindowGroup {
-		   ContentView(teamSize: AppConstants.teamSize, teamScoreSize: AppConstants.teamScoreSize)
-        }
-    }
+   var body: some Scene {
+	  WindowGroup {
+		 ContentView(teamSize: AppConstants.teamSize, teamScoreSize: AppConstants.teamScoreSize)
+	  }
+   }
 }
+

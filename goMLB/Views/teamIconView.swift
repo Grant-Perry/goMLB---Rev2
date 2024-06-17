@@ -8,71 +8,57 @@
 //
 
 import SwiftUI
-private var gameViewModel: GameViewModel = GameViewModel()
 
 struct TeamIconView: View {
-   var team: APIResponse.Event.Competition.Competitor.Team
+   var teamName: String
+   var teamLogo: String
 
    var body: some View {
-	  let teamColor = team.color ?? "#000000" // Default to black if color is not provided
-	  let teamIcon = getPreferredLogo(for: team)
-
-	  ZStack {
-		 Circle()
-			.fill(Color(hex: teamColor))
-			.frame(width: 50, height: 50)
-
-		 if let url = URL(string: teamIcon) {
-			AsyncImage(url: url) { phase in
-			   switch phase {
-				  case .empty:
-					 ProgressView()
-						.progressViewStyle(CircularProgressViewStyle())
-						.frame(width: 50, height: 50)
-
-				  case .success(let image):
-					 image.resizable()
-						.scaledToFit()
-						.frame(width: 50, height: 50)
-						.clipShape(Circle())
-
-				  case .failure(let error):
-					 // Display an error message or placeholder image
-					 Image(systemName: "exclamationmark.triangle.fill") // Example error image
-						.resizable()
-						.scaledToFit()
-						.frame(width: 50, height: 50)
-						.foregroundColor(.red)
-						.clipShape(Circle())
-
-				  @unknown default:
-					 // Handle unknown cases (optional)
-					 EmptyView()
-			   }
-			}
+	  VStack {
+		 if !teamLogo.isEmpty {
+			Image(uiImage: loadImage(from: teamLogo))
+			   .resizable()
+			   .frame(width: 100, height: 100)
+			   .clipShape(Circle())
+			   .overlay(Circle().stroke(Color.white, lineWidth: 4))
+			   .shadow(radius: 10)
+			   .padding()
 		 } else {
 			Image(systemName: "photo")
 			   .resizable()
-			   .scaledToFit()
-			   .frame(width: 50, height: 50)
-			   .foregroundColor(.gray)
+			   .frame(width: 100, height: 100)
 			   .clipShape(Circle())
+			   .overlay(Circle().stroke(Color.white, lineWidth: 4))
+			   .shadow(radius: 10)
+			   .padding()
 		 }
+
+		 Text(teamName)
+			.font(.title)
+			.bold()
+			.padding()
 	  }
+	  .background(Color(.systemBackground))
+	  .cornerRadius(10)
+	  .shadow(radius: 5)
+	  .padding()
    }
 
-   // Function to get the preferred logo
-   func getPreferredLogo(for team: APIResponse.Event.Competition.Competitor.Team) -> String {
-	  // Prefer the second logo URL if it exists
-	  if let logos = team.logos, logos.count > 1 {
-		 return logos[1].href
+   private func loadImage(from urlString: String) -> UIImage {
+	  guard let url = URL(string: urlString),
+			let data = try? Data(contentsOf: url),
+			let image = UIImage(data: data) else {
+		 return UIImage(systemName: "photo") ?? UIImage()
 	  }
-	  // Fallback to the first logo if the second doesn't exist
-	  return team.logos?.first?.href ?? team.logo ?? ""
+	  return image
    }
 }
 
-
-
-
-
+struct TeamIconView_Previews: PreviewProvider {
+   static var previews: some View {
+	  TeamIconView(
+		 teamName: "Yankees",
+		 teamLogo: "https://example.com/yankees.png"
+	  )
+   }
+}

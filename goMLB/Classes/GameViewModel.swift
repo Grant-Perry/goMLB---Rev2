@@ -34,7 +34,7 @@ class GameViewModel: ObservableObject {
    @Published var homePitcherID: String = ""
    @Published var homePitcherThrows: String = ""
    @Published var homePitcherWins: Int = 0
-   @Published var homePitcherLosses: Int = 0 // Added losses
+   @Published var homePitcherLosses: Int = 0
    @Published var homePitcherStrikeOuts: Int = 0
 
    @Published var visitorPitcherName: String = ""
@@ -43,7 +43,7 @@ class GameViewModel: ObservableObject {
    @Published var visitorPitcherID: String = ""
    @Published var visitorPitcherThrows: String = ""
    @Published var visitorPitcherWins: Int = 0
-   @Published var visitorPitcherLosses: Int = 0 // Added losses
+   @Published var visitorPitcherLosses: Int = 0
    @Published var visitorPitcherStrikeOuts: Int = 0
 
    // Current Pitcher Properties
@@ -53,7 +53,7 @@ class GameViewModel: ObservableObject {
    @Published var currentPitcherID: String = ""
    @Published var currentPitcherThrows: String = ""
    @Published var currentPitcherWins: Int = 0
-   @Published var currentPitcherLosses: Int = 0 // Added losses
+   @Published var currentPitcherLosses: Int = 0
    @Published var currentPitcherStrikeOuts: Int = 0
    @Published var currentPitcherPitchesThrown: Int = 0
    @Published var currentPitcherLastPitchSpeed: String? = nil
@@ -74,13 +74,11 @@ class GameViewModel: ObservableObject {
 
    func loadAllGames(showLiveAction: Bool, completion: (() -> Void)? = nil) {
 	  if isDebuggingEnabled {
-		 // Load data from the local "gp.json" file
 		 if let path = Bundle.main.path(forResource: "gp", ofType: "json"),
 			let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
 			processGameData(data: data, showLiveAction: showLiveAction, completion: completion)
 		 }
 	  } else {
-		 // Load data from the ESPN API
 		 guard let url = URL(string: "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard") else { return }
 
 		 URLSession.shared.dataTask(with: url) { data, response, error in
@@ -93,163 +91,96 @@ class GameViewModel: ObservableObject {
 	  }
    }
 
+
    private func processGameData(data: Data, showLiveAction: Bool, completion: (() -> Void)? = nil) {
 	  do {
-		 let decodedResponse = try JSONDecoder().decode(APIResponse.self, from: data)
-		 DispatchQueue.main.async { [self] in
-			self.allEvents = decodedResponse.events.map { event in
-			   createGameEvent(from: event)
-			}
-			//			print("All Events Count: \(self.allEvents.count)") // Debug statement to check all events count
+		 if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+			let eventsArray = json["events"] as? [[String: Any]] {
 
-			if showLiveAction {
-			   self.filteredEvents = self.allEvents.filter { !($0.inningTxt.contains("Final") || $0.inningTxt.contains("Scheduled")) }
-			} else {
-			   self.filteredEvents = self.allEvents.filter { $0.visitors.contains(teamPlaying) || $0.home.contains(teamPlaying) }
-			}
+			self.allEvents = eventsArray.compactMap { createGameEvent(from: $0) }
 
-			//			print("Filtered Events Count: \(self.filteredEvents.count)") // Debug statement to check filtered events count
-			completion?()
+			DispatchQueue.main.async {
+			   if showLiveAction {
+				  self.filteredEvents = self.allEvents.filter { $0.isInProgress }
+			   } else {
+				  self.filteredEvents = self.allEvents.filter { $0.visitors.contains(self.teamPlaying) || $0.home.contains(self.teamPlaying) }
+			   }
+			   completion?()
+			}
 		 }
 	  } catch {
 		 print("Error decoding JSON: \(error)")
 	  }
    }
 
-   func updateTeamPlaying(with teamName: String) {
-	  teamPlaying = teamName
-	  filteredEvents = allEvents.filter { event in
-		 event.visitors.lowercased().contains(teamPlaying.lowercased()) || event.home.lowercased().contains(teamPlaying.lowercased())
-	  }
-   }
-
-   // Helper function to create gameEvent
-   private func createGameEvent(from event: APIResponse.Event) -> gameEvent {
-	  let competition = event.competitions[0]
-	  let homeTeam = competition.competitors[0]
-	  let awayTeam = competition.competitors[1]
-	  let inningTxt = competition.status.type.detail
-	  let startTime = convertTo12HourFormat(from: event.date, DST: false)
-
-	  var lastPlay = competition.situation?.lastPlay?.text
-	  self.extractDateAndTime(from: event.date)
-
-	  if lastPlay == nil {
-		 lastPlay = inningTxt
+   func createGameEvent(from dictionary: [String: Any]) -> gameEvent? {
+	  guard
+		 let id = dictionary["id"] as? String,
+		 let name = dictionary["name"] as? String,
+		 let competitions = dictionary["competitions"] as? [[String: Any]],
+		 let competition = competitions.first,
+		 let competitors = competition["competitors"] as? [[String: Any]],
+		 let homeCompetitor = competitors.first(where: { $0["homeAway"] as? String == "home" }),
+		 let awayCompetitor = competitors.first(where: { $0["homeAway"] as? String == "away" }),
+		 let homeTeam = homeCompetitor["team"] as? [String: Any],
+		 let awayTeam = awayCompetitor["team"] as? [String: Any],
+		 let status = competition["status"] as? [String: Any],
+		 let statusType = status["type"] as? [String: Any],
+		 let situation = competition["situation"] as? [String: Any],
+		 let homeScore = homeCompetitor["score"] as? String,
+		 let awayScore = awayCompetitor["score"] as? String
+	  else {
+		 return nil
 	  }
 
-	  if let thisLastPlay = self.lastPlayHist.last, !thisLastPlay.isEmpty {
-		 self.lastPlayHist.append(thisLastPlay)
-		 previousLastPlay = thisLastPlay
-	  }
+	  // Extract other necessary values
+	  let homeRecord = (homeCompetitor["records"] as? [[String: Any]])?.first?["summary"] as? String ?? "N/A"
+	  let awayRecord = (awayCompetitor["records"] as? [[String: Any]])?.first?["summary"] as? String ?? "N/A"
+	  let homeColor = homeTeam["color"] as? String ?? "000000"
+	  let homeAltColor = homeTeam["alternateColor"] as? String
+	  let awayColor = awayTeam["color"] as? String ?? "000000"
+	  let awayAltColor = awayTeam["alternateColor"] as? String
+	  let homeLogo = homeTeam["logo"] as? String ?? ""
+	  let awayLogo = awayTeam["logo"] as? String ?? ""
+	  let inningTxt = (statusType["description"] as? [String: Any])?["shortDetail"] as? String ?? "N/A"
+	  let startDate = dictionary["date"] as? String ?? "N/A"
+	  let startTime = (statusType["description"] as? [String: Any])?["inningHalf"] as? String ?? "N/A"
 
-	  if let situationStrikes = competition.situation?.strikes {
-		 if situationStrikes < 2 {
-			self.subStrike = 0
-			self.foulStrike2 = false
-		 } else {
-			if let thisLastPlay = lastPlay {
-			   if thisLastPlay.lowercased().contains("strike 2 foul") && situationStrikes == 2 {
-				  if !self.foulStrike2 {
-					 self.foulStrike2 = true
-				  } else {
-					 self.subStrike += 1
-				  }
-			   } else {
-				  self.foulStrike2 = false
-				  self.subStrike = 0
-			   }
-			} else {
-			   self.foulStrike2 = false
-			}
-		 }
-	  } else {
-		 self.foulStrike2 = false
-	  }
+	  // Handle pitcher and batter details
+	  let homePitcher = homeCompetitor["probable"] as? [String: Any]
+	  let awayPitcher = awayCompetitor["probable"] as? [String: Any]
+	  let currentPitcher = situation["pitcher"] as? [String: Any]
 
-	  let title = event.name
-	  let shortTitle = event.shortName
-	  let homeTeamName = homeTeam.team.name
-	  let awayTeamName = awayTeam.team.name
-	  let homeRecord = homeTeam.records?.first?.summary ?? "0-0"
-	  let visitorRecord = awayTeam.records?.first?.summary ?? "0-0"
-	  let inning = event.status.period ?? 0
-	  let homeScore = homeTeam.score ?? "0"
-	  let visitScore = awayTeam.score ?? "0"
-	  let homeColor = homeTeam.team.color ?? "#C4CED3"
-	  let homeAltColor = homeTeam.team.alternateColor ?? "#C4CED3"
-	  let visitorColor = awayTeam.team.color ?? "#C4CED3"
-	  let visitorAltColor = awayTeam.team.alternateColor ?? "#C4CED3"
-	  let on1 = competition.situation?.onFirst ?? false
-	  let on2 = competition.situation?.onSecond ?? false
-	  let on3 = competition.situation?.onThird ?? false
-	  let balls = competition.situation?.balls ?? 0
-	  let strikes = competition.situation?.strikes ?? 0
-	  let outs = competition.situation?.outs ?? 0
-	  let homeLogo = homeTeam.team.logo ?? "N/A"
-	  let visitorLogo = awayTeam.team.logo ?? "N/A"
-
-	  let batterName = competition.situation?.batter?.athlete.shortName ?? ""
-	  let batterPic = competition.situation?.batter?.athlete.headshot ?? ""
-	  let batterSummary = competition.situation?.batter?.athlete.summary
-	  let atBatID = competition.situation?.batter?.athlete.id ?? ""
-
-	  let homePitcher = homeTeam.probables?.first?.athlete
-	  let currentPitcher = competition.situation?.pitcher?.athlete
-	  let visitorPitcher = awayTeam.probables?.first?.athlete // Get visitor pitcher from probables
-
-	  let homePitcherID = homePitcher?.id ?? ""
-	  let currentPitcherID = currentPitcher?.id ?? ""
-	  let visitorPitcherID = visitorPitcher?.id ?? ""
-
-	  let visitorRuns = getVisitorRuns(from: awayTeam.statistics ?? [])
-	  let visitorHits = getVisitorHits(from: awayTeam.statistics ?? [])
-	  let visitorErrors = getVisitorErrors(from: awayTeam.statistics ?? [])
-	  let homeRuns = getHomeRuns(from: homeTeam.statistics ?? [])
-	  let homeHits = getHomeHits(from: homeTeam.statistics ?? [])
-	  let homeErrors = getHomeErrors(from: homeTeam.statistics ?? [])
-
-	  let batterAvg = competition.situation?.batter?.athlete.statistics?.first(where: { $0.name == "avg" })?.displayValue ?? "N/A"
-	  let batterLine = getBatterLine(from: homeTeam) // This might need adjusting
-
-	  // Pitcher Information Extraction
-	  extractPitcherInformation(from: homeTeam, forTeam: true)
-	  extractPitcherInformation(from: awayTeam, forTeam: false)
-
-	  // Determine current pitcher based on current inning and top/bottom
-	  let currentInningHalf = inningTxt.contains("Top") ? "away" : "home"
-	  currentPitcherName = (currentInningHalf == "home" ? homePitcherName : visitorPitcherName)
-	  currentPitcherPic = (currentInningHalf == "home" ? homePitcherPic : visitorPitcherPic)
-	  currentPitcherERA = (currentInningHalf == "home" ? homePitcherERA : visitorPitcherERA)
-	  currentPitcherThrows = (currentInningHalf == "home" ? homePitcherThrows : visitorPitcherThrows)
-	  currentPitcherWins = (currentInningHalf == "home" ? homePitcherWins : visitorPitcherWins)
-	  currentPitcherLosses = (currentInningHalf == "home" ? homePitcherLosses : visitorPitcherLosses)
-	  currentPitcherStrikeOuts = (currentInningHalf == "home" ? homePitcherStrikeOuts : visitorPitcherStrikeOuts)
-	  currentPitcherID = (currentInningHalf == "home" ? homePitcherID : visitorPitcherID)
+	  // Extracting the actual values using your logic
+	  let batterName = ((situation["atBat"] as? [String: Any])?["athlete"] as? [String: Any])?["displayName"] as? String ?? "N/A"
+	  let batterPic = ((situation["atBat"] as? [String: Any])?["athlete"] as? [String: Any])?["headshot"] as? String ?? ""
+	  let batterSummary = (situation["atBat"] as? [String: Any])?["summary"] as? String ?? "N/A"
+	  let batterAvg = ((situation["atBat"] as? [String: Any])?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "avg" })?["displayValue"] as? String ?? "N/A"
+	  let batterLine = (situation["atBat"] as? [String: Any])?["line"] as? String ?? "N/A"
 
 	  return gameEvent(
-		 title: title,
-		 shortTitle: shortTitle,
-		 home: homeTeamName,
-		 visitors: awayTeamName,
+		 title: name,
+		 shortTitle: name, // Adjust as needed
+		 home: homeTeam["name"] as? String ?? "",
+		 visitors: awayTeam["name"] as? String ?? "",
 		 homeRecord: homeRecord,
-		 visitorRecord: visitorRecord,
-		 inning: inning,
+		 visitorRecord: awayRecord,
+		 inning: status["period"] as? Int ?? 1,
 		 homeScore: homeScore,
-		 visitScore: visitScore,
+		 visitScore: awayScore,
 		 homeColor: homeColor,
 		 homeAltColor: homeAltColor,
-		 visitorColor: visitorColor,
-		 visitorAltColor: visitorAltColor,
-		 on1: on1,
-		 on2: on2,
-		 on3: on3,
-		 lastPlay: lastPlay,
-		 balls: balls,
-		 strikes: strikes,
-		 outs: outs,
+		 visitorColor: awayColor,
+		 visitorAltColor: awayAltColor,
+		 on1: situation["onFirst"] as? Bool ?? false,
+		 on2: situation["onSecond"] as? Bool ?? false,
+		 on3: situation["onThird"] as? Bool ?? false,
+		 lastPlay: situation["lastPlay"] as? String,
+		 balls: situation["balls"] as? Int,
+		 strikes: situation["strikes"] as? Int,
+		 outs: situation["outs"] as? Int,
 		 homeLogo: homeLogo,
-		 visitorLogo: visitorLogo,
+		 visitorLogo: awayLogo,
 		 inningTxt: inningTxt,
 		 thisSubStrike: subStrike,
 		 thisCalledStrike2: foulStrike2,
@@ -257,43 +188,43 @@ class GameViewModel: ObservableObject {
 		 startTime: startTime,
 		 atBat: batterName,
 		 atBatPic: batterPic,
-		 atBatSummary: batterSummary ?? "N/A",
+		 atBatSummary: batterSummary,
 		 batterStats: batterAvg,
 		 batterLine: batterLine,
-		 visitorRuns: visitorRuns,
-		 visitorHits: visitorHits,
-		 visitorErrors: visitorErrors,
-		 homeRuns: homeRuns,
-		 homeHits: homeHits,
-		 homeErrors: homeErrors,
-		 currentPitcherName: currentPitcherName,
-		 currentPitcherPic: currentPitcherPic,
-		 currentPitcherERA: currentPitcherERA,
-		 currentPitcherPitchesThrown: currentPitcher?.statistics?.first(where: { $0.name == "pitchesThrown" })?.displayValue as? Int ?? 0,
-		 currentPitcherLastPitchSpeed: currentPitcher?.statistics?.first(where: { $0.name == "lastPitchSpeed" })?.displayValue,
-		 currentPitcherLastPitchType: currentPitcher?.statistics?.first(where: { $0.name == "lastPitchType" })?.displayValue,
-		 currentPitcherID: currentPitcherID,
-		 currentPitcherThrows: currentPitcher?.throwsHand ?? "",
-		 currentPitcherWins: currentPitcher?.statistics?.first(where: { $0.name == "wins" })?.displayValue as? Int ?? 0,
-		 currentPitcherLosses: currentPitcher?.statistics?.first(where: { $0.name == "losses" })?.displayValue as? Int ?? 0,
-		 currentPitcherStrikeOuts: currentPitcher?.statistics?.first(where: { $0.name == "strikeOuts" })?.displayValue as? Int ?? 0,
-		 homePitcherName: homePitcherName,
-		 homePitcherPic: homePitcherPic,
-		 homePitcherERA: homePitcherERA,
-		 homePitcherID: homePitcherID,
-		 homePitcherThrows: homePitcher?.throwsHand ?? "",
-		 homePitcherWins: homePitcher?.stats?.wins ?? "0",
-		 homePitcherLosses: homePitcher?.stats?.losses ?? "0",
-		 homePitcherStrikeOuts: Int(homePitcher?.stats?.strikeOuts ?? "0") ?? 0,
-		 visitorPitcherName: visitorPitcher?.athlete.displayName ?? "TBD",
-		 visitorPitcherPic: visitorPitcher?.athlete.headshot,
-		 visitorPitcherERA: visitorPitcher?.stats?.era ?? "0.00",
-		 visitorPitcherID: visitorPitcherID,
-		 visitorPitcherThrows: visitorPitcher?.athlete.hand ?? "",
-		 visitorPitcherWins: visitorPitcher?.stats?.wins ?? "0",
-		 visitorPitcherLosses: visitorPitcher?.stats?.losses ?? "0",
-		 visitorPitcherStrikeOuts: Int(visitorPitcher?.stats?.strikeOuts ?? "0") ?? 0,
-		 atBatID: atBatID
+		 visitorRuns: awayScore,
+		 visitorHits: situation["hits"] as? String ?? "0",
+		 visitorErrors: situation["errors"] as? String ?? "0",
+		 homeRuns: homeScore,
+		 homeHits: situation["hits"] as? String ?? "0",
+		 homeErrors: situation["errors"] as? String ?? "0",
+		 currentPitcherName: (currentPitcher?["athlete"] as? [String: Any])?["displayName"] as? String ?? "TBD",
+		 currentPitcherPic: (currentPitcher?["athlete"] as? [String: Any])?["headshot"] as? String ?? "",
+		 currentPitcherERA: (currentPitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "ERA" })?["displayValue"] as? String ?? "0.00",
+		 currentPitcherPitchesThrown: Int((currentPitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "pitchesThrown" })?["displayValue"] as? String ?? "0") ?? 0,
+		 currentPitcherLastPitchSpeed: (currentPitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "lastPitchSpeed" })?["displayValue"] as? String,
+		 currentPitcherLastPitchType: (currentPitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "lastPitchType" })?["displayValue"] as? String,
+		 currentPitcherID: (currentPitcher?["athlete"] as? [String: Any])?["id"] as? String ?? "",
+		 currentPitcherThrows: (currentPitcher?["athlete"] as? [String: Any])?["hand"] as? String ?? "",
+		 currentPitcherWins: Int((currentPitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "wins" })?["displayValue"] as? String ?? "0") ?? 0,
+		 currentPitcherLosses: Int((currentPitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "losses" })?["displayValue"] as? String ?? "0") ?? 0,
+		 currentPitcherStrikeOuts: Int((currentPitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "strikeOuts" })?["displayValue"] as? String ?? "0") ?? 0,
+		 homePitcherName: (homePitcher?["athlete"] as? [String: Any])?["displayName"] as? String ?? "TBD",
+		 homePitcherPic: (homePitcher?["athlete"] as? [String: Any])?["headshot"] as? String,
+		 homePitcherERA: (homePitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "ERA" })?["displayValue"] as? String ?? "0.00",
+		 homePitcherID: (homePitcher?["athlete"] as? [String: Any])?["id"] as? String ?? "",
+		 homePitcherThrows: (homePitcher?["athlete"] as? [String: Any])?["hand"] as? String ?? "",
+		 homePitcherWins: Int((homePitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "wins" })?["displayValue"] as? String ?? "0") ?? 0,
+		 homePitcherLosses: Int((homePitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "losses" })?["displayValue"] as? String ?? "0") ?? 0,
+		 homePitcherStrikeOuts: Int((homePitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "strikeOuts" })?["displayValue"] as? String ?? "0") ?? 0,
+		 visitorPitcherName: (awayPitcher?["athlete"] as? [String: Any])?["displayName"] as? String ?? "TBD",
+		 visitorPitcherPic: (awayPitcher?["athlete"] as? [String: Any])?["headshot"] as? String,
+		 visitorPitcherERA: (awayPitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "ERA" })?["displayValue"] as? String ?? "0.00",
+		 visitorPitcherID: (awayPitcher?["athlete"] as? [String: Any])?["id"] as? String ?? "",
+		 visitorPitcherThrows: (awayPitcher?["athlete"] as? [String: Any])?["hand"] as? String ?? "",
+		 visitorPitcherWins: Int((awayPitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "wins" })?["displayValue"] as? String ?? "0") ?? 0,
+		 visitorPitcherLosses: Int((awayPitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "losses" })?["displayValue"] as? String ?? "0") ?? 0,
+		 visitorPitcherStrikeOuts: Int((awayPitcher?["statistics"] as? [[String: Any]])?.first(where: { $0["name"] as? String == "strikeOuts" })?["displayValue"] as? String ?? "0") ?? 0,
+		 atBatID: situation["atBatId"] as? String ?? ""
 	  )
    }
 
@@ -308,37 +239,11 @@ class GameViewModel: ObservableObject {
 	  favTeam = teamName
    }
 
-   private func getBatterStats(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-	  return stats[safe: 2]?.displayValue ?? "N/A"
-   }
 
-   private func getBatterLine(from team: APIResponse.Event.Competition.Competitor) -> String {
-	  return team.leaders?.first(where: { $0.abbreviation == "RAT" })?.leaders.first?.displayValue ?? "N/A"
-   }
-
-   private func getVisitorRuns(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-	  return stats.first(where: { $0.name == "runs" })?.displayValue ?? "N/A"
-   }
-
-   private func getVisitorHits(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-	  return stats.first(where: { $0.name == "hits" })?.displayValue ?? "N/A"
-   }
-
-   private func getVisitorErrors(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-	  return stats.first(where: { $0.name == "errors" })?.displayValue ?? "N/A"
-   }
-
-   private func getHomeRuns(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-	  return stats.first(where: { $0.name == "runs" })?.displayValue ?? "N/A"
-   }
-
-   private func getHomeHits(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-	  return stats.first(where: { $0.name == "hits" })?.displayValue ?? "N/A"
-   }
-
-   private func getHomeErrors(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
-	  return stats.first(where: { $0.name == "errors" })?.displayValue ?? "N/A"
-   }
+//
+//   private func getHomeErrors(from stats: [APIResponse.Event.Competition.Competitor.Statistic]) -> String {
+//	  return stats.first(where: { $0.name == "errors" })?.displayValue ?? "N/A"
+//   }
 
    private func extractDateAndTime(from dateString: String) {
 	  let parts = dateString.split(separator: "T")
@@ -348,54 +253,55 @@ class GameViewModel: ObservableObject {
 	  }
    }
 
-   func extractPitcherInformation(from competitor: APIResponse.Event.Competition.Competitor, forTeam isHomeTeam: Bool) {
-	  if let probables = competitor.probables,
-		 let probable = probables.first,
-		 let athlete = probable.athlete,
-		 let stats = athlete.statistics {
-
-		 let name = athlete.shortName
-		 let pic = athlete.headshot
-		 let id = athlete.id
-		 let throwsHand = athlete.throwsHand ?? ""
-
-		 var wins = 0
-		 var losses = 0
-		 var era = ""
-		 var strikeouts = 0
-
-		 for stat in stats {
-			if let abbreviation = stat.abbreviation,
-			   let displayValue = stat.displayValue {
-			   switch abbreviation {
-				  case "W": wins = Int(displayValue) ?? 0
-				  case "L": losses = Int(displayValue) ?? 0
-				  case "ERA": era = displayValue
-				  case "K": strikeouts = Int(displayValue) ?? 0
-				  default: break
-			   }
-			}
-		 }
-
-		 if isHomeTeam {
-			homePitcherName = name
-			homePitcherPic = pic
-			homePitcherERA = era
-			homePitcherID = id
-			homePitcherThrows = throwsHand
-			homePitcherWins = wins
-			homePitcherLosses = losses
-			homePitcherStrikeOuts = strikeouts
-		 } else {
-			visitorPitcherName = name
-			visitorPitcherPic = pic
-			visitorPitcherERA = era
-			visitorPitcherID = id
-			visitorPitcherThrows = throwsHand
-			visitorPitcherWins = wins
-			visitorPitcherLosses = losses
-			visitorPitcherStrikeOuts = strikeouts
-		 }
-	  }
-   }
+//   func extractPitcherInformation(from competitor: APIResponse.Event.Competition.Competitor, forTeam isHomeTeam: Bool) {
+//	  if let probables = competitor.probables,
+//		 let probable = probables.first,
+//		 let athlete = probable.athlete,
+//		 let stats = athlete.statistics {
+//
+//		 let name = athlete.shortName
+//		 let pic = athlete.headshot
+//		 let id = athlete.id
+//		 let throwsHand = athlete.throwsHand ?? ""
+//
+//		 var wins = 0
+//		 var losses = 0
+//		 var era = ""
+//		 var strikeouts = 0
+//
+//		 for stat in stats {
+//			if let abbreviation = stat.abbreviation,
+//			   let displayValue = stat.displayValue {
+//			   switch abbreviation {
+//				  case "W": wins = Int(displayValue) ?? 0
+//				  case "L": losses = Int(displayValue) ?? 0
+//				  case "ERA": era = displayValue
+//				  case "K": strikeouts = Int(displayValue) ?? 0
+//				  default: break
+//			   }
+//			}
+//		 }
+//
+//		 if isHomeTeam {
+//			homePitcherName = name
+//			homePitcherPic = pic
+//			homePitcherERA = era
+//			homePitcherID = id
+//			homePitcherThrows = throwsHand
+//			homePitcherWins = wins
+//			homePitcherLosses = losses
+//			homePitcherStrikeOuts = strikeouts
+//		 } else {
+//			visitorPitcherName = name
+//			visitorPitcherPic = pic
+//			visitorPitcherERA = era
+//			visitorPitcherID = id
+//			visitorPitcherThrows = throwsHand
+//			visitorPitcherWins = wins
+//			visitorPitcherLosses = losses
+//			visitorPitcherStrikeOuts = strikeouts
+//		 }
+//	  }
+//   }
 }
+

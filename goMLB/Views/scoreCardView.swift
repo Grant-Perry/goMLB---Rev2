@@ -9,317 +9,207 @@
 
 import SwiftUI
 
-struct scoreCardView: View {
+struct ScoreCardView: View {
    @ObservedObject var vm: GameViewModel
-   @Binding var selectedEventID: String?
-   @Binding var showModal: Bool
-
    var titleSize: CGFloat
+   @Binding var showModal: Bool
    var tooDark: String
    var event: gameEvent
    var scoreSize: Int
    @Binding var numUpdates: Int
    @Binding var refreshGame: Bool
-   @Binding var timeRemaining: Int
-
-   let home: String?
-   let homeScore: String
-   let homeRecord: String?
-   let visitorRecord: String?
-   let homeColor: String?
-   let visitors: String?
-   let visitScore: String
-   let visitColor: String?
-   let homeWin: Bool
-   let visitWin: Bool
-   let inningTxt: String?
-   let startTime: String?
-   let atBat: String?
-   let atBatPic: String?
-   let batterStats: String?
-   let batterLine: String?
-   var winColor: Color { .green }
-   var thisIsInProgress: Bool { event.isInProgress }
-
-   init(vm: GameViewModel, titleSize: CGFloat, showModal: Binding<Bool>, tooDark: String, event: gameEvent, scoreSize: Int, numUpdates: Binding<Int>, refreshGame: Binding<Bool>, timeRemaining: Binding<Int>, selectedEventID: Binding<String?>) {
-	  self.vm = vm
-	  self.titleSize = titleSize
-	  self.tooDark = tooDark
-	  self.event = event
-	  self.scoreSize = scoreSize
-	  self._numUpdates = numUpdates
-	  self._refreshGame = refreshGame
-	  self._timeRemaining = timeRemaining
-	  self._selectedEventID = selectedEventID
-	  self._showModal = showModal
-
-	  self.home = vm.filteredEvents.first?.home
-	  self.homeScore = vm.filteredEvents.first?.homeScore ?? "0"
-	  self.homeRecord = vm.filteredEvents.first?.homeRecord
-	  self.visitorRecord = vm.filteredEvents.first?.visitorRecord
-	  self.homeColor = vm.filteredEvents.first?.homeColor
-	  self.visitors = vm.filteredEvents.first?.visitors
-	  self.visitScore = vm.filteredEvents.first?.visitScore ?? "0"
-	  self.visitColor = vm.filteredEvents.first?.visitorAltColor
-	  self.inningTxt = vm.filteredEvents.first?.inningTxt
-	  self.atBat = vm.filteredEvents.first?.atBat
-	  self.atBatPic = vm.filteredEvents.first?.atBatPic
-	  self.batterStats = vm.filteredEvents.first?.batterStats
-	  self.batterLine = vm.filteredEvents.first?.batterLine
-
-	  self.startTime = event.startTime
-
-	  self.homeWin = (Int(visitScore) ?? 0) < (Int(homeScore) ?? 0)
-	  self.visitWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0)
-   }
+   var timeRemaining: String
+   @Binding var selectedEventID: String
 
    var body: some View {
 	  VStack {
-		 VStack {
-			HeaderView(
-			   gameViewModel: vm,
-			   showModal: $showModal,
-			   selectedEventID: $selectedEventID,
-			   event: event,
-			   visitors: event.visitors,
-			   home: event.home,
-			   visitColor: event.visitorColor,
-			   homeColor: event.homeColor,
-			   inningTxt: event.inningTxt,
-			   startTime: event.startTime,
-			   tooDark: tooDark,
-			   isToday: vm.isToday,
-			   eventOuts: event.outs,
-			   refreshGame: $refreshGame,
-			   numUpdates: $numUpdates,
-			   timeRemaining: $timeRemaining,
-			   thisIsInProgress: thisIsInProgress
-			)
+		 HStack {
+			Text(event.home)
+			   .font(.headline)
+			   .foregroundColor(Color(hex: event.homeColor))
+			Spacer()
+			Text(event.visitors)
+			   .font(.headline)
+			   .foregroundColor(Color(hex: event.visitorColor))
 		 }
+		 .padding()
 
-		 HStack(spacing: 0) {
-			HStack {
-			   VStack(alignment: .leading, spacing: 0) {
-				  VStack {
-					 HStack {
-						Text("\(visitors ?? "")")
-					 }
-					 .font(.title3)
-					 .minimumScaleFactor(0.5)
-					 .lineLimit(1)
-					 .frame(maxWidth: .infinity, alignment: .trailing)
-					 .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
-
-					 Text("\(visitorRecord ?? "")")
-						.font(.caption)
-						.padding(.trailing, 5)
-						.foregroundColor(.gray)
-						.frame(maxWidth: .infinity, alignment: .trailing)
-
-					 HStack {
-						TeamIconView(team: APIResponse.Event.Competition.Competitor.Team(
-						   name: "Visitor",
-						   color: visitColor,
-						   alternateColor: nil,
-						   logo: nil,
-						   logos: [
-							  APIResponse.Event.Competition.Competitor.Team.Logo(
-								 href: event.visitorLogo,
-								 width: nil,
-								 height: nil
-							  )
-						   ]
-						))
-						.clipShape(Circle())
-					 }
-					 .frame(maxWidth: .infinity, alignment: .center)
-					 .padding(.bottom, 2)
-				  }
-			   }
-			   Text("\(visitScore)")
-				  .font(.system(size: CGFloat(scoreSize)))
-				  .bold()
-				  .padding(.trailing)
-				  .foregroundColor(visitWin && Int(visitScore) ?? 0 > 0 ? winColor : Color(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark)))
-			}
-			.frame(maxWidth: .infinity, alignment: .trailing)
-			.background(
-			   Group {
-				  if visitWin, Int(visitScore) ?? 0 > 0 {
-					 LinearGradient(
-						gradient: Gradient(colors: [Color.clear, Color.green.opacity(0.5)]),
-						startPoint: .trailing,
-						endPoint: .leading
-					 )
-				  } else {
-					 Color.clear
-				  }
-			   }
-			)
-
-			HStack {
-			   if inningTxt?.contains("Bottom") ?? false {
-				  Image(systemName: "arrowtriangle.right.fill")
-					 .imageScale(.small)
-			   } else if inningTxt?.contains("Top") ?? false {
-				  Image(systemName: "arrowtriangle.left.fill")
-			   }
-			   Text("\(homeScore)")
-				  .font(.system(size: CGFloat(scoreSize)))
-				  .bold()
-				  .padding(.leading)
-				  .foregroundColor(homeWin && Int(homeScore) ?? 0 > 0 ? winColor : Color(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark)))
-
-			   VStack(alignment: .leading) {
-				  VStack {
-					 Text("\(home ?? "")")
-						.font(.title3)
-						.foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
-						.minimumScaleFactor(0.5)
-						.frame(maxWidth: .infinity, alignment: .leading)
-						.lineLimit(1)
-
-					 Text("\(vm.filteredEvents.first?.homeRecord ?? "")")
-						.font(.caption)
-						.foregroundColor(.gray)
-						.frame(maxWidth: .infinity, alignment: .leading)
-
-					 HStack {
-						TeamIconView(team: APIResponse.Event.Competition.Competitor.Team(
-						   name: "Home",
-						   color: homeColor,
-						   alternateColor: nil,
-						   logo: nil,
-						   logos: [
-							  APIResponse.Event.Competition.Competitor.Team.Logo(
-								 href: event.homeLogo,
-								 width: nil,
-								 height: nil
-							  )
-						   ]
-						))
-						.clipShape(Circle())
-					 }
-					 .frame(maxWidth: .infinity, alignment: .center)
-					 .padding(.bottom, 2)
+		 HStack {
+			VStack(alignment: .leading) {
+			   Text("Home")
+				  .font(.subheadline)
+			   HStack {
+				  Image(uiImage: loadImage(from: event.homeLogo))
+					 .resizable()
+					 .frame(width: 50, height: 50)
+				  VStack(alignment: .leading) {
+					 Text(event.home)
+					 Text(event.homeRecord)
 				  }
 			   }
 			}
-			.frame(maxWidth: .infinity, alignment: .leading)
-			.background(
-			   Group {
-				  if homeWin, Int(homeScore) ?? 0 > 0 {
-					 LinearGradient(
-						gradient: Gradient(colors: [Color.clear, Color.green.opacity(0.5)]),
-						startPoint: .leading,
-						endPoint: .trailing
-					 )
-				  } else {
-					 Color.clear
+			Spacer()
+			VStack(alignment: .trailing) {
+			   Text("Visitors")
+				  .font(.subheadline)
+			   HStack {
+				  VStack(alignment: .trailing) {
+					 Text(event.visitors)
+					 Text(event.visitorRecord)
 				  }
+				  Image(uiImage: loadImage(from: event.visitorLogo))
+					 .resizable()
+					 .frame(width: 50, height: 50)
 			   }
-			)
-		 }
-
-		 if let atBat = atBat, !atBat.isEmpty {
-			VStack {
-			   Text("At Bat: \(atBat)")
-				  .font(.headline)
-				  .onTapGesture {
-					 if let url = URL(string: event.batterBioURL) {
-						UIApplication.shared.open(url)
-					 }
-				  }
-			   if let batterStats = batterStats {
-				  Text("Avg: \(batterStats)  |  \(batterLine ?? "")")
-					 .font(.subheadline)
-			   }
-			   Spacer()
-			   VStack {
-				  AsyncImage(url: URL(string: atBatPic ?? "")) { phase in
-					 switch phase {
-						case .empty:
-						   ProgressView()
-							  .progressViewStyle(CircularProgressViewStyle())
-							  .frame(width: 140, height: 140)
-						case .success(let image):
-						   image.resizable()
-							  .scaledToFit()
-							  .frame(width: 140, height: 140)
-							  .clipShape(Circle())
-							  .onTapGesture {
-								 if let url = URL(string: event.batterBioURL) {
-									UIApplication.shared.open(url)
-								 }
-							  }
-						case .failure:
-						   Image(systemName: "photo")
-							  .resizable()
-							  .scaledToFit()
-							  .frame(width: 140, height: 140)
-							  .foregroundColor(.gray)
-							  .clipShape(Circle())
-						@unknown default:
-						   EmptyView()
-					 }
-				  }
-
-				  VStack {
-					 Text(event.currentPitcherName)
-						.font(.subheadline)
-						.onTapGesture {
-						   if let url = URL(string: event.homePitcherBioURL) {
-							  UIApplication.shared.open(url)
-						   }
-						}
-					 VStack(alignment: .leading) {
-						Text("ERA: \(event.currentPitcherERA)")
-						Text("Pitches: \(event.currentPitcherPitchesThrown)")
-						if let speed = event.currentPitcherLastPitchSpeed {
-						   Text("Speed: \(speed)")
-						}
-						if let type = event.currentPitcherLastPitchType {
-						   Text("Type: \(type)")
-						}
-					 }
-					 .font(.footnote)
-					 .foregroundColor(.white)
-
-					 AsyncImage(url: URL(string: event.currentPitcherPic ?? "")) { phase in
-						switch phase {
-						   case .empty:
-							  ProgressView()
-								 .progressViewStyle(CircularProgressViewStyle())
-								 .frame(width: 50, height: 50)
-						   case .success(let image):
-							  image.resizable()
-								 .scaledToFit()
-								 .frame(width: 50, height: 50)
-								 .clipShape(Circle())
-								 .onTapGesture {
-									if let url = URL(string: event.homePitcherBioURL) {
-									   UIApplication.shared.open(url)
-									}
-								 }
-						   case .failure:
-							  Image(systemName: "photo")
-								 .resizable()
-								 .scaledToFit()
-								 .frame(width: 50, height: 50)
-								 .foregroundColor(.gray)
-								 .clipShape(Circle())
-						   @unknown default:
-							  EmptyView()
-						}
-					 }
-				  }
-			   }
-			   .padding()
-			   .foregroundColor(.white)
 			}
 		 }
+		 .padding()
+
+		 HStack {
+			VStack(alignment: .leading) {
+			   Text("Inning: \(event.inningTxt)")
+			   Text("Balls: \(event.balls ?? 0)")
+			   Text("Strikes: \(event.strikes ?? 0)")
+			   Text("Outs: \(event.outs ?? 0)")
+			}
+			Spacer()
+			VStack(alignment: .trailing) {
+			   Text("Bases")
+			   HStack {
+				  Text(event.on1 ? "1" : "-")
+				  Text(event.on2 ? "2" : "-")
+				  Text(event.on3 ? "3" : "-")
+			   }
+			}
+		 }
+		 .padding()
+
+		 VStack(alignment: .leading) {
+			Text("Last Play: \(event.lastPlay ?? "N/A")")
+			Text("At Bat: \(event.atBat ?? "N/A")")
+			if !event.atBatPic.isEmpty {
+			   Image(uiImage: loadImage(from: event.atBatPic))
+				  .resizable()
+				  .frame(width: 50, height: 50)
+			}
+			Text("Batter Stats: \(event.batterStats ?? "N/A")")
+			Text("Batter Line: \(event.batterLine ?? "N/A")")
+		 }
+		 .padding()
+
+		 VStack(alignment: .leading) {
+			Text("Pitcher Details")
+			VStack(alignment: .leading) {
+			   Text("Current Pitcher: \(event.currentPitcherName)")
+			   if !event.currentPitcherPic.isEmpty {
+				  Image(uiImage: loadImage(from: event.currentPitcherPic))
+					 .resizable()
+					 .frame(width: 50, height: 50)
+			   }
+			   Text("ERA: \(event.currentPitcherERA)")
+			   Text("Pitches Thrown: \(event.currentPitcherPitchesThrown)")
+			   Text("Last Pitch Speed: \(event.currentPitcherLastPitchSpeed ?? "N/A")")
+			   Text("Last Pitch Type: \(event.currentPitcherLastPitchType ?? "N/A")")
+			}
+		 }
+		 .padding()
 	  }
-	  .frame(width: UIScreen.main.bounds.width * 0.9)
-	  .padding(.bottom, 50)
+	  .background(Color(.systemBackground))
+	  .cornerRadius(10)
+	  .shadow(radius: 5)
+	  .padding()
+   }
+
+   private func loadImage(from urlString: String) -> UIImage {
+	  guard let url = URL(string: urlString),
+			let data = try? Data(contentsOf: url),
+			let image = UIImage(data: data) else {
+		 return UIImage(systemName: "photo") ?? UIImage()
+	  }
+	  return image
+   }
+}
+
+struct ScoreCardView_Previews: PreviewProvider {
+   static var previews: some View {
+	  ScoreCardView(
+		 vm: GameViewModel(),
+		 titleSize: 20,
+		 showModal: .constant(false),
+		 tooDark: "#444444",
+		 event: gameEvent(
+			title: "Sample Game",
+			shortTitle: "Sample",
+			home: "Yankees",
+			visitors: "Red Sox",
+			homeRecord: "10-5",
+			visitorRecord: "8-7",
+			inning: 5,
+			homeScore: "5",
+			visitScore: "3",
+			homeColor: "#003087",
+			homeAltColor: "#003087",
+			visitorColor: "#BD3039",
+			visitorAltColor: "#BD3039",
+			on1: true,
+			on2: false,
+			on3: true,
+			lastPlay: "Single to center",
+			balls: 2,
+			strikes: 1,
+			outs: 2,
+			homeLogo: "https://example.com/yankees.png",
+			visitorLogo: "https://example.com/redsox.png",
+			inningTxt: "Bottom 5",
+			thisSubStrike: 0,
+			thisCalledStrike2: false,
+			startDate: "2024-06-01",
+			startTime: "13:00",
+			atBat: "Aaron Judge",
+			atBatPic: "https://example.com/aaronjudge.png",
+			atBatSummary: "2 for 3",
+			batterStats: ".315",
+			batterLine: "2 for 3",
+			visitorRuns: "3",
+			visitorHits: "5",
+			visitorErrors: "1",
+			homeRuns: "5",
+			homeHits: "7",
+			homeErrors: "0",
+			currentPitcherName: "Gerrit Cole",
+			currentPitcherPic: "https://example.com/gerritcole.png",
+			currentPitcherERA: "2.50",
+			currentPitcherPitchesThrown: 75,
+			currentPitcherLastPitchSpeed: "97 MPH",
+			currentPitcherLastPitchType: "Fastball",
+			currentPitcherID: "123456",
+			currentPitcherThrows: "Right",
+			currentPitcherWins: 5,
+			currentPitcherLosses: 2,
+			currentPitcherStrikeOuts: 55,
+			homePitcherName: "Nestor Cortes",
+			homePitcherPic: "https://example.com/nestorcortes.png",
+			homePitcherERA: "3.20",
+			homePitcherID: "654321",
+			homePitcherThrows: "Left",
+			homePitcherWins: 3,
+			homePitcherLosses: 1,
+			homePitcherStrikeOuts: 40,
+			visitorPitcherName: "Chris Sale",
+			visitorPitcherPic: "https://example.com/chrissale.png",
+			visitorPitcherERA: "3.75",
+			visitorPitcherID: "789012",
+			visitorPitcherThrows: "Left",
+			visitorPitcherWins: 4,
+			visitorPitcherLosses: 3,
+			visitorPitcherStrikeOuts: 50,
+			atBatID: "111222"
+		 ),
+		 scoreSize: 15,
+		 numUpdates: .constant(10),
+		 refreshGame: .constant(true),
+		 timeRemaining: "2:15",
+		 selectedEventID: .constant("")
+	  )
    }
 }

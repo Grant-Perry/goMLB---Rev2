@@ -11,138 +11,69 @@
 import SwiftUI
 
 struct PitcherDetailsView: View {
-   var event: gameEvent
-   var picSize: CGFloat = 75.0
+   var pitcherName: String
+   var pitcherPic: String
+   var pitcherERA: String
+   var pitcherWins: Int
+   var pitcherLosses: Int
+   var pitcherStrikeOuts: Int
+   var pitcherThrows: String
 
    var body: some View {
-	  HStack(spacing: 0) {
-		 // Current Pitcher's Info
-		 VStack {
-			HStack {
-			   VStack(alignment: .trailing) {
-				  HStack {
-					 Text(event.currentPitcherThrows)
-						.font(.footnote)
-					 Text(event.currentPitcherName)
-						.font(.footnote)
-						.bold()
-						.onTapGesture {
-						   if let url = URL(string: event.currentPitcherBioURL) {
-							  UIApplication.shared.open(url)
-						   }
-						}
-				  }
-				  VStack(alignment: .trailing) {
-					 Text("ERA: \(event.currentPitcherERA)")
-					 Text("\(event.currentPitcherWins)-\(event.currentPitcherLosses) - K: \(event.currentPitcherStrikeOuts)")
-					 if let pitches = event.currentPitcherPitchesThrown {
-						Text("Pitches: \(pitches)")
-					 }
-				  }
-				  .font(.footnote)
-				  .foregroundColor(.white)
-			   }
-			   if let currentPitcherPic = event.currentPitcherPic, let url = URL(string: currentPitcherPic) {
-				  AsyncImage(url: url) { phase in
-					 switch phase {
-						case .empty:
-						   ProgressView()
-							  .progressViewStyle(CircularProgressViewStyle())
-							  .frame(width: picSize)
-						case .success(let image):
-						   image
-							  .resizable()
-							  .scaledToFit()
-							  .frame(width: picSize)
-							  .clipShape(Circle())
-						case .failure:
-						   Image(systemName: "photo")
-							  .resizable()
-							  .scaledToFit()
-							  .frame(width: picSize)
-							  .foregroundColor(.gray)
-							  .clipShape(Circle())
-						@unknown default:
-						   EmptyView()
-					 }
-				  }
-			   } else {
-				  Image(systemName: "photo")
-					 .resizable()
-					 .scaledToFit()
-					 .frame(width: picSize)
-					 .foregroundColor(.gray)
-					 .clipShape(Circle())
-			   }
-			}
-		 }
-		 .frame(maxWidth: .infinity)
-		 //        .border(.red)
+	  VStack {
+		 Text(pitcherName)
+			.font(.largeTitle)
+			.bold()
+			.padding()
 
-		 // Visitor Pitcher's Info
-		 VStack {
-			HStack {
-			   if let visitorPitcherPic = event.visitorPitcherPic, let url = URL(string: visitorPitcherPic) {
-				  AsyncImage(url: url) { phase in
-					 switch phase {
-						case .empty:
-						   ProgressView()
-							  .progressViewStyle(CircularProgressViewStyle())
-							  .frame(width: picSize)
-						case .success(let image):
-						   image
-							  .resizable()
-							  .scaledToFit()
-							  .frame(width: picSize)
-							  .clipShape(Circle())
-						case .failure:
-						   Image(systemName: "photo")
-							  .resizable()
-							  .scaledToFit()
-							  .frame(width: picSize)
-							  .foregroundColor(.gray)
-							  .clipShape(Circle())
-						@unknown default:
-						   EmptyView()
-					 }
-				  }
-			   } else {
-				  Image(systemName: "photo")
-					 .resizable()
-					 .scaledToFit()
-					 .frame(width: picSize)
-					 .foregroundColor(.gray)
-					 .clipShape(Circle())
-			   }
-
-			   VStack(alignment: .leading) {
-				  HStack {
-					 Text(event.visitorPitcherName)
-						.font(.footnote)
-						.bold()
-						.onTapGesture {
-						   if let url = URL(string: event.visitorPitcherBioURL) {
-							  UIApplication.shared.open(url)
-						   }
-						}
-					 Text(event.visitorPitcherThrows)
-						.font(.footnote)
-				  }
-				  VStack(alignment: .leading) {
-					 Text("ERA: \(event.visitorPitcherERA)")
-					 Text("\(event.visitorPitcherWins)-\(event.visitorPitcherLosses) - K: \(event.visitorPitcherStrikeOuts)")
-				  }
-				  .font(.footnote)
-				  .foregroundColor(.white)
-			   }
-			}
+		 if !pitcherPic.isEmpty {
+			Image(uiImage: loadImage(from: pitcherPic))
+			   .resizable()
+			   .frame(width: 100, height: 100)
+			   .clipShape(Circle())
+			   .overlay(Circle().stroke(Color.white, lineWidth: 4))
+			   .shadow(radius: 10)
+			   .padding()
 		 }
-		 .frame(maxWidth: .infinity)
-		 //        .border(.yellow)
+
+		 VStack(alignment: .leading) {
+			Text("ERA: \(pitcherERA)")
+			Text("Wins: \(pitcherWins)")
+			Text("Losses: \(pitcherLosses)")
+			Text("Strike Outs: \(pitcherStrikeOuts)")
+			Text("Throws: \(pitcherThrows)")
+		 }
+		 .font(.title2)
+		 .padding()
+
+		 Spacer()
 	  }
-	  .frame(maxWidth: .infinity)
+	  .background(Color(.systemBackground))
+	  .cornerRadius(10)
+	  .shadow(radius: 5)
 	  .padding()
-	  //    .border(.green)
+   }
+
+   private func loadImage(from urlString: String) -> UIImage {
+	  guard let url = URL(string: urlString),
+			let data = try? Data(contentsOf: url),
+			let image = UIImage(data: data) else {
+		 return UIImage(systemName: "photo") ?? UIImage()
+	  }
+	  return image
    }
 }
 
+struct PitcherDetailsView_Previews: PreviewProvider {
+   static var previews: some View {
+	  PitcherDetailsView(
+		 pitcherName: "Gerrit Cole",
+		 pitcherPic: "https://example.com/gerritcole.png",
+		 pitcherERA: "2.50",
+		 pitcherWins: 5,
+		 pitcherLosses: 2,
+		 pitcherStrikeOuts: 55,
+		 pitcherThrows: "Right"
+	  )
+   }
+}
