@@ -9,7 +9,7 @@
 
 import SwiftUI
 
-struct scoreCardView: View {
+struct ScoreCardView: View {
    @ObservedObject var vm: GameViewModel
    @Binding var selectedEventID: String?
    @Binding var showModal: Bool
@@ -22,56 +22,8 @@ struct scoreCardView: View {
    @Binding var refreshGame: Bool
    @Binding var timeRemaining: Int
 
-   let home: String?
-   let homeScore: String
-   let homeRecord: String?
-   let visitorRecord: String?
-   let homeColor: String?
-   let visitors: String?
-   let visitScore: String
-   let visitColor: String?
-   let homeWin: Bool
-   let visitWin: Bool
-   let inningTxt: String?
-   let startTime: String?
-   let atBat: String?
-   let atBatPic: String?
-   let batterStats: String?
-   let batterLine: String?
    var winColor: Color { .green }
    var thisIsInProgress: Bool { event.isInProgress }
-
-   init(vm: GameViewModel, titleSize: CGFloat, showModal: Binding<Bool>, tooDark: String, event: gameEvent, scoreSize: Int, numUpdates: Binding<Int>, refreshGame: Binding<Bool>, timeRemaining: Binding<Int>, selectedEventID: Binding<String?>) {
-	  self.vm = vm
-	  self.titleSize = titleSize
-	  self.tooDark = tooDark
-	  self.event = event
-	  self.scoreSize = scoreSize
-	  self._numUpdates = numUpdates
-	  self._refreshGame = refreshGame
-	  self._timeRemaining = timeRemaining
-	  self._selectedEventID = selectedEventID
-	  self._showModal = showModal
-
-	  self.home = vm.filteredEvents.first?.home
-	  self.homeScore = vm.filteredEvents.first?.homeScore ?? "0"
-	  self.homeRecord = vm.filteredEvents.first?.homeRecord
-	  self.visitorRecord = vm.filteredEvents.first?.visitorRecord
-	  self.homeColor = vm.filteredEvents.first?.homeColor
-	  self.visitors = vm.filteredEvents.first?.visitors
-	  self.visitScore = vm.filteredEvents.first?.visitScore ?? "0"
-	  self.visitColor = vm.filteredEvents.first?.visitorAltColor
-	  self.inningTxt = vm.filteredEvents.first?.inningTxt
-	  self.atBat = vm.filteredEvents.first?.atBat
-	  self.atBatPic = vm.filteredEvents.first?.atBatPic
-	  self.batterStats = vm.filteredEvents.first?.batterStats
-	  self.batterLine = vm.filteredEvents.first?.batterLine
-
-	  self.startTime = event.startTime
-
-	  self.homeWin = (Int(visitScore) ?? 0) < (Int(homeScore) ?? 0)
-	  self.visitWin = (Int(visitScore) ?? 0) > (Int(homeScore) ?? 0)
-   }
 
    var body: some View {
 	  VStack {
@@ -102,50 +54,42 @@ struct scoreCardView: View {
 			   VStack(alignment: .leading, spacing: 0) {
 				  VStack {
 					 HStack {
-						Text("\(visitors ?? "")")
+						Text("\(event.visitors)")
 					 }
 					 .font(.title3)
 					 .minimumScaleFactor(0.5)
 					 .lineLimit(1)
 					 .frame(maxWidth: .infinity, alignment: .trailing)
-					 .foregroundColor(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
+					 .foregroundColor(getColorForUI(hex: event.visitorColor, thresholdHex: tooDark))
 
-					 Text("\(visitorRecord ?? "")")
+					 Text("\(event.visitorRecord)")
 						.font(.caption)
 						.padding(.trailing, 5)
 						.foregroundColor(.gray)
 						.frame(maxWidth: .infinity, alignment: .trailing)
 
 					 HStack {
-						TeamIconView(team: APIResponse.Event.Competition.Competitor.Team(
-						   name: "Visitor",
-						   color: visitColor,
-						   alternateColor: nil,
-						   logo: nil,
-						   logos: [
-							  APIResponse.Event.Competition.Competitor.Team.Logo(
-								 href: event.visitorLogo,
-								 width: nil,
-								 height: nil
-							  )
-						   ]
-						))
+						TeamIconView(team: [
+						   "name": event.visitors,
+						   "color": event.visitorColor,
+						   "logo": event.visitorLogo
+						])
 						.clipShape(Circle())
 					 }
 					 .frame(maxWidth: .infinity, alignment: .center)
 					 .padding(.bottom, 2)
 				  }
 			   }
-			   Text("\(visitScore)")
+			   Text("\(event.visitScore)")
 				  .font(.system(size: CGFloat(scoreSize)))
 				  .bold()
 				  .padding(.trailing)
-				  .foregroundColor(visitWin && Int(visitScore) ?? 0 > 0 ? winColor : Color(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark)))
+				  .foregroundColor(event.visitorWin ? winColor : getColorForUI(hex: event.visitorColor, thresholdHex: tooDark))
 			}
 			.frame(maxWidth: .infinity, alignment: .trailing)
 			.background(
 			   Group {
-				  if visitWin, Int(visitScore) ?? 0 > 0 {
+				  if event.visitorWin {
 					 LinearGradient(
 						gradient: Gradient(colors: [Color.clear, Color.green.opacity(0.5)]),
 						startPoint: .trailing,
@@ -158,46 +102,38 @@ struct scoreCardView: View {
 			)
 
 			HStack {
-			   if inningTxt?.contains("Bottom") ?? false {
+			   if event.inningTxt.contains("Bottom") {
 				  Image(systemName: "arrowtriangle.right.fill")
 					 .imageScale(.small)
-			   } else if inningTxt?.contains("Top") ?? false {
+			   } else if event.inningTxt.contains("Top") {
 				  Image(systemName: "arrowtriangle.left.fill")
 			   }
-			   Text("\(homeScore)")
+			   Text("\(event.homeScore)")
 				  .font(.system(size: CGFloat(scoreSize)))
 				  .bold()
 				  .padding(.leading)
-				  .foregroundColor(homeWin && Int(homeScore) ?? 0 > 0 ? winColor : Color(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark)))
+				  .foregroundColor(event.homeWin ? winColor : getColorForUI(hex: event.homeColor, thresholdHex: tooDark))
 
 			   VStack(alignment: .leading) {
 				  VStack {
-					 Text("\(home ?? "")")
+					 Text("\(event.home)")
 						.font(.title3)
-						.foregroundColor(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
+						.foregroundColor(getColorForUI(hex: event.homeColor, thresholdHex: tooDark))
 						.minimumScaleFactor(0.5)
 						.frame(maxWidth: .infinity, alignment: .leading)
 						.lineLimit(1)
 
-					 Text("\(vm.filteredEvents.first?.homeRecord ?? "")")
+					 Text("\(event.homeRecord)")
 						.font(.caption)
 						.foregroundColor(.gray)
 						.frame(maxWidth: .infinity, alignment: .leading)
 
 					 HStack {
-						TeamIconView(team: APIResponse.Event.Competition.Competitor.Team(
-						   name: "Home",
-						   color: homeColor,
-						   alternateColor: nil,
-						   logo: nil,
-						   logos: [
-							  APIResponse.Event.Competition.Competitor.Team.Logo(
-								 href: event.homeLogo,
-								 width: nil,
-								 height: nil
-							  )
-						   ]
-						))
+						TeamIconView(team: [
+						   "name": event.home,
+						   "color": event.homeColor,
+						   "logo": event.homeLogo
+						])
 						.clipShape(Circle())
 					 }
 					 .frame(maxWidth: .infinity, alignment: .center)
@@ -208,7 +144,7 @@ struct scoreCardView: View {
 			.frame(maxWidth: .infinity, alignment: .leading)
 			.background(
 			   Group {
-				  if homeWin, Int(homeScore) ?? 0 > 0 {
+				  if event.homeWin {
 					 LinearGradient(
 						gradient: Gradient(colors: [Color.clear, Color.green.opacity(0.5)]),
 						startPoint: .leading,
@@ -221,22 +157,22 @@ struct scoreCardView: View {
 			)
 		 }
 
-		 if let atBat = atBat, !atBat.isEmpty {
+		 if event.atBat != "N/A" {
 			VStack {
-			   Text("At Bat: \(atBat)")
+			   Text("At Bat: \(event.atBat)")
 				  .font(.headline)
 				  .onTapGesture {
 					 if let url = URL(string: event.batterBioURL) {
 						UIApplication.shared.open(url)
 					 }
 				  }
-			   if let batterStats = batterStats {
-				  Text("Avg: \(batterStats)  |  \(batterLine ?? "")")
+			   if !event.batterStats.isEmpty {
+				  Text("Avg: \(event.batterStats)  |  \(event.batterLine)")
 					 .font(.subheadline)
 			   }
 			   Spacer()
 			   VStack {
-				  AsyncImage(url: URL(string: atBatPic ?? "")) { phase in
+				  AsyncImage(url: URL(string: event.atBatPic)) { phase in
 					 switch phase {
 						case .empty:
 						   ProgressView()
@@ -268,7 +204,7 @@ struct scoreCardView: View {
 					 Text(event.currentPitcherName)
 						.font(.subheadline)
 						.onTapGesture {
-						   if let url = URL(string: event.homePitcherBioURL) {
+						   if let url = URL(string: event.currentPitcherBioURL) {
 							  UIApplication.shared.open(url)
 						   }
 						}
@@ -285,7 +221,7 @@ struct scoreCardView: View {
 					 .font(.footnote)
 					 .foregroundColor(.white)
 
-					 AsyncImage(url: URL(string: event.currentPitcherPic ?? "")) { phase in
+					 AsyncImage(url: URL(string: event.currentPitcherPic)) { phase in
 						switch phase {
 						   case .empty:
 							  ProgressView()
@@ -297,7 +233,7 @@ struct scoreCardView: View {
 								 .frame(width: 50, height: 50)
 								 .clipShape(Circle())
 								 .onTapGesture {
-									if let url = URL(string: event.homePitcherBioURL) {
+									if let url = URL(string: event.currentPitcherBioURL) {
 									   UIApplication.shared.open(url)
 									}
 								 }
@@ -323,3 +259,14 @@ struct scoreCardView: View {
 	  .padding(.bottom, 50)
    }
 }
+
+private func hexToInt(_ hex: String) -> Int {
+   var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+   if hexSanitized.hasPrefix("#") {
+	  hexSanitized.remove(at: hexSanitized.startIndex)
+   }
+   var intValue: UInt64 = 0
+   Scanner(string: hexSanitized).scanHexInt64(&intValue)
+   return Int(intValue)
+}
+

@@ -7,6 +7,15 @@
 //  Copyright © 2024 Delicious Studios, LLC. - Grant Perry
 //
 
+//   HeaderView.swift
+//   goMLB
+//
+//   Created by: Grant Perry on 5/26/24 at 8:31 PM
+//     Modified:
+//
+//  Copyright © 2024 Delicious Studios, LLC. - Grant Perry
+//
+
 import SwiftUI
 
 struct HeaderView: View {
@@ -36,10 +45,6 @@ struct HeaderView: View {
 			Spacer()
 
 			ZStack {
-//			   Circle()
-//				  .fill(getColorForUI(hex: visitColor ?? "#000000", thresholdHex: tooDark))
-//				  .frame(width: 50, height: 50)
-
 			   Text(visitors ?? "Visitor")
 				  .font(.system(size: 25, weight: .bold))
 				  .foregroundColor(.white)
@@ -62,10 +67,6 @@ struct HeaderView: View {
 			   .padding(.horizontal, 10)
 
 			ZStack {
-//			   Circle()
-//				  .fill(getColorForUI(hex: homeColor ?? "#000000", thresholdHex: tooDark))
-//				  .frame(width: 50, height: 50)
-//
 			   Text(home ?? "Home")
 				  .font(.system(size: 25, weight: .bold))
 				  .foregroundColor(.white)
@@ -147,8 +148,6 @@ struct HeaderView: View {
    }
 }
 
-
-
 //#Preview {
 //   HeaderView(
 //	  thisIsInProgress: true,
@@ -167,3 +166,4 @@ struct HeaderView: View {
 //
 //}
 //
+

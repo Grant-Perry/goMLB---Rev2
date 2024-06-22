@@ -2,7 +2,7 @@
 //   goMLB
 //
 //   Created by: Grant Perry on 6/14/24 at 11:10 AM
-//     Modified: 
+//     Modified:
 //
 //  Copyright © 2024 Delicious Studios, LLC. - Grant Perry
 //
@@ -40,7 +40,6 @@ struct ConfirmationSheet: View {
 				  .multilineTextAlignment(.center) // Center the text
 			}
 			.padding() // Add padding around the entire VStack
-
 
 			HStack {
 			   Button(action: {

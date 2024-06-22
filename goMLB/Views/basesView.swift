@@ -1,4 +1,4 @@
-//   basesView.swift
+//   BasesView.swift
 //   goMLB
 //
 //   Created by: Grant Perry on 4/22/24 at 3:00 PM
@@ -49,7 +49,7 @@ struct BasesView: View {
 
 		 VStack(alignment: .center, spacing: 2) {
 			VStack(spacing: 0) {
-			   Text("\(balls)-\(strikes)\(thisSubStrike  > 0 ? ".\(thisSubStrike)" : "")")
+			   Text("\(balls)-\(strikes)\(thisSubStrike > 0 ? ".\(thisSubStrike)" : "")")
 				  .font(.system(size: 14))
 
 			   VStack {
@@ -57,12 +57,10 @@ struct BasesView: View {
 					 .font(.system(size: 10))
 					 .padding(.top, 1)
 			   }
-//			   .padding(.top, 30)
 			   Spacer()
 			   if showPic { // don't show bottom half if false to use this view in other smaller places
 				  VStack {
-//					 Spacer() // Push the content to the bottom
-							  // ... content to show when showPic is true ...
+					 // ... content to show when showPic is true ...
 				  }
 				  Spacer()
 
@@ -89,20 +87,17 @@ struct BasesView: View {
 						   AsyncImage(url: url) { phase in
 							  switch phase {
 								 case .empty:
-									// While the image is loading (e.g., show an activity indicator or a placeholder image)
 									ProgressView()
 									   .progressViewStyle(CircularProgressViewStyle())
 									   .frame(width: 100, height: 100)
 
 								 case .success(let image):
-									// On successful image load
 									image.resizable()
 									   .scaledToFit()
 									   .frame(width: 70)
 									   .clipShape(Circle())
 
 								 case .failure:
-									// If the image fails to load (e.g., show an error image or a default image)
 									Image(systemName: "photo")
 									   .resizable()
 									   .scaledToFit()
@@ -111,7 +106,6 @@ struct BasesView: View {
 									   .clipShape(Circle())
 
 								 @unknown default:
-									// Future proofing for additional cases that are not covered
 									EmptyView()
 							  }
 						   }
