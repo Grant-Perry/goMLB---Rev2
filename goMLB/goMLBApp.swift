@@ -11,9 +11,22 @@ import SwiftUI
 
 @main
 struct goMLBApp: App {
-    var body: some Scene {
-        WindowGroup {
-		   ContentView(teamSize: AppConstants.teamSize, teamScoreSize: AppConstants.teamScoreSize)
-        }
-    }
+   var body: some Scene {
+	  WindowGroup {
+		 TabView {
+			ContentView(teamSize: AppConstants.teamSize, teamScoreSize: AppConstants.teamScoreSize)
+			   .tabItem {
+				  Label("Games", systemImage: "figure.baseball")
+			   }
+
+			ScheduleView()
+			   .tabItem {
+				  Label("Schedule", systemImage: "calendar")
+			   }
+		 }
+	  }
+   }
 }
+
+
+

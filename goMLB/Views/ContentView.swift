@@ -1,12 +1,13 @@
 //   ContentView.swift
 //   goMLB
 //
-//   Created by: Grant Perry on 4/21/24 at 4:37 PM
+//   Created by: Grant Perry on 4/21/24 at 4:37 PM
 //     Modified:
 //
 //  Copyright © 2024 Delicious Studios, LLC. - Grant Perry
 //
 
+// THIS
 import SwiftUI
 
 struct ContentView: View {
@@ -50,26 +51,25 @@ struct ContentView: View {
 			   let batterStats = event.batterStats
 			   let batterLine = event.batterLine
 
-			   scoreCardView(
+			   ScoreCardView(
 				  vm: gameViewModel,
-				  titleSize: titleSize,
+				  selectedEventID: $selectedEventID,
 				  showModal: $showModal,
+				  titleSize: titleSize,
 				  tooDark: tooDark,
 				  event: event,
 				  scoreSize: Int(scoreSize),
 				  numUpdates: $numUpdates,
 				  refreshGame: $refreshGame,
-				  timeRemaining: $thisTimeRemaining,
-				  selectedEventID: $selectedEventID // Added this parameter
+				  timeRemaining: $thisTimeRemaining
 			   )
 
 			   if event.isInProgress {
 				  VStack {
 					 HStack {
 						if let lastPlay = event.lastPlay {
-						   Text(lastPlay)
+						   Text("LP: \(lastPlay)")
 							  .font(.system(size: 18))
-
 							  .lineLimit(2)
 							  .minimumScaleFactor(0.5)
 							  .scaledToFit()
@@ -77,51 +77,63 @@ struct ContentView: View {
 					 }
 
 					 HStack {
-						BasesView(onFirst: event.on1,
-								  onSecond: event.on2,
-								  onThird: event.on3,
-								  strikes: event.strikes ?? 0,
-								  balls: event.balls ?? 0,
-								  outs: event.outs ?? 0,
-								  inning: event.inning,
-								  inningTxt: event.inningTxt,
-								  thisSubStrike: event.thisSubStrike,
-								  atBat: atBat,
-								  atBatPic: atBatPic,
-								  showPic: true,
-								  batterStats: batterStats,
-								  batterLine: batterLine)
+						BasesView(
+						   onFirst: event.on1,
+						   onSecond: event.on2,
+						   onThird: event.on3,
+						   strikes: event.strikes ?? 0,
+						   balls: event.balls ?? 0,
+						   outs: event.outs ?? 0,
+						   inning: event.inning,
+						   inningTxt: event.inningTxt,
+						   thisSubStrike: event.thisSubStrike,
+						   atBat: atBat,
+						   atBatPic: atBatPic,
+						   showPic: true,
+						   batterStats: batterStats,
+						   batterLine: batterLine
+						)
 					 }
-					 
 				  }
-			   } else { // not liveAction so show next game
-				  
+			   } else {
 				  PitcherDetailsView(event: event)
-
-				  Text(event.nextGameDisplayText) // Use the computed property
+				  Text(event.nextGameDisplayText)
 					 .font(.subheadline)
 					 .frame(maxWidth: .infinity, alignment: .trailing)
 			   }
 			}
 		 }
-
 		 .frame(width: UIScreen.main.bounds.width, height: 565)
 		 .padding(.top, -15)
 		 .listStyle(.plain)
-//		 Spacer()
+		 .refreshable {
+			gameViewModel.loadAllGames(showLiveAction: true)
+		 }
+		 .navigationBarTitle("MLB Games", displayMode: .inline)
+		 .navigationBarItems(trailing: Button(action: {
+			refreshGame.toggle()
+		 }) {
+			Image(systemName: "arrow.clockwise")
+		 })
 
 		 ScrollView(.horizontal, showsIndicators: false) {
 			HStack(spacing: 10) {
-			   ForEach(gameViewModel.allEvents) { event in
+			   ForEach(gameViewModel.allEvents, id: \.id) { event in
 				  Button(action: {
 					 selectedEventID = event.id.uuidString
-					 gameViewModel.updateTeamPlaying(with: event.visitors)
+					 gameViewModel.teamPlaying = event.visitors // Update the team playing to the selected team
+					 gameViewModel.loadAllGames(showLiveAction: showLiveAction) {
+						DispatchQueue.main.async {
+						   selectedEventID = event.id.uuidString
+						}
+					 }
 				  }) {
-					 HorizontalCardView(gameViewModel: gameViewModel,
-										event: event,
-										teamSize: teamSize,
-										teamScoreSize: teamScoreSize)
-
+					 HorizontalCardView(
+						gameViewModel: gameViewModel,
+						event: event,
+						teamSize: teamSize,
+						teamScoreSize: teamScoreSize
+					 )
 				  }
 				  .buttonStyle(.plain)
 			   }
@@ -132,22 +144,16 @@ struct ContentView: View {
 		 .background(cardColor)
 		 .ignoresSafeArea(edges: .bottom)
 		 .opacity(0.9)
-
 	  }
-//	  .onAppear {
-//		 gameViewModel.loadAllGames(showLiveAction: showLiveAction) {
-//			if selectedEventID == nil {
-//			   selectedEventID = gameViewModel.allEvents.first?.id.uuidString
-//			}
-//		 }
-//	  }
 	  .onAppear {
 		 selectedTeam = gameViewModel.favTeam // Set selectedTeam to favTeam
-		 gameViewModel.updateTeamPlaying(with: selectedTeam) // Update the team playing to the selected team
+		 gameViewModel.teamPlaying = selectedTeam // Update the team playing to the selected team
 		 gameViewModel.loadAllGames(showLiveAction: showLiveAction) {
-			gameViewModel.updateTeamPlaying(with: selectedTeam) // Ensure filtering is called again after loading
-			if selectedEventID == nil {
-			   selectedEventID = gameViewModel.filteredEvents.first?.id.uuidString // Corrected to filteredEvents
+			DispatchQueue.main.async {
+			   gameViewModel.teamPlaying = selectedTeam // Ensure filtering is called again after loading
+			   if selectedEventID == nil {
+				  selectedEventID = gameViewModel.filteredEvents.first?.id.uuidString
+			   }
 			}
 		 }
 	  }
@@ -182,23 +188,27 @@ struct ContentView: View {
 		 Text("Version: \(getAppVersion())")
 			.font(.system(size: 10))
 	  }
-	  Button("Refresh") {
-		 // also reset and restart the game updates
+	  Button(action: {
+		 // Reset and restart the game updates
 		 numUpdates = 0
 		 thisTimeRemaining = timerValue
 		 refreshGame = true
 		 gameViewModel.loadAllGames(showLiveAction: showLiveAction)
+	  }) {
+		 Image(systemName: "arrow.clockwise")
+			.font(.footnote)
+
 	  }
+
 	  .font(.footnote)
 	  .padding(4)
-	  .background(Color.blue)
+	  .background(Color.blue.gradient)
 	  .foregroundColor(.white)
 	  .clipShape(Capsule())
 	  .preferredColorScheme(.dark)
-
 	  .alert(isPresented: $showAlert) {
 		 Alert(
-			title: Text("Update Limit Reached"),
+			title: Text("Pump the brakes..."),
 			message: Text("Would you like to continue receiving updates?"),
 			primaryButton: .default(Text("Continue")) {
 			   refreshGame = true

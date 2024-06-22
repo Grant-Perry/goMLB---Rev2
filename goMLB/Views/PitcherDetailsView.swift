@@ -2,12 +2,11 @@
 //   goMLB
 //
 //   Created by: Grant Perry on 6/14/24 at 7:01 PM
-//     Modified: 
+//     Modified:
 //
 //  Copyright © 2024 Delicious Studios, LLC. - Grant Perry
 //
 
-// PitcherDetailsView.swift
 import SwiftUI
 
 struct PitcherDetailsView: View {
@@ -39,7 +38,7 @@ struct PitcherDetailsView: View {
 				  .font(.footnote)
 				  .foregroundColor(.white)
 			   }
-			   AsyncImage(url: URL(string: event.currentPitcherPic ?? "")) { phase in
+			   AsyncImage(url: URL(string: event.currentPitcherPic)) { phase in
 				  switch phase {
 					 case .empty:
 						ProgressView()
@@ -48,7 +47,7 @@ struct PitcherDetailsView: View {
 					 case .success(let image):
 						image.resizable()
 						   .scaledToFit()
-						   .frame(width:picSize)
+						   .frame(width: picSize)
 						   .clipShape(Circle())
 					 case .failure:
 						Image(systemName: "photo")
@@ -64,7 +63,6 @@ struct PitcherDetailsView: View {
 			}
 		 }
 		 .frame(maxWidth: .infinity)
-//		 .border(.red)
 
 		 // Home Pitcher's Info
 		 VStack {
@@ -114,10 +112,10 @@ struct PitcherDetailsView: View {
 			}
 		 }
 		 .frame(maxWidth: .infinity)
-//		 .border(.yellow)
 	  }
 	  .frame(maxWidth: .infinity)
 	  .padding()
-//	  .border(.green)
    }
 }
+
+

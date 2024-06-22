@@ -10,7 +10,7 @@
 import SwiftUI
 
 struct HorizontalCardView: View {
-   var gameViewModel: GameViewModel 
+   var gameViewModel: GameViewModel
    var event: gameEvent
    let teamSize: CGFloat
    let teamScoreSize: CGFloat
@@ -29,7 +29,7 @@ struct HorizontalCardView: View {
 			}
 			HStack {
 			   Text(event.home)
-				  .font(.system(size:teamSize, weight: .bold))
+				  .font(.system(size: teamSize, weight: .bold))
 				  .foregroundColor(.white)
 			}
 		 }
@@ -93,7 +93,6 @@ struct HorizontalCardView: View {
 			}
 		 }
 	  }
-
 	  .frame(width: 165, height: 120)
 	  .background(
 		 event.inningTxt.contains("Final") ? Color.indigo.gradient :
@@ -105,4 +104,5 @@ struct HorizontalCardView: View {
 	  .opacity(0.9)
    }
 }
+
 

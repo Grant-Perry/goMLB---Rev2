@@ -7,8 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9B10F5C02C272B13008EB697 /* GameSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B10F5BF2C272B13008EB697 /* GameSchedule.swift */; };
+		9B10F5C42C272BC6008EB697 /* ScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B10F5C32C272BC6008EB697 /* ScheduleView.swift */; };
+		9B10F5C62C272CAD008EB697 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B10F5C52C272CAD008EB697 /* CalendarView.swift */; };
+		9B10F5CA2C273DDC008EB697 /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B10F5C92C273DDC008EB697 /* ScheduleViewModel.swift */; };
+		9B10F5CC2C274AE3008EB697 /* ScheduleRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B10F5CB2C274AE3008EB697 /* ScheduleRowView.swift */; };
 		9B12539E2BEC264000A7B422 /* timerRemaingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B12539D2BEC264000A7B422 /* timerRemaingView.swift */; };
-		9B1253A02BEE8FCD00A7B422 /* scoreCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B12539F2BEE8FCD00A7B422 /* scoreCardView.swift */; };
+		9B1253A02BEE8FCD00A7B422 /* ScoreCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B12539F2BEE8FCD00A7B422 /* ScoreCardView.swift */; };
 		9B1D63512BD5B09B00066D30 /* goMLBApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1D63502BD5B09B00066D30 /* goMLBApp.swift */; };
 		9B1D63532BD5B09B00066D30 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B1D63522BD5B09B00066D30 /* ContentView.swift */; };
 		9B1D63552BD5B09C00066D30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B1D63542BD5B09C00066D30 /* Assets.xcassets */; };
@@ -38,8 +43,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9B10F5BF2C272B13008EB697 /* GameSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSchedule.swift; sourceTree = "<group>"; };
+		9B10F5C32C272BC6008EB697 /* ScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleView.swift; sourceTree = "<group>"; };
+		9B10F5C52C272CAD008EB697 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		9B10F5C92C273DDC008EB697 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
+		9B10F5CB2C274AE3008EB697 /* ScheduleRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleRowView.swift; sourceTree = "<group>"; };
 		9B12539D2BEC264000A7B422 /* timerRemaingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = timerRemaingView.swift; sourceTree = "<group>"; };
-		9B12539F2BEE8FCD00A7B422 /* scoreCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = scoreCardView.swift; sourceTree = "<group>"; };
+		9B12539F2BEE8FCD00A7B422 /* ScoreCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreCardView.swift; sourceTree = "<group>"; };
 		9B1D634D2BD5B09B00066D30 /* goMLB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = goMLB.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B1D63502BD5B09B00066D30 /* goMLBApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = goMLBApp.swift; sourceTree = "<group>"; };
 		9B1D63522BD5B09B00066D30 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -128,6 +138,8 @@
 				9B585FEF2BD5C70900BE2E4B /* APIResponse.swift */,
 				E71035F72BDBD27E00F1F3B7 /* teamNames.swift */,
 				9BD920FF2BE18DFD007D558F /* gameEvent.swift */,
+				9B10F5BF2C272B13008EB697 /* GameSchedule.swift */,
+				9B10F5C32C272BC6008EB697 /* ScheduleView.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -146,6 +158,7 @@
 			isa = PBXGroup;
 			children = (
 				9B585FFE2BD8536300BE2E4B /* GameViewModel.swift */,
+				9B10F5C92C273DDC008EB697 /* ScheduleViewModel.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -159,13 +172,15 @@
 				9B7488E22C040BCF00A22541 /* HeaderView.swift */,
 				9B43419C2C14AA4D0052904E /* HorizontalCardView.swift */,
 				9BD920FD2BDD9AB1007D558F /* outsView.swift */,
-				9B12539F2BEE8FCD00A7B422 /* scoreCardView.swift */,
+				9B12539F2BEE8FCD00A7B422 /* ScoreCardView.swift */,
 				9BBF49812BE54CD700E27A5F /* stupidView.swift */,
 				E71035F52BDAA07E00F1F3B7 /* teamIconView.swift */,
 				9B12539D2BEC264000A7B422 /* timerRemaingView.swift */,
 				9BF10BDF2C1C94CB000B9A4A /* ConfirmationSheet.swift */,
 				9BF10BE12C1C965D000B9A4A /* BackgroundClearView.swift */,
 				9BF10BE32C1D033A000B9A4A /* PitcherDetailsView.swift */,
+				9B10F5C52C272CAD008EB697 /* CalendarView.swift */,
+				9B10F5CB2C274AE3008EB697 /* ScheduleRowView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -258,21 +273,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				9BAFE92D2BFE45EA004DEC22 /* view.swift in Sources */,
+				9B10F5C02C272B13008EB697 /* GameSchedule.swift in Sources */,
 				9B585FF72BD6EB4200BE2E4B /* basesView.swift in Sources */,
 				9B1D63532BD5B09B00066D30 /* ContentView.swift in Sources */,
 				9BF10BE42C1D033A000B9A4A /* PitcherDetailsView.swift in Sources */,
 				9BBF49822BE54CD700E27A5F /* stupidView.swift in Sources */,
 				9B585FF02BD5C70900BE2E4B /* APIResponse.swift in Sources */,
+				9B10F5C62C272CAD008EB697 /* CalendarView.swift in Sources */,
 				9BEBFB532C038BD5005AD198 /* color.swift in Sources */,
 				E71035F62BDAA07E00F1F3B7 /* teamIconView.swift in Sources */,
 				9B585FFD2BD8439700BE2E4B /* colorMod.swift in Sources */,
 				9B585FFF2BD8536300BE2E4B /* GameViewModel.swift in Sources */,
+				9B10F5CC2C274AE3008EB697 /* ScheduleRowView.swift in Sources */,
 				9BAFE92F2BFE4C1D004DEC22 /* GameState.swift in Sources */,
+				9B10F5CA2C273DDC008EB697 /* ScheduleViewModel.swift in Sources */,
 				9B99A3982C02A908003F3C85 /* MatchupView.swift in Sources */,
 				9B4341A22C14BC350052904E /* HorizontalCardView.swift in Sources */,
 				9BF10BE02C1C94CB000B9A4A /* ConfirmationSheet.swift in Sources */,
 				9BF3BC252BF9184000535630 /* Inning.swift in Sources */,
 				9BF3BC272BFC10A400535630 /* Date.swift in Sources */,
+				9B10F5C42C272BC6008EB697 /* ScheduleView.swift in Sources */,
 				9B1D63512BD5B09B00066D30 /* goMLBApp.swift in Sources */,
 				9B12539E2BEC264000A7B422 /* timerRemaingView.swift in Sources */,
 				9B7488E32C040BCF00A22541 /* HeaderView.swift in Sources */,
@@ -282,7 +302,7 @@
 				9BF10BE22C1C965D000B9A4A /* BackgroundClearView.swift in Sources */,
 				9B4341A62C151B0F0052904E /* dork.swift in Sources */,
 				9BD921002BE18DFD007D558F /* gameEvent.swift in Sources */,
-				9B1253A02BEE8FCD00A7B422 /* scoreCardView.swift in Sources */,
+				9B1253A02BEE8FCD00A7B422 /* ScoreCardView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -429,7 +449,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.67.1;
+				MARKETING_VERSION = 5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -459,7 +479,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.67.1;
+				MARKETING_VERSION = 5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grantperry.goMLB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
