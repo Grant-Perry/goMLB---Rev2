@@ -109,12 +109,12 @@ struct ContentView: View {
 		 .refreshable {
 			gameViewModel.loadAllGames(showLiveAction: true)
 		 }
-		 .navigationBarTitle("MLB Games", displayMode: .inline)
-		 .navigationBarItems(trailing: Button(action: {
-			refreshGame.toggle()
-		 }) {
-			Image(systemName: "arrow.clockwise")
-		 })
+//		 .navigationBarTitle("MLB Games", displayMode: .inline)
+//		 .navigationBarItems(trailing: Button(action: {
+//			refreshGame.toggle()
+//		 }) {
+//			Image(systemName: "arrow.clockwise")
+//		 })
 
 		 ScrollView(.horizontal, showsIndicators: false) {
 			HStack(spacing: 10) {
@@ -265,7 +265,7 @@ extension ContentView {
 }
 
 // Preview
-
-#Preview {
-   ContentView(teamSize: AppConstants.teamSize, teamScoreSize: AppConstants.teamScoreSize)
-}
+//
+//#Preview {
+//   ContentView(teamSize: AppConstants.teamSize, teamScoreSize: AppConstants.teamScoreSize)
+//}

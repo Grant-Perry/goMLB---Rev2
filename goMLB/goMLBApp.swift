@@ -9,24 +9,36 @@
 
 import SwiftUI
 
+// Main App
 @main
 struct goMLBApp: App {
    var body: some Scene {
 	  WindowGroup {
-		 TabView {
-			ContentView(teamSize: AppConstants.teamSize, teamScoreSize: AppConstants.teamScoreSize)
-			   .tabItem {
-				  Label("Games", systemImage: "figure.baseball")
-			   }
-
-			ScheduleView()
-			   .tabItem {
-				  Label("Schedule", systemImage: "calendar")
-			   }
-		 }
+		 MainTabView()
 	  }
    }
 }
 
+struct MainTabView: View {
+   var body: some View {
+	  TabView {
+		 ContentView(teamSize: AppConstants.teamSize, teamScoreSize: AppConstants.teamScoreSize)
+			.tabItem {
+			   Label("Home", systemImage: "house")
+			}
 
+		 ScheduleView()
+			.tabItem {
+			   Label("Schedule", systemImage: "calendar")
+			}
+	  }
+   }
+}
 
+// Preview Provider
+struct goMLBApp_Previews: PreviewProvider {
+   static var previews: some View {
+	  MainTabView()
+		 .preferredColorScheme(.dark)
+   }
+}

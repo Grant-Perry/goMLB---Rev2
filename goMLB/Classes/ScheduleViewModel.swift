@@ -176,7 +176,7 @@ class ScheduleViewModel: ObservableObject {
 								 // Calculate the date range
 								 let startDate = displayFormatter.string(from: today)
 								 let endDate = displayFormatter.string(from: Calendar.current.date(byAdding: .day, value: 10, to: today)!)
-								 self.dateRange = "Games for: \(startDate) - \(endDate)"
+								 self.dateRange = "\(startDate) -\n\(endDate)"
 							  }
 						   }
 						}
